@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>House Floor Watch</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="House Floor Watch is a free email alert service that notifies subscribers when the U.S. House officially updates its Bills This Week schedule." />
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #111;
+      line-height: 1.5;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-top: 32px;
+      margin-bottom: 8px;
+    }
+    p, li {
+      font-size: 15px;
+    }
+    ul {
+      padding-left: 18px;
+    }
+    a {
+      color: #0645ad;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .links {
+      margin: 20px 0;
+    }
+    .links a {
+      margin-right: 20px;
+      font-weight: 500;
+    }
+    footer {
+      margin-top: 48px;
+      font-size: 13px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>House Floor Watch</h1>
+
+    <p>
+      House Floor Watch is a free, opt-in email alert service that monitors the
+      U.S. House of Representatives’ official “Bills This Week” page and sends
+      an email only when the House posts an official update.
+    </p>
+
+    <div class="links">
+      <a href="https://docs.google.com/spreadsheets/d/1pc_-cgzEIR5BroOt43KUBnGC0dbz7cFrjmVafs_LoFE/edit?gid=1809365410#gid=1809365410">Subscribe</a>
+      <a href="mailto:housefloorupdates@gmail.com">Contact</a>
+    </div>
+
+    <h2>What it monitors</h2>
+    <p>
+      House Floor Watch monitors the House’s official “Bills This Week” posting.
+      The House documentation site is treated as the single source of truth.
+    </p>
+
+    <p>
+      This service does not predict floor action or interpret House communications.
+      It only alerts subscribers when the official schedule page changes.
+    </p>
+
+    <h2>When emails are sent</h2>
+    <ul>
+      <li>No speculation, analysis, or commentary</li>
+      <li>No duplicate alerts</li>
+      <li>Often zero emails in a day</li>
+      <li>One email per official House update</li>
+    </ul>
+
+    <h2>Who it’s for</h2>
+    <p>
+      House Floor Watch is intended for congressional staff, advocates,
+      policy professionals, and others who rely on timely, official schedule updates.
+    </p>
+
+    <h2>Unsubscribe and privacy</h2>
+    <p>
+      You may unsubscribe at any time using the instructions included in every alert email.
+      House Floor Watch does not sell subscriber information and does not use website tracking.
+    </p>
+
+    <footer>
+      <p>
+        House Floor Watch is an independent informational service and is not an
+        official U.S. House of Representatives resource.
+      </p>
+      <p>
+        © <span id="year"></span> House Floor Watch
+      </p>
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
