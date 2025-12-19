@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>Unsubscribe - House Floor Watch</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: -apple-system, sans-serif; text-align: center; padding: 50px; }
+    #status { font-weight: 600; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>House Floor Watch</h1>
+  <div id="status">Processing your request...</div>
+
+  <script>
+    // CONNECT TO YOUR DATABASE
+    const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; // Safe for public use
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function handleUnsubscribe() {
+      // 1. Get the email from the link they clicked
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get('email');
+
+      if (!email) {
+        document.getElementById('status').innerText = "Invalid request. No email provided.";
+        return;
+      }
+
+      // 2. Delete it from the database
+      const { error } = await _supabase.from('subscribers').delete().eq('email', email);
+
+      if (error) {
+        document.getElementById('status').innerText = "Error unsubscribing. Please contact housefloorupdates@gmail.com";
+      } else {
+        document.getElementById('status').innerText = `Success. ${email} has been removed from the list.`;
+      }
+    }
+    handleUnsubscribe();
+  </script>
+</body>
+</html>
