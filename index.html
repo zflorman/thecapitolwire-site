@@ -3,134 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <title>House Floor Watch</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="House Floor Watch is a free email alert service that notifies subscribers when the U.S. House officially updates its Bills This Week schedule." />
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #ffffff;
-      color: #111;
-      line-height: 1.55;
-    }
-
-    main {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 48px 20px;
-    }
-
-    h1 {
-      font-size: 28px;
-      margin-bottom: 12px;
-      font-weight: 600;
-    }
-
-    h2 {
-      font-size: 18px;
-      margin-top: 36px;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    p, li {
-      font-size: 15px;
-    }
-
-    ul {
-      padding-left: 18px;
-    }
-
-    a {
-      color: #0645ad;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .links {
-      margin: 24px 0;
-    }
-
-    .links a {
-      margin-right: 24px;
-      font-weight: 500;
-    }
-
-    footer {
-      margin-top: 56px;
-      font-size: 13px;
-      color: #555;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 0; padding: 0; background: #ffffff; color: #111; line-height: 1.55; }
+    main { max-width: 720px; margin: 0 auto; padding: 48px 20px; }
+    h1 { font-size: 28px; margin-bottom: 12px; font-weight: 600; }
+    h2 { font-size: 18px; margin-top: 36px; margin-bottom: 8px; font-weight: 600; }
+    p, li { font-size: 15px; }
+    .signup-container { margin: 32px 0; padding: 24px; background: #f4f4f4; border-radius: 8px; border: 1px solid #ddd; }
+    input[type="email"] { padding: 10px; font-size: 15px; border: 1px solid #ccc; border-radius: 4px; width: 100%; max-width: 300px; margin-bottom: 10px; }
+    button { padding: 10px 20px; font-size: 15px; background: #003366; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
+    button:hover { background: #002244; }
+    #message { margin-top: 12px; font-size: 14px; font-weight: 500; }
+    footer { margin-top: 56px; font-size: 13px; color: #555; }
   </style>
 </head>
-
 <body>
   <main>
     <h1>House Floor Watch</h1>
+    <p>House Floor Watch is a free, opt-in email alert service that monitors the House’s official schedule page and sends an email only when it updates.</p>
 
-    <p>
-      House Floor Watch is a free, opt-in email alert service that monitors the
-      U.S. House of Representatives’ official “Bills This Week” page and sends
-      an email only when the House posts an official update.
-    </p>
-
-    <div class="links">
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfal6yniadc9ZDIFShzUOpx9ZIzxZNKo9AP4LS-r3zFsZuYYQ/viewform" target="_blank" rel="noopener">Subscribe</a>
-      <a href="mailto:housefloorupdates@gmail.com">Contact</a>
+    <div class="signup-container">
+      <strong>Subscribe to Floor Alerts</strong>
+      <div style="margin-top: 15px;">
+        <input type="email" id="email" placeholder="staffer@mail.house.gov" required>
+        <button id="submitBtn">Join List</button>
+      </div>
+      <div id="message"></div>
     </div>
 
-    <h2>What it monitors</h2>
-    <p>
-      House Floor Watch monitors the House’s official “Bills This Week” posting.
-      The House documentation site is treated as the single source of truth.
-    </p>
-
-    <p>
-      This service does not predict floor action, interpret House communications,
-      or provide analysis. It only alerts subscribers when the official schedule
-      page changes.
-    </p>
-
-    <h2>When emails are sent</h2>
+    <h2>How it works</h2>
+    <p>This service monitors the official <a href="https://docs.house.gov/floor/Default.aspx" target="_blank">Bills This Week</a> posting. It does not provide analysis or predictions—only official updates.</p>
+    
     <ul>
-      <li>No speculation, analysis, or commentary</li>
-      <li>No duplicate alerts</li>
-      <li>Often zero emails in a day</li>
+      <li>No speculation or commentary</li>
+      <li>Zero duplicate alerts</li>
       <li>One email per official House update</li>
     </ul>
 
-    <h2>Who it’s for</h2>
-    <p>
-      House Floor Watch is intended for congressional staff, advocates,
-      policy professionals, and others who rely on timely, official schedule updates.
-    </p>
-
-    <h2>Unsubscribe and privacy</h2>
-    <p>
-      You may unsubscribe at any time using the instructions included in every alert email.
-      House Floor Watch does not sell subscriber information and does not use website tracking
-      or analytics.
-    </p>
-
     <footer>
-      <p>
-        House Floor Watch is an independent informational service and is not an
-        official U.S. House of Representatives resource.
-      </p>
-      <p>
-        © <span id="year"></span> House Floor Watch
-      </p>
+      <p>© <span id="year"></span> House Floor Watch</p>
     </footer>
   </main>
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    // CONNECT TO SUPABASE
+    const SUB_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
+    const SUB_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBX6Gg2lF4YfW5P5k="; // YOUR ANON KEY
+    const supabase = supabase.createClient(SUB_URL, SUB_KEY);
+
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
+    const message = document.getElementById('message');
+
+    submitBtn.addEventListener('click', async () => {
+      const email = emailInput.value.trim();
+      if (!email) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Joining...";
+
+      const { error } = await supabase
+        .from('subscribers')
+        .insert([{ email: email }]);
+
+      if (error) {
+        if (error.code === '23505') {
+          message.style.color = "#111";
+          message.innerText = "You are already on the list!";
+        } else {
+          message.style.color = "red";
+          message.innerText = "Error joining list. Please try again.";
+          console.error(error);
+        }
+      } else {
+        message.style.color = "green";
+        message.innerText = "Success! You've been added to the list.";
+        emailInput.value = "";
+      }
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Join List";
+    });
   </script>
 </body>
 </html>
