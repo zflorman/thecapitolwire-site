@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>House Floor Watch</title>
+  <title>The Capitol Wire</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Free email alerts for official U.S. House schedule updates." />
   
@@ -163,15 +163,15 @@
 <body>
 
   <header>
-    <h1>House Floor Watch</h1>
-    <p>Official U.S. House schedule alerts. No spam, no speculation.</p>
+    <h1>🏛️ The Capitol Wire</h1>
+    <p>US house alerts system. No more constant checking. No spam.</p>
   </header>
 
   <main>
     <div class="card signup-card">
       <label class="form-label" for="email">Subscribe to Alerts</label>
       <div class="input-group">
-        <input type="email" id="email" placeholder="staffer@mail.house.gov" required>
+        <input type="email" id="email" placeholder="Your Email Here" required>
         <button id="submitBtn">Join List</button>
       </div>
       <div id="message"></div>
@@ -187,8 +187,7 @@
       <h2>Our Promise</h2>
       <ul>
         <li><strong>Zero speculation:</strong> We only send what is officially posted.</li>
-        <li><strong>Zero clutter:</strong> If the schedule doesn't change, you don't get an email.</li>
-        <li><strong>Privacy first:</strong> We never sell your email or track your clicks.</li>
+        <li><strong>Zero spam:</strong> If the schedule doesn't change, you don't get an email.</li>
       </ul>
 
       <h2>Who is this for?</h2>
@@ -202,15 +201,15 @@
     </div>
 
     <footer>
-      <p>House Floor Watch is an independent service.<br>Not affiliated with the U.S. House of Representatives.</p>
-      <p>© <span id="year"></span> House Floor Watch</p>
+      <p>The Capitol Wire is an independent service.<br>Not affiliated with the U.S. House of Representatives.</p>
+      <p>© <span id="year"></span> The Capitol Wire</p>
     </footer>
   </main>
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // --- CONNECTION LOGIC (PRESERVED) ---
+    // --- CONNECTION LOGIC ---
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
