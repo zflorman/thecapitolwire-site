@@ -10,12 +10,14 @@
     h1 { color: #1e3a8a; margin-bottom: 10px; } /* Congressional Blue */
     #status { font-weight: 500; margin-top: 20px; font-size: 1.1rem; }
     .card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
+    .debug { font-size: 0.8rem; color: #999; margin-top: 20px; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>🏛️ The Capitol Wire</h1>
     <div id="status">Processing your unsubscribe request...</div>
+    <div id="debug" class="debug"></div>
   </div>
 
   <script>
@@ -27,22 +29,34 @@
     async function handleUnsubscribe() {
       // 1. Get the email from the link
       const urlParams = new URLSearchParams(window.location.search);
-      const email = urlParams.get('email');
+      const emailRaw = urlParams.get('email');
 
-      if (!email) {
+      if (!emailRaw) {
         document.getElementById('status').innerText = "Invalid link. No email found.";
         return;
       }
+      
+      const email = emailRaw.trim(); // Remove any accidental spaces
 
-      // 2. Delete from database
-      const { error } = await _supabase.from('subscribers').delete().eq('email', email);
+      // 2. Delete from database and ASK FOR COUNT
+      // The 'count' option tells us how many rows were actually removed
+      const { error, count } = await _supabase
+        .from('subscribers')
+        .delete({ count: 'exact' })
+        .eq('email', email);
 
       if (error) {
         document.getElementById('status').innerText = "System Error. Please reply to the email to unsubscribe.";
         document.getElementById('status').style.color = "#dc2626";
+        console.error(error);
+      } else if (count === 0) {
+        // SUCCESSFUL COMMAND, BUT NO EMAIL FOUND
+        document.getElementById('status').innerText = "Email not found. You may have already unsubscribed.";
+        document.getElementById('status').style.color = "#d97706"; // Orange
       } else {
-        document.getElementById('status').innerText = `Success. ${email} has been removed from The Capitol Wire list.`;
-        document.getElementById('status').style.color = "#059669";
+        // SUCCESSFUL DELETION
+        document.getElementById('status').innerText = "Success. You have been removed from The Capitol Wire list.";
+        document.getElementById('status').style.color = "#059669"; // Green
       }
     }
     handleUnsubscribe();
