@@ -2,258 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>The Capitol Wire</title>
+  <title>The Capitol Wire - House Floor Alerts</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Free email alerts for official U.S. House schedule updates." />
-  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* RESET & BASE STYLES */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #f3f4f6; /* Light slate background */
-      color: #1f2937; /* Dark gray text for readability */
-      line-height: 1.6;
+    :root {
+      --primary: #1e3a8a; /* Congressional Blue */
+      --secondary: #3b82f6; /* Bright Blue */
+      --bg: #f3f4f6;
+      --text: #1f2937;
     }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
+    
+    .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+    
+    /* Hero Section */
+    .hero { background: white; padding: 60px 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 40px; }
+    h1 { font-size: 2.5rem; font-weight: 700; color: var(--primary); margin: 0 0 10px 0; letter-spacing: -0.02em; }
+    .tagline { font-size: 1.25rem; font-weight: 600; color: #4b5563; margin-bottom: 15px; }
+    .description { font-size: 1.1rem; color: #6b7280; max-width: 600px; margin: 0 auto 30px auto; }
 
-    /* HEADER / HERO SECTION */
-    header {
-      background-color: #1e3a8a; /* "Congressional Blue" */
-      color: white;
-      padding: 48px 20px 64px; /* Extra padding at bottom for overlap effect */
-      text-align: center;
-    }
-    header h1 {
-      font-family: 'Merriweather', serif;
-      font-size: 2.25rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      letter-spacing: -0.02em;
-    }
-    header p {
-      font-size: 1.1rem;
-      color: #bfdbfe; /* Soft blue text */
-      max-width: 600px;
-      margin: 0 auto;
-    }
+    /* Form */
+    .input-group { display: flex; gap: 10px; justify-content: center; max-width: 450px; margin: 0 auto; }
+    input { padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 8px; flex: 1; font-size: 16px; outline: none; transition: border-color 0.2s; }
+    input:focus { border-color: var(--secondary); }
+    button { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px; transition: background 0.2s; }
+    button:hover { background: #1e40af; }
+    button:disabled { background: #9ca3af; cursor: not-allowed; }
 
-    /* MAIN CONTAINER */
-    main {
-      max-width: 680px;
-      margin: -40px auto 40px; /* Negative top margin pulls content up into header */
-      padding: 0 20px;
-      position: relative;
-      z-index: 10;
-    }
+    /* Features Grid */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; margin-top: 40px; }
+    .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .card h3 { color: var(--primary); margin-top: 0; font-size: 1.1rem; }
+    .card p { font-size: 0.95rem; color: #666; margin-bottom: 0; }
 
-    /* CARD DESIGN */
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 32px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      margin-bottom: 24px;
-    }
+    /* Footer */
+    footer { margin-top: 50px; font-size: 0.85rem; color: #9ca3af; }
+    
+    #status { margin-top: 15px; font-weight: 500; height: 20px; }
+    .success { color: #059669; }
+    .error { color: #dc2626; }
 
-    /* SIGNUP FORM STYLING */
-    .signup-card {
-      border-top: 5px solid #b45309; /* Gold accent bar */
-    }
-    .form-label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 10px;
-      font-size: 1.15rem;
-      color: #111;
-    }
-    .input-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    input[type="email"] {
-      flex: 1;
-      min-width: 240px;
-      padding: 14px 16px;
-      font-size: 1rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    input[type="email"]:focus {
-      outline: none;
-      border-color: #1e3a8a;
-      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
-    }
-    button {
-      background-color: #1e3a8a;
-      color: white;
-      font-weight: 600;
-      padding: 14px 28px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.2s;
-    }
-    button:hover {
-      background-color: #1e40af;
-    }
-    button:disabled {
-      background-color: #9ca3af;
-      cursor: not-allowed;
-    }
-    #message {
-      margin-top: 14px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      min-height: 24px;
-    }
-
-    /* INFO CONTENT STYLING */
-    h2 {
-      font-family: 'Merriweather', serif;
-      font-size: 1.25rem;
-      margin-bottom: 12px;
-      color: #111;
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 8px;
-    }
-    h2:not(:first-of-type) {
-      margin-top: 32px;
-    }
-    ul {
-      padding-left: 20px;
-      margin-bottom: 16px;
-      color: #374151;
-    }
-    li {
-      margin-bottom: 8px;
-    }
-    p {
-      margin-bottom: 16px;
-      color: #374151;
-    }
-    a {
-      color: #1e3a8a;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      font-weight: 500;
-    }
-    a:hover {
-      color: #1e40af;
-    }
-
-    /* FOOTER */
-    footer {
-      text-align: center;
-      font-size: 0.85rem;
-      color: #6b7280;
-      margin-top: 40px;
-      padding-bottom: 40px;
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: 1fr; }
+      .input-group { flex-direction: column; }
+      h1 { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>🏛️ The Capitol Wire</h1>
-    <p>US house alerts system. No more constant checking. No spam.</p>
-  </header>
+  <div class="container">
+    <div class="hero">
+      <h1>🏛️ The Capitol Wire</h1>
+      <p class="tagline">Real-time alerts for the U.S. House Floor Schedule.</p>
+      <p class="description">
+        Stop manually refreshing <code>docs.house.gov</code>. Our system monitors the Majority Leader’s official schedule 24/7 and notifies you the instant a bill is added, removed, or updated.
+      </p>
 
-  <main>
-    <div class="card signup-card">
-      <label class="form-label" for="email">Subscribe to Alerts</label>
       <div class="input-group">
-        <input type="email" id="email" placeholder="Your Email Here" required>
-        <button id="submitBtn">Join List</button>
+        <input type="email" id="email" placeholder="Enter your work email" required />
+        <button id="submitBtn">Subscribe to Alerts</button>
       </div>
-      <div id="message"></div>
+      <div id="status"></div>
     </div>
 
-    <div class="card">
-      <h2>How it works</h2>
-      <p>
-        We monitor the official <a href="https://docs.house.gov/floor/Default.aspx" target="_blank">Bills This Week</a> page. 
-        When the House Clerk posts an update, our system detects the change and emails you immediately.
-      </p>
-
-      <h2>Our Promise</h2>
-      <ul>
-        <li><strong>Zero speculation:</strong> We only send what is officially posted.</li>
-        <li><strong>Zero spam:</strong> If the schedule doesn't change, you don't get an email.</li>
-      </ul>
-
-      <h2>Who is this for?</h2>
-      <p>
-        Designed for congressional staff, policy professionals, and advocates who need to know exactly when bills are added to the floor schedule.
-      </p>
-
-      <p style="font-size: 0.9rem; color: #666; margin-top: 24px; border-top: 1px solid #eee; padding-top: 16px;">
-        <em>You can unsubscribe at any time via the link in every email.</em>
-      </p>
+    <div class="grid">
+      <div class="card">
+        <h3>⚡ Instant Detection</h3>
+        <p>We ping the House Clerk's site every minute. If the "Bills This Week" page changes, you know about it immediately.</p>
+      </div>
+      <div class="card">
+        <h3>🚫 Zero Noise</h3>
+        <p>We don't send newsletters or opinion pieces. You only receive an email when the official schedule actually changes.</p>
+      </div>
+      <div class="card">
+        <h3>📝 Change Summaries</h3>
+        <p>Our alerts highlight exactly what changed—whether it's a new suspension bill, a rule change, or a time update.</p>
+      </div>
+      <div class="card">
+        <h3>🔒 Secure & Private</h3>
+        <p>Your email is used solely for alerts. No tracking, no ads, and you can unsubscribe instantly with one click.</p>
+      </div>
     </div>
 
     <footer>
-      <p>The Capitol Wire is an independent service.<br>Not affiliated with the U.S. House of Representatives.</p>
-      <p>© <span id="year"></span> The Capitol Wire</p>
+      <p>© 2025 The Capitol Wire. Independent service, not affiliated with the U.S. House of Representatives.</p>
     </footer>
-  </main>
+  </div>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // --- CONNECTION LOGIC ---
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
+    const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const emailInput = document.getElementById('email');
     const submitBtn = document.getElementById('submitBtn');
-    const message = document.getElementById('message');
+    const statusDiv = document.getElementById('status');
 
     submitBtn.addEventListener('click', async () => {
       const email = emailInput.value.trim();
-      
-      // 1. Validate Email
       if (!email || !email.includes('@')) {
-        message.style.color = "#dc2626"; // Red
-        message.innerText = "Please enter a valid email address.";
+        statusDiv.textContent = "Please enter a valid email address.";
+        statusDiv.className = "error";
         return;
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerText = "Joining...";
-      message.innerText = "";
+      submitBtn.textContent = "Joining...";
 
-      // 2. Send to Supabase
-      const { error } = await _supabase
-        .from('subscribers')
-        .insert([{ email: email }]);
+      const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
 
       if (error) {
-        if (error.code === '23505') { // Duplicate code
-          message.style.color = "#1e3a8a"; // Congressional Blue
-          message.innerText = "You are already on the list!";
+        if (error.code === '23505') { // Unique violation
+          statusDiv.textContent = "You are already on the list!";
+          statusDiv.className = "success";
         } else {
-          message.style.color = "#dc2626"; // Red
-          message.innerText = "Connection error. Please try again.";
+          statusDiv.textContent = "Error joining list. Please try again.";
+          statusDiv.className = "error";
           console.error(error);
         }
       } else {
-        message.style.color = "#059669"; // Green
-        message.innerText = "Success! You have been added to the list.";
+        statusDiv.textContent = "Success! You are now subscribed to alerts.";
+        statusDiv.className = "success";
         emailInput.value = "";
       }
-      
       submitBtn.disabled = false;
-      submitBtn.innerText = "Join List";
+      submitBtn.textContent = "Subscribe to Alerts";
     });
   </script>
 </body>
