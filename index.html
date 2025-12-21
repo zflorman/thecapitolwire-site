@@ -32,6 +32,8 @@
     button { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px; transition: background 0.2s; }
     button:hover { background: #1e40af; }
     button:disabled { background: #9ca3af; cursor: not-allowed; }
+    
+    .trust-badge { font-size: 0.8rem; color: #9ca3af; margin-top: 10px; }
 
     /* Features Grid */
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; text-align: left; margin-top: 40px; }
@@ -40,7 +42,9 @@
     .card p { font-size: 0.95rem; color: #666; margin-bottom: 0; }
 
     /* Footer */
-    footer { margin-top: 50px; font-size: 0.85rem; color: #9ca3af; }
+    footer { margin-top: 50px; border-top: 1px solid #e5e7eb; padding-top: 20px; font-size: 0.85rem; color: #9ca3af; }
+    footer a { color: #6b7280; text-decoration: none; margin: 0 10px; transition: color 0.2s; }
+    footer a:hover { color: var(--primary); }
     
     #status { margin-top: 15px; font-weight: 500; height: 20px; }
     .success { color: #059669; }
@@ -69,6 +73,7 @@
         <button id="submitBtn">Subscribe to Alerts</button>
       </div>
       <div id="status"></div>
+      <div class="trust-badge">We respect your inbox. Unsubscribe at any time.</div>
     </div>
 
     <div class="grid">
@@ -88,6 +93,10 @@
 
     <footer>
       <p>© 2025 The Capitol Wire. Independent service, not affiliated with the U.S. House of Representatives.</p>
+      <p>
+        <a href="privacy.html">Privacy Policy</a> • 
+        <a href="terms.html">Terms of Service</a>
+      </p>
     </footer>
   </div>
 
