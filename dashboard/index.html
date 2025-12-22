@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Staff Feed | The Capitol Wire</title>
+  <title>Staff Dashboard | The Capitol Wire</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
 
@@ -21,12 +21,18 @@
 
     .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
+    /* NAV */
     nav { background: white; border-bottom: 1px solid var(--border); padding: 12px 0; margin-bottom: 25px; }
     .nav-inner { display: flex; justify-content: space-between; align-items: center; }
     .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.2rem; color: var(--primary); text-decoration: none; }
     .logo span { color: var(--light-blue); }
+    
+    .nav-right { display: flex; align-items: center; gap: 20px; }
     .back-link { font-size: 0.9rem; color: var(--text); text-decoration: none; }
     .back-link:hover { text-decoration: underline; }
+    
+    .sub-btn { background: var(--accent); color: white; padding: 6px 14px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; }
+    .sub-btn:hover { background: #1e40af; }
 
     /* UPDATE HEADER */
     .status-line { margin-bottom: 20px; text-align: right; font-size: 0.85rem; color: #64748b; font-weight: 500; }
@@ -49,14 +55,26 @@
     .meta-time { color: #dc2626; font-weight: 600; font-family: monospace; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
     .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
     .doc-link:hover { background: #dbeafe; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index:100; }
+    .modal { background:white; padding:30px; border-radius:10px; width:90%; max-width:400px; text-align:center; position:relative; }
+    .close-modal { position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.5rem; color:#999; }
+    .modal h3 { margin-bottom:15px; color:var(--primary); font-family: 'Merriweather', serif; }
+    .modal input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:10px; }
+    .modal button { width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; }
+    .modal-msg { margin-top:10px; font-size:0.85rem; }
   </style>
 </head>
 <body>
 
   <nav>
     <div class="container nav-inner">
-      <a href="index.html" class="logo">🏛️ The Capitol <span>Wire</span></a>
-      <a href="index.html" class="back-link">← Main Site</a>
+      <a href="/" class="logo">🏛️ The Capitol <span>Wire</span></a>
+      <div class="nav-right">
+        <a href="/" class="back-link">← Main Site</a>
+        <button class="sub-btn" onclick="openModal()">Subscribe</button>
+      </div>
     </div>
   </nav>
 
@@ -73,6 +91,17 @@
       <div class="feed-list" id="schedule-list">
         <div style="padding:40px; text-align:center; color:#94a3b8;">Loading data...</div>
       </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <h3>Get Instant Alerts</h3>
+      <p style="font-size:0.9rem; color:#666; margin-bottom:15px;">Enter your email to get notified when the schedule changes.</p>
+      <input type="email" id="modal-email" placeholder="Your Email Here" />
+      <button id="modal-submit">Subscribe Free</button>
+      <div id="modal-status" class="modal-msg"></div>
     </div>
   </div>
 
@@ -149,7 +178,43 @@
         div.innerHTML = `<div class="bill-title">${item.title}</div><div class="bill-meta"><span class="meta-cat">${item.category}</span>${timeHtml}${linkHtml}</div>`;
         return div;
     }
+    
     initFeed();
+
+    // MODAL LOGIC
+    const modal = document.getElementById('modal');
+    const modalInput = document.getElementById('modal-email');
+    const modalBtn = document.getElementById('modal-submit');
+    const modalStatus = document.getElementById('modal-status');
+
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModal() { modal.style.display = 'none'; }
+
+    modalBtn.addEventListener('click', async () => {
+        const email = modalInput.value.trim();
+        if (!email || !email.includes('@')) {
+            modalStatus.innerText = "Please enter a valid email.";
+            modalStatus.style.color = "red";
+            return;
+        }
+        modalBtn.innerText = "...";
+        const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
+        if (error) {
+            if (error.code === '23505') {
+                modalStatus.innerText = "Already subscribed!";
+                modalStatus.style.color = "green";
+            } else {
+                modalStatus.innerText = "Error.";
+                modalStatus.style.color = "red";
+            }
+        } else {
+            modalStatus.innerText = "Subscribed!";
+            modalStatus.style.color = "green";
+            modalInput.value = "";
+            setTimeout(closeModal, 2000);
+        }
+        modalBtn.innerText = "Subscribe Free";
+    });
   </script>
 </body>
 </html>
