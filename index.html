@@ -2,6 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-CEV5ME0C6L');
+  </script>
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Capitol Wire | House Floor Updates</title>
   
@@ -61,7 +70,7 @@
         font-family: 'Merriweather', serif; 
         font-size: 3rem; 
         color: var(--primary); 
-        margin-bottom: 25px; 
+        margin-bottom: 20px; 
         line-height: 1.2;
         letter-spacing: -0.5px;
     }
@@ -133,7 +142,7 @@
         height: 12px; 
         background: #22c55e; 
         border-radius: 50%; 
-        animation: pulse 2s infinite; /* BREATHING EFFECT */
+        animation: pulse 2s infinite; 
     }
     
     .feed-banner h2 { font-family: 'Merriweather', serif; font-size: 1.4rem; color: var(--primary); margin: 0; }
@@ -286,7 +295,6 @@
         { key: 'Possible Consideration', label: 'Items that may be considered' }
     ];
 
-    // Tracker for polling
     let lastKnownTimestamp = "";
 
     async function initFeed() {
@@ -301,15 +309,12 @@
             if (data && data.length > 0) {
                 const newestTimestamp = data[0].timestamp;
                 
-                // ONLY UPDATE DOM IF TIMESTAMP CHANGED (Prevent flickering)
                 if (newestTimestamp !== lastKnownTimestamp) {
-                    lastKnownTimestamp = newestTimestamp; // Update tracker
+                    lastKnownTimestamp = newestTimestamp;
 
-                    // CLEAR LISTS
                     scheduleList.innerHTML = '';
                     latestList.innerHTML = '';
-
-                    // UPDATE HEADER TIMESTAMP
+                    
                     if (newestTimestamp && newestTimestamp.trim() !== "") {
                         lastUpdatedEl.innerHTML = "Latest update from the Clerk: " + newestTimestamp;
                         lastUpdatedEl.style.display = 'block';
@@ -317,7 +322,6 @@
                         lastUpdatedEl.style.display = 'none';
                     }
 
-                    // POPULATE LATEST CHANGES
                     let hasLatest = false;
                     if (newestTimestamp && newestTimestamp.trim() !== "") {
                         data.forEach(item => {
@@ -330,7 +334,6 @@
                     }
                     if (hasLatest) { latestContainer.style.display = 'block'; } else { latestContainer.style.display = 'none'; }
 
-                    // POPULATE FULL SCHEDULE
                     CATEGORIES.forEach(cat => {
                         const catItems = data.filter(i => i.category === cat.key);
                         if (catItems.length > 0) {
@@ -343,8 +346,6 @@
                             catItems.forEach(item => scheduleList.appendChild(createBillItem(item)));
                         }
                     });
-                    
-                    console.log("Feed refreshed at " + new Date().toLocaleTimeString());
                 }
             } else {
                 scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">No active schedule.</div>';
@@ -368,10 +369,7 @@
         return div;
     }
     
-    // Initial Load
     initFeed();
-    
-    // Auto-Refresh every 10 seconds
     setInterval(initFeed, 10000);
 
     const btn = document.getElementById('submitBtn');
