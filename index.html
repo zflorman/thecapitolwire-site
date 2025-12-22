@@ -66,43 +66,37 @@
         letter-spacing: -0.5px;
     }
 
-    /* Gradient Text Effect */
+    /* Gradient Text */
     .hero h1 span.gradient {
         background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
-    /* Typing Animation for the second line */
-    .typing-container {
+    /* Typewriter Animation */
+    .typing-wrapper {
         display: inline-block;
     }
     .typing-text {
-        overflow: hidden; /* Ensures the content is not revealed until the animation */
-        border-right: .15em solid #3b82f6; /* The typwriter cursor */
-        white-space: nowrap; /* Keeps the content on a single line */
-        margin: 0 auto; /* Gives that scrolling effect as the typing happens */
-        animation: 
-            typing 2.5s steps(30, end),
-            blink-caret .75s step-end infinite;
-        font-style: italic;
-        padding-right: 5px;
         display: inline-block;
-        vertical-align: bottom;
-        max-width: 0; /* Start hidden */
-        animation-fill-mode: forwards; /* Stay visible */
+        overflow: hidden; /* Hide text until revealed */
+        border-right: 0.15em solid #3b82f6; /* Cursor */
+        white-space: nowrap;
+        margin: 0;
+        width: 0; /* Start width 0 */
+        font-style: italic;
+        /* steps(11) corresponds to "Instantly." (10 chars + 1) */
+        animation: typing 1.5s steps(11, end) forwards, blink-caret 0.8s step-end infinite;
     }
 
-    /* The typing effect */
     @keyframes typing {
-      from { max-width: 0 }
-      to { max-width: 100% }
+        from { width: 0; }
+        to { width: 100%; }
     }
 
-    /* The typewriter cursor effect */
     @keyframes blink-caret {
-      from, to { border-color: transparent }
-      50% { border-color: #3b82f6; }
+        from, to { border-color: transparent; }
+        50% { border-color: #3b82f6; }
     }
     
     .hero p { 
@@ -111,23 +105,25 @@
         max-width: 750px; 
         margin: 0 auto 35px; 
         line-height: 1.6;
-        animation: fadeIn 1s ease-in-out 1s backwards; /* Delay fade in */
     }
     .hero p a { color: var(--light-blue); text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
     .hero p strong { color: var(--primary); font-weight: 700; }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
     /* FORM */
-    .form-wrapper { max-width: 420px; margin: 0 auto; display: flex; gap: 8px; animation: fadeIn 1s ease-in-out 1.2s backwards; }
+    .form-wrapper { max-width: 420px; margin: 0 auto; display: flex; gap: 8px; }
     input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; transition: border-color 0.2s; }
     input:focus { border-color: var(--light-blue); outline: none; }
     button.form-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
     button.form-btn:hover { background: #1e40af; }
     .msg { margin-top: 8px; font-size: 0.8rem; min-height: 20px; }
+
+    /* DATA SOURCE LINE (Moved Here) */
+    .source-line {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin-top: 15px;
+    }
+    .source-line a { color: #64748b; text-decoration: none; border-bottom: 1px dotted #94a3b8; }
 
     /* FEATURES */
     .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; }
@@ -207,11 +203,10 @@
     <div class="container">
       <h1>
         Quit Refreshing for Updates.<br>
-        <span class="gradient">Get Them <div class="typing-container"><span class="typing-text">Instantly.</span></div></span>
+        <span class="gradient">Get Them <span class="typing-wrapper"><span class="typing-text">Instantly.</span></span></span>
       </h1>
       
       <p>
-        Official scheduling data sourced directly from <a href="https://docs.house.gov/floor/Default.aspx" target="_blank">docs.house.gov/floor</a>. 
         We track every bill that <strong>may be considered</strong> on the House Floor this week and deliver updates to your inbox the moment they are published. 
         Stop refreshing the page and start getting <strong>instant email alerts</strong>.
       </p>
@@ -221,6 +216,10 @@
         <button id="submitBtn" class="form-btn">Subscribe Free</button>
       </div>
       <div id="status" class="msg"></div>
+      
+      <div class="source-line">
+        Official data sourced directly from <a href="https://docs.house.gov/floor/Default.aspx" target="_blank">docs.house.gov/floor</a>.
+      </div>
     </div>
   </section>
 
@@ -232,7 +231,7 @@
       </div>
       <div class="feature-card">
         <h3>🚫 Official Business Only</h3>
-        <p>No newsletters, fundraising, or opinion pieces. Alerts are sent strictly when the official schedule updates. <strong>Includes a one-click unsubscribe link on every email.</strong></p>
+        <p>No newsletters, fundraising, or opinion pieces. Alerts are sent strictly when the official schedule updates. Includes a one-click unsubscribe link on every email.</p>
       </div>
       <div class="feature-card">
         <h3>📝 Instant Summaries</h3>
