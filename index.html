@@ -66,26 +66,28 @@
         letter-spacing: -0.5px;
     }
 
-    /* Gradient Text */
-    .hero h1 span.gradient {
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    /* Typewriter Animation - Fixed Steps */
+    /* TYPEWRITER ANIMATION FIXES */
     .typing-wrapper {
         display: inline-block;
+        /* Ensure spacing between "Get Them" and "Instantly" */
+        margin-left: 8px; 
     }
+    
     .typing-text {
         display: inline-block;
         overflow: hidden;
-        border-right: 3px solid #3b82f6; /* Thicker cursor */
+        border-right: 3px solid #3b82f6; /* Cursor matches text color */
         white-space: nowrap;
         margin: 0;
         width: 0;
         font-style: italic;
-        /* Steps(11) = 10 chars + 1 period. Faster time (1.2s) for poppier effect */
+        color: var(--light-blue); /* Solid, explicit color */
+        
+        /* ALIGNMENT FIX: Forces the inline-block to sit on the text baseline */
+        vertical-align: bottom; 
+        line-height: 1.3; /* Matches parent H1 roughly */
+        
+        /* Steps(11) = 10 chars + 1 period */
         animation: typing 1.2s steps(11, end) forwards, blink-caret 0.8s step-end infinite;
     }
 
@@ -117,7 +119,7 @@
     button.form-btn:hover { background: #1e40af; }
     .msg { margin-top: 8px; font-size: 0.8rem; min-height: 20px; }
 
-    /* DATA SOURCE LINE - Tight to button */
+    /* DATA SOURCE LINE */
     .source-line {
         font-size: 0.8rem;
         color: #94a3b8;
@@ -125,7 +127,7 @@
     }
     .source-line a { color: #64748b; text-decoration: none; border-bottom: 1px dotted #94a3b8; }
 
-    /* FEATURES - Gap Removed */
+    /* FEATURES */
     .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 25px; }
     .feature-card { background: white; padding: 30px 25px; border-radius: 12px; border: 1px solid var(--border); transition: transform 0.2s; }
     .feature-card:hover { transform: translateY(-3px); border-color: #cbd5e1; }
@@ -193,7 +195,7 @@
           </div>
         </div>
         
-        <a href="feed.html" class="nav-link" style="color:var(--light-blue);">Staff View</a>
+        <a href="feed.html" class="nav-link" style="color:var(--light-blue);">Dashboard</a>
         <a href="#hero" class="sub-btn">Subscribe</a>
       </div>
     </div>
@@ -203,7 +205,7 @@
     <div class="container">
       <h1>
         Quit Refreshing for Updates.<br>
-        <span class="gradient">Get Them <span class="typing-wrapper"><span class="typing-text">Instantly.</span></span></span>
+        Get Them <span class="typing-wrapper"><span class="typing-text">Instantly.</span></span>
       </h1>
       
       <p>
