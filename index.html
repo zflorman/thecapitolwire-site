@@ -52,9 +52,22 @@
         color: white; text-decoration: none; display: flex; align-items: center; gap: 8px;
     }
     .nav-links { display: flex; align-items: center; gap: 20px; }
-    .nav-link { color: #dbeafe; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-link { color: #dbeafe; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; cursor: pointer; }
     .nav-link:hover { color: white; text-decoration: underline; }
     .sub-btn { background: white; color: var(--header-bg); padding: 5px 12px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; }
+
+    /* DROPDOWN MENU */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content { display: none; position: absolute; background-color: white; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border); border-radius: 8px; z-index: 100; top: 100%; left: 50%; transform: translateX(-50%); padding: 5px 0; margin-top: 10px; }
+    /* Small arrow for dropdown */
+    .dropdown-content::before {
+        content: ""; position: absolute; bottom: 100%; left: 50%; margin-left: -5px;
+        border-width: 5px; border-style: solid; border-color: transparent transparent white transparent;
+    }
+    .dropdown:hover .dropdown-content { display: block; }
+    .dropdown-content a { color: var(--text); padding: 10px 15px; text-decoration: none; display: block; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; text-align: left; }
+    .dropdown-content a:last-child { border-bottom: none; }
+    .dropdown-content a:hover { background-color: #f8fafc; color: var(--accent); }
 
     /* HERO SECTION */
     .hero { text-align: center; padding: 50px 0 30px; } 
@@ -69,7 +82,7 @@
     }
 
     /* TYPEWRITER ANIMATION */
-    .typing-wrapper { display: inline-block; margin-left: 8px; }
+    .typing-wrapper { display: inline-block; margin-left: 4px; /* Reduced from 8px */ }
     .typing-text {
         display: inline-block;
         overflow: hidden;
@@ -179,7 +192,17 @@
     <div class="nav-inner">
       <a href="/" class="logo">🏛️ The Capitol Wire</a>
       <div class="nav-links">
-        <a href="#live-feed" class="nav-link">Live Feed</a>
+        
+        <div class="dropdown">
+          <a href="#live-feed" class="nav-link">Live Feed ▾</a>
+          <div class="dropdown-content">
+            <a href="#latest-container">⚡ What Changed</a>
+            <a href="#cat-suspension">Suspensions</a>
+            <a href="#cat-rule">Rules</a>
+            <a href="#cat-possible-consideration">Possible Consideration</a>
+          </div>
+        </div>
+
         <a href="dashboard/" class="nav-link">Dashboard</a>
         <a href="#hero" class="sub-btn">Subscribe</a>
       </div>
@@ -194,8 +217,8 @@
       </h1>
       
       <div class="hero-checklist">
-        <div><span class="check">✓</span> Monitors the weekly docket for <strong>bill additions, drops, and updates</strong>.</div>
-        <div><span class="check">✓</span> Tracks <strong>bills for Suspensions, Rules, and for Possible Considerations</strong>.</div>
+        <div><span class="check">✓</span> Monitors the weekly docket for <strong>real-time floor activity</strong>.</div>
+        <div><span class="check">✓</span> Tracks <strong>Suspensions, Rules, and Possible Considerations</strong>.</div>
         <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly from official Clerk data.</div>
       </div>
       
@@ -326,7 +349,7 @@
             timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
         }
 
-        // --- TITLE PARSING LOGIC (Copied from Dashboard) ---
+        // --- TITLE PARSING LOGIC (From Dashboard) ---
         let fullTitle = item.title;
         let boldPart = fullTitle;
         let normalPart = "";
