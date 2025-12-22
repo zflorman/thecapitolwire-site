@@ -40,7 +40,7 @@
 
     /* --- LAYOUT --- */
     .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 60px 0; } /* Reduced from 80px */
+    .section { padding: 60px 0; } 
     .section-gray { background: var(--bg-gray); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
     /* --- NAV --- */
@@ -51,149 +51,50 @@
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
-      padding: 12px 0; /* Reduced padding */
+      padding: 12px 0;
     }
     .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-    
-    .logo { 
-      font-family: 'Merriweather', serif; 
-      font-weight: 900; 
-      font-size: 1.2rem; 
-      color: var(--primary); /* Single color */
-      display: flex; align-items: center; gap: 10px;
-    }
-
+    .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
     .nav-links { display: flex; gap: 24px; align-items: center; font-size: 0.9rem; font-weight: 500; color: var(--text-light); }
     .nav-links a:hover { color: var(--primary); }
-    .nav-btn {
-      background: var(--primary);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      transition: background 0.2s;
-    }
+    .nav-btn { background: var(--primary); color: white; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; transition: background 0.2s; }
     .nav-btn:hover { background: #1e293b; }
 
     /* --- HERO --- */
-    .hero {
-      padding: 60px 0 40px; /* Drastically reduced top padding */
-      text-align: center;
-    }
-
-    .hero h1 {
-      font-size: 2.75rem;
-      line-height: 1.1;
-      margin-bottom: 16px;
-      letter-spacing: -0.02em;
-    }
-
-    .hero-sub {
-      font-size: 1.1rem;
-      color: var(--text-light);
-      max-width: 680px;
-      margin: 0 auto 32px;
-    }
+    .hero { padding: 60px 0 40px; text-align: center; }
+    .hero h1 { font-size: 2.75rem; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.02em; }
+    .hero-sub { font-size: 1.1rem; color: var(--text-light); max-width: 680px; margin: 0 auto 32px; }
 
     /* --- SUBSCRIPTION FORM --- */
-    .form-wrapper {
-      max-width: 500px;
-      margin: 0 auto 40px;
-    }
-    
-    .input-group {
-      display: flex;
-      gap: 8px;
-      background: white;
-      padding: 5px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      box-shadow: var(--shadow-sm);
-    }
-    
-    input[type="email"] {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 10px 16px;
-      font-size: 0.95rem;
-      border-radius: 6px;
-    }
-
-    button.submit-btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+    .form-wrapper { max-width: 500px; margin: 0 auto 40px; }
+    .input-group { display: flex; gap: 8px; background: white; padding: 5px; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: var(--shadow-sm); }
+    input[type="email"] { flex: 1; border: none; outline: none; padding: 10px 16px; font-size: 0.95rem; border-radius: 6px; }
+    button.submit-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; cursor: pointer; }
     button.submit-btn:hover { background: #1d4ed8; }
     button.submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
-
     .status-msg { margin-top: 10px; font-size: 0.85rem; height: 20px; font-weight: 500; }
     .status-success { color: #059669; }
     .status-error { color: #dc2626; }
-
     .secure-note { font-size: 0.8rem; color: #94a3b8; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 
     /* --- LAPTOP MOCKUP --- */
-    .laptop-wrapper {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      perspective: 1000px;
-    }
+    .laptop-wrapper { margin-top: 20px; display: flex; justify-content: center; perspective: 1000px; }
+    .laptop-screen { background: #fff; border: 1px solid #d1d5db; border-radius: 8px 8px 0 0; width: 700px; height: 400px; position: relative; box-shadow: var(--shadow-lg); overflow: hidden; border-bottom: none; z-index: 10; }
+    .laptop-base { width: 820px; height: 24px; background: linear-gradient(to bottom, #f1f5f9, #cbd5e1); border-radius: 0 0 12px 12px; margin: 0 auto; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+    .laptop-base::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 8px; background: #94a3b8; border-radius: 0 0 8px 8px; }
 
-    .laptop-screen {
-      background: #fff;
-      border: 1px solid #d1d5db;
-      border-radius: 8px 8px 0 0;
-      width: 700px; /* Wide view */
-      height: 400px;
-      position: relative;
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
-      border-bottom: none;
-      z-index: 10;
-    }
-
-    .laptop-base {
-      width: 820px;
-      height: 24px;
-      background: #e2e8f0;
-      border-radius: 0 0 12px 12px;
-      margin: 0 auto;
-      position: relative;
-      background: linear-gradient(to bottom, #f1f5f9, #cbd5e1);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-    }
-    .laptop-base::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 50%; transform: translateX(-50%);
-      width: 100px; height: 8px;
-      background: #94a3b8;
-      border-radius: 0 0 8px 8px;
-    }
-
-    /* --- EMAIL PREVIEW CONTENT (Inside Laptop) --- */
-    .browser-bar {
-      background: #f1f5f9;
-      padding: 8px 12px;
-      border-bottom: 1px solid #e2e8f0;
-      display: flex; gap: 6px;
-    }
+    /* --- EMAIL PREVIEW CONTENT --- */
+    .browser-bar { background: #f1f5f9; padding: 8px 12px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 6px; align-items: center; }
     .dot { width: 10px; height: 10px; border-radius: 50%; }
     .dot.red { background: #ef4444; }
     .dot.yellow { background: #f59e0b; }
     .dot.green { background: #22c55e; }
+    .url-bar { background: white; margin-left: 10px; padding: 2px 10px; border-radius: 4px; font-size: 10px; color: #94a3b8; flex: 1; text-align: center; border: 1px solid #e2e8f0; }
 
     .email-content { padding: 30px; font-family: 'Arial', sans-serif; font-size: 14px; color: #333; height: 100%; overflow-y: auto; text-align: left; }
     .email-meta { border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
-    .email-from { font-weight: bold; color: var(--primary); }
+    .email-from { font-weight: bold; color: var(--primary); display: flex; justify-content: space-between; }
+    .email-date { font-weight: normal; color: #888; font-size: 11px; }
     .email-subject { font-size: 1.1em; margin-top: 4px; }
     
     .highlight-box { background: #fffbeb; border: 1px solid #fcd34d; padding: 10px; border-radius: 4px; margin: 15px 0; font-size: 13px; color: #92400e; }
@@ -204,11 +105,7 @@
     .tag { display: inline-block; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 10px; color: #555; border: 1px solid #e5e7eb; margin-left: 6px; }
 
     /* --- FEATURES GRID --- */
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 30px;
-    }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
     .feature-card { padding: 20px; }
     .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--primary); }
     .feature-card p { font-size: 0.95rem; color: var(--text-light); }
@@ -228,7 +125,7 @@
       .hero h1 { font-size: 2rem; }
       .laptop-screen { width: 100%; height: 300px; }
       .laptop-base { width: 95%; }
-      .nav-links { display: none; } /* Hide extra links on mobile */
+      .nav-links { display: none; }
     }
   </style>
 </head>
@@ -239,7 +136,7 @@
       <div class="logo">🏛️ The Capitol Wire</div>
       <div class="nav-links">
         <a href="#features">How it Works</a>
-        <a href="#">Live Feed</a> <a href="#subscribe" class="nav-btn">Get Alerts</a>
+        <a href="#subscribe" class="nav-btn">Get Alerts</a>
       </div>
     </div>
   </nav>
@@ -270,29 +167,26 @@
           <div class="laptop-screen">
             <div class="browser-bar">
               <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+              <div class="url-bar">mail.house.gov - Inbox</div>
             </div>
             <div class="email-content">
               <div class="email-meta">
-                <div class="email-from">The Capitol Wire</div>
-                <div class="email-subject">House Floor updates: 2 added (Suspension)</div>
+                <div class="email-from">The Capitol Wire <span class="email-date" id="live-date">Just now</span></div>
+                <div class="email-subject" id="live-subject">House Floor updates: Loading live data...</div>
                 <div style="font-size: 11px; color: #888; margin-top: 4px;">To: subscriber@mail.house.gov</div>
               </div>
               
               <p><strong>Bills This Week — Schedule Updates</strong></p>
               
               <div class="highlight-box">
-                <strong>⚡ WHAT CHANGED (OFFICIAL)</strong>
-                <div style="margin-top:4px;">The following are links to the text of legislation scheduled for consideration during the week of Dec. 15, 2025.</div>
+                <strong>⚡ WHAT CHANGED (LIVE FEED)</strong>
+                <div style="margin-top:4px;">Real-time data fetched from official House Clerk servers:</div>
               </div>
 
-              <div class="bill-item">
-                <div class="bill-title">H.R. 4776 — SPEED Act <span class="tag">PDF</span></div>
-                <div class="bill-meta">Added 12/15/2025 at 10:42 AM</div>
-              </div>
-
-              <div class="bill-item">
-                <div class="bill-title">H.R. 1366 — Mining Regulatory Clarity Act <span class="tag">XML</span></div>
-                <div class="bill-meta">Updated 12/15/2025 at 10:45 AM</div>
+              <div id="live-feed-container">
+                <div class="bill-item" style="opacity: 0.5;">
+                  <div class="bill-title">Connecting to House server...</div>
+                </div>
               </div>
 
               <div style="font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 10px; margin-top: 20px;">
@@ -362,6 +256,7 @@
   </footer>
 
   <script>
+    // 1. SUPABASE SUBSCRIPTION LOGIC
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -404,6 +299,69 @@
         submitBtn.textContent = originalText;
       }, 2000);
     });
+
+    // 2. LIVE FEED LOGIC FOR LAPTOP MOCKUP
+    async function initLiveMockup() {
+        const feedContainer = document.getElementById('live-feed-container');
+        const subjectLine = document.getElementById('live-subject');
+        const dateDisplay = document.getElementById('live-date');
+        const RSS_URL = "https://docs.house.gov/BillsThisWeek-RSS.xml";
+        const API_ENDPOINT = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+
+        try {
+            const response = await fetch(API_ENDPOINT);
+            const data = await response.json();
+
+            if (data.status === 'ok') {
+                // Clear loading state
+                feedContainer.innerHTML = '';
+                
+                // Set Date to today
+                const now = new Date();
+                dateDisplay.innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                // Take first 3 items
+                const items = data.items.slice(0, 3);
+                
+                // Update Subject Line
+                subjectLine.innerText = `House Floor updates: ${items.length} items (Live)`;
+
+                items.forEach(item => {
+                    // Try to clean title. Official feed usually looks like "Added: H.R. 1234" or "Updated: H.R. 5678"
+                    let titleText = item.title;
+                    let timestamp = new Date(item.pubDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+
+                    const div = document.createElement('div');
+                    div.className = 'bill-item';
+                    
+                    // Add PDF tag if link ends in PDF (simple heuristic)
+                    const isPdf = item.link.toLowerCase().endsWith('pdf');
+                    const tagHtml = isPdf ? `<span class="tag">PDF</span>` : `<span class="tag">LINK</span>`;
+
+                    div.innerHTML = `
+                        <div class="bill-title">${titleText} ${tagHtml}</div>
+                        <div class="bill-meta">${timestamp}</div>
+                    `;
+                    feedContainer.appendChild(div);
+                });
+            } else {
+                feedContainer.innerHTML = '<div class="bill-item">No live data available right now.</div>';
+                subjectLine.innerText = 'House Floor updates: Schedule updated';
+            }
+        } catch (e) {
+            console.error(e);
+            feedContainer.innerHTML = `
+                <div class="bill-item">
+                  <div class="bill-title">H.R. 4776 — SPEED Act <span class="tag">PDF</span></div>
+                  <div class="bill-meta">Added 12/21/2025 (Fallback Mode)</div>
+                </div>
+            `;
+            subjectLine.innerText = 'House Floor updates: 1 added (Suspension)';
+        }
+    }
+
+    // Run the live fetch
+    initLiveMockup();
   </script>
 </body>
 </html>
