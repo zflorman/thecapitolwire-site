@@ -6,7 +6,7 @@
   <title>The Capitol Wire | House Floor Updates</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
 
   <style>
     /* VARIABLES */
@@ -55,43 +55,94 @@
     .dropdown-content a:hover { background-color: #f8fafc; color: var(--accent); }
 
     /* HERO */
-    .hero { text-align: center; padding: 50px 0 20px; } 
-    .hero h1 { font-family: 'Merriweather', serif; font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; line-height: 1.2; }
+    .hero { text-align: center; padding: 60px 0 30px; } 
     
-    /* UPDATED HERO TEXT */
-    .hero p { 
-        font-size: 1.1rem; 
-        color: #64748b; 
-        max-width: 720px; 
-        margin: 0 auto 30px; 
-        line-height: 1.6; 
+    .hero h1 { 
+        font-family: 'Merriweather', serif; 
+        font-size: 3rem; 
+        color: var(--primary); 
+        margin-bottom: 20px; 
+        line-height: 1.2;
+        letter-spacing: -0.5px;
     }
-    .hero p a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+    /* Gradient Text Effect */
+    .hero h1 span.gradient {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Typing Animation for the second line */
+    .typing-container {
+        display: inline-block;
+    }
+    .typing-text {
+        overflow: hidden; /* Ensures the content is not revealed until the animation */
+        border-right: .15em solid #3b82f6; /* The typwriter cursor */
+        white-space: nowrap; /* Keeps the content on a single line */
+        margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+        animation: 
+            typing 2.5s steps(30, end),
+            blink-caret .75s step-end infinite;
+        font-style: italic;
+        padding-right: 5px;
+        display: inline-block;
+        vertical-align: bottom;
+        max-width: 0; /* Start hidden */
+        animation-fill-mode: forwards; /* Stay visible */
+    }
+
+    /* The typing effect */
+    @keyframes typing {
+      from { max-width: 0 }
+      to { max-width: 100% }
+    }
+
+    /* The typewriter cursor effect */
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: #3b82f6; }
+    }
     
-    /* Make the bold text pop with color */
+    .hero p { 
+        font-size: 1.15rem; 
+        color: #475569; 
+        max-width: 750px; 
+        margin: 0 auto 35px; 
+        line-height: 1.6;
+        animation: fadeIn 1s ease-in-out 1s backwards; /* Delay fade in */
+    }
+    .hero p a { color: var(--light-blue); text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
     .hero p strong { color: var(--primary); font-weight: 700; }
 
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
     /* FORM */
-    .form-wrapper { max-width: 420px; margin: 0 auto; display: flex; gap: 8px; }
-    input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; }
-    button.form-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .form-wrapper { max-width: 420px; margin: 0 auto; display: flex; gap: 8px; animation: fadeIn 1s ease-in-out 1.2s backwards; }
+    input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; transition: border-color 0.2s; }
+    input:focus { border-color: var(--light-blue); outline: none; }
+    button.form-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    button.form-btn:hover { background: #1e40af; }
     .msg { margin-top: 8px; font-size: 0.8rem; min-height: 20px; }
 
     /* FEATURES */
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; }
-    .feature-card { background: white; padding: 25px; border-radius: 8px; border: 1px solid var(--border); }
-    .feature-card h3 { font-family: 'Merriweather', serif; font-size: 1.05rem; margin-bottom: 10px; color: var(--primary); }
-    .feature-card p { font-size: 0.9rem; color: #64748b; margin: 0; line-height: 1.5; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; }
+    .feature-card { background: white; padding: 30px 25px; border-radius: 12px; border: 1px solid var(--border); transition: transform 0.2s; }
+    .feature-card:hover { transform: translateY(-3px); border-color: #cbd5e1; }
+    .feature-card h3 { font-family: 'Merriweather', serif; font-size: 1.1rem; margin-bottom: 12px; color: var(--primary); }
+    .feature-card p { font-size: 0.95rem; color: #64748b; margin: 0; line-height: 1.5; }
 
     /* LIVE FEED SECTION */
     .feed-wrapper { margin-top: 80px; padding-top: 40px; padding-bottom: 60px; border-top: 1px dashed #e2e8f0; background: var(--bg-alt); }
     
-    /* FEED BANNER */
     .feed-banner { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; }
     .live-dot { width: 12px; height: 12px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 4px rgba(34,197,94,0.1); }
     .feed-banner h2 { font-family: 'Merriweather', serif; font-size: 1.5rem; color: var(--primary); margin: 0; }
 
-    /* CASUAL LAST UPDATED LINE */
     .last-updated { font-size: 0.85rem; color: #64748b; margin-bottom: 20px; font-family: 'Inter', sans-serif; }
     .last-updated strong { font-weight: 600; color: #334155; }
 
@@ -115,13 +166,17 @@
     .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
     .doc-link:hover { background: #dbeafe; }
 
-    /* FOOTER */
     footer { padding: 25px 0; text-align: center; color: #94a3b8; font-size: 0.8rem; background: white; border-top: 1px solid #e2e8f0; }
     footer a { color: #6b7280; text-decoration: none; }
     footer a:hover { text-decoration: underline; color: var(--accent); }
     .footer-links { margin-top: 10px; display: flex; justify-content: center; gap: 15px; }
     
-    @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } .container { padding: 0 15px; } .nav-links { display: none; } }
+    @media (max-width: 768px) { 
+        .features-grid { grid-template-columns: 1fr; } 
+        .container { padding: 0 15px; } 
+        .nav-links { display: none; } 
+        .hero h1 { font-size: 2.2rem; }
+    }
   </style>
 </head>
 <body>
@@ -150,7 +205,10 @@
 
   <section id="hero" class="hero">
     <div class="container">
-      <h1>Quit Refreshing for Updates.<br>Get Them <i>Instantly</i>.</h1>
+      <h1>
+        Quit Refreshing for Updates.<br>
+        <span class="gradient">Get Them <div class="typing-container"><span class="typing-text">Instantly.</span></div></span>
+      </h1>
       
       <p>
         Official scheduling data sourced directly from <a href="https://docs.house.gov/floor/Default.aspx" target="_blank">docs.house.gov/floor</a>. 
@@ -174,7 +232,7 @@
       </div>
       <div class="feature-card">
         <h3>🚫 Official Business Only</h3>
-        <p>No newsletters, fundraising, or opinion pieces. Alerts are sent strictly when the official House Floor Schedule is updated.</p>
+        <p>No newsletters, fundraising, or opinion pieces. Alerts are sent strictly when the official schedule updates. <strong>Includes a one-click unsubscribe link on every email.</strong></p>
       </div>
       <div class="feature-card">
         <h3>📝 Instant Summaries</h3>
@@ -242,7 +300,6 @@
                 scheduleList.innerHTML = '';
                 latestList.innerHTML = '';
                 
-                // 1. UPDATE HEADER TIMESTAMP
                 const newestTimestamp = data[0].timestamp;
                 if (newestTimestamp && newestTimestamp.trim() !== "") {
                     lastUpdatedEl.innerHTML = "Latest update from the Clerk: " + newestTimestamp;
@@ -250,7 +307,6 @@
                     lastUpdatedEl.style.display = 'none';
                 }
 
-                // 2. POPULATE LATEST CHANGES
                 let hasLatest = false;
                 if (newestTimestamp && newestTimestamp.trim() !== "") {
                     data.forEach(item => {
@@ -263,7 +319,6 @@
                 }
                 if (hasLatest) { latestContainer.style.display = 'block'; }
 
-                // 3. POPULATE FULL SCHEDULE
                 CATEGORIES.forEach(cat => {
                     const catItems = data.filter(i => i.category === cat.key);
                     if (catItems.length > 0) {
