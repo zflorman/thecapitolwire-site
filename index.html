@@ -18,11 +18,13 @@
       --bg-alt: #f8fafc;
       --text: #334155;
       --border: #e2e8f0;
-      --nav-height: 60px;
+      --nav-height: 70px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-height) + 20px); }
+    /* SCROLL FIX: Prevents halo bar from covering text when clicked */
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-height) + 40px); }
+    
     body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
 
     .container { max-width: 1200px; margin: 0 auto; padding: 0 25px; }
@@ -48,7 +50,7 @@
 
     /* DROPDOWN */
     .dropdown { position: relative; display: inline-block; }
-    .dropdown-content { display: none; position: absolute; background-color: white; min-width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border); border-radius: 8px; z-index: 1; top: 25px; left: 50%; transform: translateX(-50%); padding: 5px 0; }
+    .dropdown-content { display: none; position: absolute; background-color: white; min-width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border); border-radius: 8px; z-index: 1; top: 35px; left: 50%; transform: translateX(-50%); padding: 5px 0; }
     .dropdown:hover .dropdown-content { display: block; }
     .dropdown-content a { color: var(--text); padding: 8px 16px; text-decoration: none; display: block; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; }
     .dropdown-content a:last-child { border-bottom: none; }
@@ -72,16 +74,15 @@
     .feature-card p { font-size: 0.9rem; color: #64748b; margin: 0; line-height: 1.5; }
 
     /* LIVE FEED SECTION */
-    .feed-wrapper { margin-top: 80px; padding-top: 40px; border-top: 1px dashed #e2e8f0; }
+    .feed-wrapper { margin-top: 80px; padding-top: 40px; padding-bottom: 60px; border-top: 1px dashed #e2e8f0; background: var(--bg-alt); }
     
+    /* LIVE FEED BANNER */
+    .feed-banner { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; }
+    .live-dot { width: 12px; height: 12px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 4px rgba(34,197,94,0.1); }
+    .feed-banner h2 { font-family: 'Merriweather', serif; font-size: 1.5rem; color: var(--primary); margin: 0; }
+
     /* CASUAL LAST UPDATED LINE */
-    .last-updated {
-        font-size: 0.85rem;
-        color: #64748b;
-        margin-bottom: 15px;
-        text-align: left;
-        font-family: 'Inter', sans-serif;
-    }
+    .last-updated { font-size: 0.85rem; color: #64748b; margin-bottom: 20px; font-family: 'Inter', sans-serif; }
     .last-updated strong { font-weight: 600; color: #334155; }
 
     .box-header { font-family: 'Merriweather', serif; font-size: 0.95rem; font-weight: 700; padding: 12px 20px; border-radius: 6px 6px 0 0; border: 1px solid; border-bottom: none; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -105,7 +106,7 @@
     .doc-link:hover { background: #dbeafe; }
 
     /* FOOTER */
-    footer { padding: 40px 0; text-align: center; color: #94a3b8; font-size: 0.85rem; margin-top: 60px; border-top: 1px solid #e5e7eb; }
+    footer { padding: 25px 0; text-align: center; color: #94a3b8; font-size: 0.8rem; background: white; border-top: 1px solid #e2e8f0; }
     .footer-links { margin-top: 10px; display: flex; justify-content: center; gap: 15px; }
     .footer-links a { color: #6b7280; text-decoration: none; transition: color 0.2s; }
     .footer-links a:hover { color: var(--accent); }
@@ -120,8 +121,9 @@
       <a href="index.html" class="logo">🏛️ The Capitol <span>Wire</span></a>
       <div class="nav-links">
         <a href="#features" class="nav-link">Features</a>
+        
         <div class="dropdown">
-          <span class="nav-link">Live Feed ▾</span>
+          <a href="#live-feed" class="nav-link">Live Feed ▾</a>
           <div class="dropdown-content">
             <a href="#latest-container">⚡ What Changed</a>
             <a href="#cat-suspension">Suspensions</a>
@@ -129,6 +131,7 @@
             <a href="#cat-possible-consideration">Possible Consideration</a>
           </div>
         </div>
+        
         <a href="feed.html" class="nav-link" style="color:var(--light-blue);">Staff View</a>
         <a href="#hero" class="sub-btn">Subscribe</a>
       </div>
@@ -165,9 +168,14 @@
     </div>
   </div>
 
-  <div class="section-gray feed-wrapper">
+  <div class="feed-wrapper">
     <div class="container">
         
+      <div id="live-feed" class="feed-banner">
+        <span class="live-dot"></span>
+        <h2>Live Feed</h2>
+      </div>
+
       <div id="last-updated" class="last-updated">Checking status...</div>
 
       <div class="latest-box" id="latest-container" style="display:none;">
@@ -188,8 +196,8 @@
     <div class="container">
       <div>© 2025 The Capitol Wire. Data sourced directly from docs.house.gov/floor.</div>
       <div class="footer-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
         <a href="mailto:zach@thecapitolwire.com">Contact</a>
       </div>
     </div>
