@@ -55,7 +55,7 @@
     .dropdown-content a:hover { background-color: #f8fafc; color: var(--accent); }
 
     /* HERO */
-    .hero { text-align: center; padding: 60px 0 30px; } 
+    .hero { text-align: center; padding: 60px 0 20px; } 
     
     .hero h1 { 
         font-family: 'Merriweather', serif; 
@@ -73,20 +73,20 @@
         -webkit-text-fill-color: transparent;
     }
 
-    /* Typewriter Animation */
+    /* Typewriter Animation - Fixed Steps */
     .typing-wrapper {
         display: inline-block;
     }
     .typing-text {
         display: inline-block;
-        overflow: hidden; /* Hide text until revealed */
-        border-right: 0.15em solid #3b82f6; /* Cursor */
+        overflow: hidden;
+        border-right: 3px solid #3b82f6; /* Thicker cursor */
         white-space: nowrap;
         margin: 0;
-        width: 0; /* Start width 0 */
+        width: 0;
         font-style: italic;
-        /* steps(11) corresponds to "Instantly." (10 chars + 1) */
-        animation: typing 1.5s steps(11, end) forwards, blink-caret 0.8s step-end infinite;
+        /* Steps(11) = 10 chars + 1 period. Faster time (1.2s) for poppier effect */
+        animation: typing 1.2s steps(11, end) forwards, blink-caret 0.8s step-end infinite;
     }
 
     @keyframes typing {
@@ -103,7 +103,7 @@
         font-size: 1.15rem; 
         color: #475569; 
         max-width: 750px; 
-        margin: 0 auto 35px; 
+        margin: 0 auto 30px; 
         line-height: 1.6;
     }
     .hero p a { color: var(--light-blue); text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
@@ -117,16 +117,16 @@
     button.form-btn:hover { background: #1e40af; }
     .msg { margin-top: 8px; font-size: 0.8rem; min-height: 20px; }
 
-    /* DATA SOURCE LINE (Moved Here) */
+    /* DATA SOURCE LINE - Tight to button */
     .source-line {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: #94a3b8;
-        margin-top: 15px;
+        margin-top: 12px;
     }
     .source-line a { color: #64748b; text-decoration: none; border-bottom: 1px dotted #94a3b8; }
 
-    /* FEATURES */
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 50px; }
+    /* FEATURES - Gap Removed */
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 25px; }
     .feature-card { background: white; padding: 30px 25px; border-radius: 12px; border: 1px solid var(--border); transition: transform 0.2s; }
     .feature-card:hover { transform: translateY(-3px); border-color: #cbd5e1; }
     .feature-card h3 { font-family: 'Merriweather', serif; font-size: 1.1rem; margin-bottom: 12px; color: var(--primary); }
@@ -207,7 +207,7 @@
       </h1>
       
       <p>
-        We track every bill that <strong>may be considered</strong> on the House Floor this week and deliver updates to your inbox the moment they are published. 
+        Track every bill that <strong>may be considered</strong> on the House Floor this week and deliver updates to your inbox the moment they are published. 
         Stop refreshing the page and start getting <strong>instant email alerts</strong>.
       </p>
       
