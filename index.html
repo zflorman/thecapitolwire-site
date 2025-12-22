@@ -3,88 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Capitol Wire | Real-Time Legislative Tracker</title>
+  <title>The Capitol Wire | Official Floor Schedule</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
 
   <style>
-    /* --- CSS RESET --- */
     :root {
       --primary: #0f172a;
       --accent: #2563eb;
       --bg: #ffffff;
-      --bg-alt: #f8fafc;
+      --bg-light: #f8fafc;
       --text: #1e293b;
       --text-muted: #64748b;
       --border: #e2e8f0;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
-    a { text-decoration: none; color: inherit; transition: color 0.2s; }
+    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.4; font-size: 14px; }
+    a { text-decoration: none; color: inherit; }
 
-    /* --- NAV --- */
-    nav { border-bottom: 1px solid var(--border); padding: 16px 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); position: sticky; top:0; z-index: 100; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    /* NAV */
+    nav { border-bottom: 1px solid var(--border); padding: 10px 0; position: sticky; top:0; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); z-index: 100; }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 15px; }
     .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.3rem; color: var(--primary); letter-spacing: -0.5px; }
+    .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.1rem; color: var(--primary); }
     .logo span { color: var(--accent); }
-    .nav-btn { background: var(--primary); color: white; padding: 8px 20px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; }
-    .nav-btn:hover { background: #334155; }
+    .nav-btn { background: var(--primary); color: white; padding: 5px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
 
-    /* --- HERO --- */
-    .hero { text-align: center; padding: 80px 0 60px; }
-    .hero h1 { font-family: 'Merriweather', serif; font-size: 3rem; margin-bottom: 20px; line-height: 1.2; color: var(--primary); }
-    .hero p { color: var(--text-muted); font-size: 1.2rem; max-width: 700px; margin: 0 auto 40px; }
-
-    /* --- LIVE FEED --- */
-    .feed-section { background: var(--bg-alt); padding: 60px 0; min-height: 500px; border-top: 1px solid var(--border); }
+    /* COMPRESSED HERO */
+    .hero { text-align: center; padding: 40px 0 30px; background: linear-gradient(to bottom, #fff, #f8fafc); border-bottom: 1px solid var(--border); }
+    .hero h1 { font-family: 'Merriweather', serif; font-size: 1.8rem; margin-bottom: 8px; color: var(--primary); }
+    .hero p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
     
-    .feed-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border); }
-    .feed-title { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
-    .live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-    
-    .status-badge { font-size: 0.8rem; font-weight: 600; color: #059669; background: #d1fae5; padding: 4px 10px; border-radius: 20px; }
-
-    .feed-grid { display: flex; flex-direction: column; gap: 12px; }
-    
-    .bill-row { 
-      background: white; 
-      border: 1px solid var(--border); 
-      border-radius: 8px; 
-      padding: 20px 24px; 
-      display: grid; 
-      grid-template-columns: 80px 1fr 180px; 
-      gap: 24px; 
-      align-items: center;
-      transition: all 0.2s;
-    }
-    .bill-row:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-
-    .bill-category { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); background: #f1f5f9; padding: 4px 8px; border-radius: 4px; text-align: center; }
-    .bill-title { font-weight: 600; font-size: 1.05rem; color: var(--primary); line-height: 1.4; }
-    .bill-meta { text-align: right; }
-    .timestamp { display: block; font-size: 0.85rem; color: #dc2626; font-weight: 500; margin-bottom: 4px; }
-    .doc-link { font-size: 0.8rem; color: var(--accent); font-weight: 600; }
-    .doc-link:hover { text-decoration: underline; }
-
-    /* --- EMAIL FORM --- */
-    .form-wrapper { max-width: 500px; margin: 0 auto; position: relative; }
-    .input-group { display: flex; gap: 8px; background: white; padding: 6px; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-    input { flex: 1; border: none; padding: 10px 15px; font-size: 1rem; outline: none; }
-    button { background: var(--accent); color: white; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    /* COMPRESSED FORM */
+    .form-box { max-width: 380px; margin: 0 auto; display: flex; gap: 6px; }
+    input { flex: 1; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem; }
+    button { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
     button:hover { background: #1d4ed8; }
-    .msg { margin-top: 10px; font-size: 0.9rem; text-align: center; min-height: 24px; }
+    .msg { margin-top: 6px; font-size: 0.8rem; min-height: 18px; }
 
-    /* --- FOOTER --- */
-    footer { padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); margin-top: auto; }
-
-    @media (max-width: 768px) {
-      .bill-row { grid-template-columns: 1fr; gap: 10px; padding: 15px; }
-      .bill-meta { text-align: left; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 10px; margin-top: 5px; }
-      .bill-category { display: inline-block; width: auto; margin-bottom: 5px; }
+    /* FEED SECTION */
+    .feed-section { padding: 30px 0; min-height: 600px; }
+    .feed-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); }
+    .feed-title { font-weight: 700; font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .live-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 2px rgba(34,197,94,0.3); }
+    
+    /* DENSE LIST LAYOUT */
+    .bill-list { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: white; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.05); }
+    
+    .bill-item { 
+      padding: 12px 16px; /* Tighter padding for compression */
+      border-bottom: 1px solid var(--border); 
+      display: flex; 
+      flex-direction: column; 
+      gap: 4px; 
+      transition: background 0.1s;
     }
+    .bill-item:last-child { border-bottom: none; }
+    .bill-item:hover { background: #f8fafc; }
+
+    .item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    
+    .bill-title { font-weight: 600; font-size: 0.95rem; color: var(--primary); line-height: 1.3; }
+    
+    .meta-row { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; margin-top: 2px; }
+    
+    .category-badge { text-transform: uppercase; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 2px 5px; border-radius: 3px; letter-spacing: 0.5px; font-size: 0.65rem; border: 1px solid #e2e8f0; }
+    
+    /* Email-style timestamp highlight */
+    .timestamp { font-family: monospace; color: #b91c1c; font-weight: 600; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
+    
+    .action-link { font-size: 0.7rem; color: var(--accent); font-weight: 600; text-transform: uppercase; border: 1px solid var(--border); padding: 2px 6px; border-radius: 3px; background: white; white-space: nowrap; }
+    .action-link:hover { border-color: var(--accent); background: #eff6ff; }
+
+    /* FOOTER */
+    footer { padding: 30px 0; text-align: center; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 40px; }
   </style>
 </head>
 <body>
@@ -98,30 +91,25 @@
 
   <header class="hero">
     <div class="container">
-      <h1>Track Legislation Instantly.</h1>
-      <p>Direct feed from the House Clerk's server. <br>We monitor official schedule changes 24/7 so you don't have to.</p>
+      <h1>Official House Floor Schedule</h1>
+      <p>Live feed from the Office of the Clerk. Sorted by latest activity.</p>
       
-      <div id="subscribe" class="form-wrapper">
-        <div class="input-group">
-          <input type="email" id="email" placeholder="Enter work email..." required />
-          <button id="submitBtn">Subscribe Free</button>
-        </div>
-        <div id="status" class="msg"></div>
+      <div id="subscribe" class="form-box">
+        <input type="email" id="email" placeholder="Work email..." required />
+        <button id="submitBtn">Subscribe</button>
       </div>
+      <div id="status" class="msg"></div>
     </div>
   </header>
 
   <section class="feed-section">
     <div class="container">
       <div class="feed-header">
-        <div class="feed-title"><div class="live-dot"></div> Live House Feed</div>
-        <div class="status-badge">System Operational</div>
+        <div class="feed-title"><div class="live-dot"></div> Latest Updates & Schedule</div>
       </div>
 
-      <div id="live-feed-container" class="feed-grid">
-        <div style="text-align:center; padding: 60px; color:#94a3b8;">
-          Loading official schedule...
-        </div>
+      <div id="feed-container" class="bill-list">
+        <div style="padding:30px; text-align:center; color:#94a3b8;">Loading official data...</div>
       </div>
     </div>
   </section>
@@ -137,10 +125,10 @@
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    async function initLiveFeed() {
-        const container = document.getElementById('live-feed-container');
+    async function initFeed() {
+        const container = document.getElementById('feed-container');
         try {
-            // Fetch live data from Supabase
+            // Fetch live data (Already sorted by bot)
             const { data, error } = await _supabase
                 .from('live_feed')
                 .select('*')
@@ -149,36 +137,40 @@
             if (data && data.length > 0) {
                 container.innerHTML = '';
                 data.forEach(item => {
-                    const row = document.createElement('div');
-                    row.className = 'bill-row';
+                    const div = document.createElement('div');
+                    div.className = 'bill-item';
                     
-                    // Determine Link Text
-                    const isPdf = item.link.toLowerCase().endsWith('pdf');
-                    const linkText = isPdf ? 'Download PDF' : 'View Text';
+                    // Link Logic
+                    let linkHtml = '';
+                    if (item.link) {
+                        const isPdf = item.link.toLowerCase().endsWith('pdf');
+                        linkHtml = `<a href="${item.link}" target="_blank" class="action-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
+                    }
 
-                    row.innerHTML = `
-                        <div class="bill-category">${item.category}</div>
-                        <div class="bill-title">${item.title}</div>
-                        <div class="bill-meta">
+                    div.innerHTML = `
+                        <div class="item-top">
+                            <div class="bill-title">${item.title}</div>
+                            ${linkHtml}
+                        </div>
+                        <div class="meta-row">
+                            <span class="category-badge">${item.category}</span>
                             <span class="timestamp">${item.timestamp}</span>
-                            <a href="${item.link}" target="_blank" class="doc-link">${linkText} &rarr;</a>
                         </div>
                     `;
-                    container.appendChild(row);
+                    container.appendChild(div);
                 });
             } else {
-                container.innerHTML = '<div style="text-align:center; padding:60px; color:#64748b;">No active legislation scheduled at this moment.</div>';
+                container.innerHTML = '<div style="padding:30px; text-align:center; color:#64748b;">No active schedule items found.</div>';
             }
         } catch (e) {
             console.error(e);
-            container.innerHTML = '<div style="text-align:center; padding:60px; color:#dc2626;">Unable to load live feed. Please refresh.</div>';
+            container.innerHTML = '<div style="padding:30px; text-align:center; color:red;">Unable to load feed.</div>';
         }
     }
     
-    // Initialize Feed
-    initLiveFeed();
+    initFeed();
 
-    // Subscription Logic
+    // Subscribe
     const emailInput = document.getElementById('email');
     const submitBtn = document.getElementById('submitBtn');
     const statusDiv = document.getElementById('status');
@@ -187,29 +179,22 @@
       const email = emailInput.value.trim();
       if (!email || !email.includes('@')) {
         statusDiv.textContent = "Please enter a valid email address.";
-        statusDiv.style.color = "#dc2626";
+        statusDiv.style.color = "red";
         return;
       }
       submitBtn.disabled = true;
-      submitBtn.textContent = "Processing...";
-      
+      submitBtn.textContent = "...";
       const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
       
       if (error) {
-          if (error.code === '23505') {
-             statusDiv.textContent = "You are already on the list!";
-             statusDiv.style.color = "#059669";
-          } else {
-             statusDiv.textContent = "Error joining list. Please try again.";
-             statusDiv.style.color = "#dc2626";
-          }
+          statusDiv.textContent = error.code === '23505' ? "Already subscribed." : "Error.";
+          statusDiv.style.color = error.code === '23505' ? "green" : "red";
       } else {
-          statusDiv.textContent = "Success! You are now subscribed.";
-          statusDiv.style.color = "#059669";
+          statusDiv.textContent = "Subscribed!";
+          statusDiv.style.color = "green";
           emailInput.value = "";
       }
-      
-      setTimeout(() => { submitBtn.disabled = false; submitBtn.textContent = "Subscribe Free"; }, 3000);
+      setTimeout(() => { submitBtn.disabled = false; submitBtn.textContent = "Subscribe"; }, 2000);
     });
   </script>
 </body>
