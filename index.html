@@ -2,168 +2,203 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Capitol Wire | Official Floor Schedule</title>
-  
+  <title>The Capitol Wire - Official House Floor Schedule</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
-
+  
   <style>
+    /* --- VARIABLES --- */
     :root {
       --house-blue: #1e3a8a;
       --house-red: #b91c1c;
-      --text-main: #222;
-      --text-muted: #555;
-      --bg-gray: #f9f9f9;
+      --bg: #f3f4f6;
+      --text: #1f2937;
+      --white: #ffffff;
       --border: #e5e7eb;
-      --yellow-bg: #fffbeb;
-      --yellow-border: #fcd34d;
-      --yellow-text: #92400e;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; color: var(--text-main); background: #ffffff; line-height: 1.5; font-size: 15px; }
-    a { text-decoration: none; color: inherit; }
+    
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.5; }
+    
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
 
-    /* --- NAV --- */
-    nav { border-bottom: 1px solid var(--border); padding: 12px 0; background: white; position: sticky; top:0; z-index: 100; }
-    .container { max-width: 850px; margin: 0 auto; padding: 0 20px; }
-    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.2rem; color: var(--house-blue); }
-    .nav-btn { background: var(--house-blue); color: white; padding: 6px 14px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; }
+    /* --- HERO SECTION (Restored from your old site) --- */
+    .hero { 
+      background: var(--white); 
+      padding: 50px 30px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+      margin-bottom: 40px; 
+      text-align: center; 
+    }
+    
+    h1 { 
+      font-family: 'Merriweather', serif; 
+      font-size: 2.5rem; 
+      font-weight: 900; 
+      color: var(--house-blue); 
+      margin: 0 0 10px 0; 
+      letter-spacing: -0.5px; 
+    }
+    
+    .tagline { font-size: 1.1rem; color: #4b5563; margin-bottom: 25px; }
+    
+    /* Subscribe Form */
+    .input-group { display: flex; gap: 10px; justify-content: center; max-width: 480px; margin: 0 auto; }
+    input { padding: 12px 16px; border: 2px solid var(--border); border-radius: 6px; flex: 1; font-size: 16px; outline: none; }
+    input:focus { border-color: var(--house-blue); }
+    
+    button { 
+      background: var(--house-blue); 
+      color: white; 
+      border: none; 
+      padding: 12px 24px; 
+      border-radius: 6px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      font-size: 16px; 
+      transition: background 0.2s; 
+    }
+    button:hover { background: #1e40af; }
+    button:disabled { opacity: 0.7; cursor: not-allowed; }
+    
+    .status-msg { margin-top: 15px; font-size: 0.9rem; font-weight: 500; height: 20px; }
+    .success { color: #059669; }
+    .error { color: #dc2626; }
 
-    /* --- MAIN LAYOUT --- */
-    .report-container { padding: 40px 0; max-width: 800px; margin: 0 auto; }
-
-    /* --- EMAIL HEADER STYLE --- */
-    .email-header { text-align: center; margin-bottom: 30px; }
-    .email-header h1 { font-family: 'Merriweather', serif; font-size: 2rem; color: var(--house-blue); margin-bottom: 5px; }
-    .email-header h2 { font-size: 1rem; color: var(--text-muted); font-weight: 400; margin-bottom: 15px; }
-    .sub-link { color: var(--house-blue); font-size: 0.9rem; text-decoration: underline; cursor: pointer; }
-
-    /* --- METADATA BOX (GREY) --- */
-    .metadata-box { background: var(--bg-gray); border: 1px solid var(--border); padding: 15px; border-radius: 6px; margin-bottom: 25px; font-size: 0.95rem; }
-    .meta-label { font-weight: 700; color: #444; }
-    .meta-value { color: #000; margin-bottom: 8px; display: block; }
-    .meta-link { color: var(--house-blue); text-decoration: none; word-break: break-all; }
-    .meta-link:hover { text-decoration: underline; }
-
-    /* --- YELLOW INFO BOX --- */
-    .info-box { background: var(--yellow-bg); border: 1px solid var(--yellow-border); padding: 15px; border-radius: 6px; margin-bottom: 30px; }
-    .info-title { color: var(--yellow-text); font-weight: 700; text-transform: uppercase; margin-bottom: 8px; font-size: 1rem; }
-    .info-text { color: var(--yellow-text); font-size: 0.95rem; }
-
-    /* --- SECTION HEADERS --- */
-    .section-title { 
-      font-size: 1.1rem; 
-      font-weight: 700; 
-      color: #333; 
-      border-bottom: 2px solid #333; 
-      padding-bottom: 6px; 
-      margin-top: 30px; 
-      margin-bottom: 20px; 
+    /* --- OFFICIAL FEED SECTION --- */
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 15px;
+      padding: 0 5px;
+    }
+    .feed-title {
+      font-weight: 700;
+      color: #374151;
       text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+    .feed-meta {
+      font-size: 0.85rem;
+      color: #6b7280;
     }
 
-    /* --- LIST ITEMS (Clean Report Style) --- */
-    .bill-item { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #f1f1f1; }
+    /* The "Sheet" of Paper Look */
+    .feed-sheet {
+      background: var(--white);
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    /* Individual Bill Item (Styled like the Email) */
+    .bill-item {
+      padding: 20px 25px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: background 0.1s;
+    }
     .bill-item:last-child { border-bottom: none; }
-    
-    .bill-main { font-size: 1rem; color: #222; line-height: 1.4; margin-bottom: 6px; }
-    .bill-id { font-weight: 700; color: var(--house-blue); }
-    
-    .bill-links { display: inline-block; margin-left: 8px; }
-    .link-tag { 
-      background: #f3f4f6; 
-      border: 1px solid #d1d5db; 
-      color: #374151; 
-      font-size: 0.75rem; 
-      padding: 1px 6px; 
-      border-radius: 3px; 
-      font-weight: 500; 
-      margin-right: 4px;
-      vertical-align: middle;
-    }
-    .link-tag:hover { background: #e5e7eb; }
+    .bill-item:hover { background: #f9fafb; }
 
-    .bill-details { font-size: 0.85rem; color: var(--house-red); font-style: italic; margin-top: 4px; font-weight: 500; }
-    .bill-category { 
-      display: inline-block;
-      font-size: 0.75rem; 
-      text-transform: uppercase; 
-      color: #64748b; 
-      font-weight: 700; 
-      letter-spacing: 0.5px;
-      margin-right: 8px;
+    /* Title Row */
+    .bill-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    
+    .bill-title {
+      font-family: 'Merriweather', serif; /* Serif for official look */
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--house-blue);
+      line-height: 1.4;
     }
 
-    /* --- EMAIL FORM (Hidden by default, shown on click) --- */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 200; }
-    .modal { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; }
-    .modal h3 { margin-bottom: 15px; color: var(--house-blue); }
-    .form-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
-    .form-btn { width: 100%; background: var(--house-blue); color: white; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-    .close-modal { margin-top: 10px; display: block; color: #666; font-size: 0.9rem; cursor: pointer; text-decoration: underline; }
+    /* Metadata Row (Red Text) */
+    .bill-meta-row {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--house-red);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    /* Category Badge (Small grey text) */
+    .cat-badge {
+      text-transform: uppercase;
+      color: #6b7280;
+      font-size: 0.75rem;
+      border: 1px solid #e5e7eb;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-right: 5px;
+    }
 
-    /* --- FOOTER --- */
-    footer { text-align: center; padding: 40px 0; border-top: 1px solid var(--border); color: #666; font-size: 0.85rem; margin-top: 40px; }
+    /* PDF / XML Buttons */
+    .doc-link {
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-decoration: none;
+      border: 1px solid #d1d5db;
+      white-space: nowrap;
+    }
+    .doc-link:hover { background: #e5e7eb; border-color: #9ca3af; }
+
+    /* Footer */
+    footer { margin-top: 50px; border-top: 1px solid #e5e7eb; padding-top: 20px; font-size: 0.85rem; color: #9ca3af; text-align: center; }
+    footer a { color: #6b7280; text-decoration: none; margin: 0 10px; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .input-group { flex-direction: column; }
+      button { width: 100%; }
+    }
   </style>
 </head>
 <body>
 
-  <nav>
-    <div class="container nav-inner">
-      <div class="logo">🏛️ The Capitol Wire</div>
-      <button class="nav-btn" onclick="openModal()">Subscribe</button>
-    </div>
-  </nav>
-
-  <div class="container report-container">
+  <div class="container">
     
-    <div class="email-header">
-      <h1>The Capitol Wire</h1>
-      <h2>Bills This Week — Schedule Updates</h2>
-      <span class="sub-link" onclick="openModal()">Subscribe here</span>
+    <div class="hero">
+      <h1>🏛️ The Capitol Wire</h1>
+      <p class="tagline">Official House Floor Schedule Alerts</p>
+      
+      <div class="input-group">
+        <input type="email" id="email" placeholder="Enter work email..." required />
+        <button id="submitBtn">Subscribe Free</button>
+      </div>
+      <div id="status" class="status-msg"></div>
     </div>
 
-    <div class="metadata-box">
-      <div style="margin-bottom: 10px;">
-        <span class="meta-label">House page last updated:</span><br>
-        <span class="meta-value" id="page-time">Loading...</span>
-      </div>
-      <div>
-        <span class="meta-label">Official source:</span><br>
-        <a href="https://docs.house.gov/floor/Default.aspx" target="_blank" class="meta-link">https://docs.house.gov/floor/Default.aspx</a>
-      </div>
+    <div class="feed-header">
+      <div class="feed-title">Latest Updates & Schedule</div>
+      <div class="feed-meta">Live from the Clerk's Desk</div>
     </div>
 
-    <div class="info-box">
-      <div class="info-title" id="info-title">⚡ Latest Activity</div>
-      <div class="info-text" id="info-text">
-        The House has updated the schedule. The most recent additions are listed at the top below.
-      </div>
-    </div>
-
-    <div class="section-title">Current Schedule Snapshot</div>
-    <div id="feed-container">
-      <div style="text-align:center; padding:30px; color:#666;">Loading official data...</div>
+    <div id="feed-container" class="feed-sheet">
+      <div style="padding:40px; text-align:center; color:#9ca3af;">Loading official schedule...</div>
     </div>
 
     <footer>
-      Run by Zachary Florman<br>
-      646-853-0359<br>
-      Zach@TheCapitolWire.com
+      <p>© 2025 The Capitol Wire. Data sourced directly from docs.house.gov.</p>
+      <p><a href="#">Privacy</a> • <a href="#">Terms</a></p>
     </footer>
 
-  </div>
-
-  <div class="modal-overlay" id="modal">
-    <div class="modal">
-      <h3>Get Alerts via Email</h3>
-      <input type="email" id="email" class="form-input" placeholder="Enter work email..." />
-      <button id="submitBtn" class="form-btn">Subscribe Free</button>
-      <div id="status" style="margin-top:10px; font-size:0.9rem;"></div>
-      <span class="close-modal" onclick="closeModal()">Close</span>
-    </div>
   </div>
 
   <script>
@@ -171,88 +206,65 @@
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // --- FEED LOGIC ---
     async function initFeed() {
         const container = document.getElementById('feed-container');
-        const pageTime = document.getElementById('page-time');
-        
         try {
-            // Fetch live data (Sorted by Date Descending from Main.py)
+            // Fetch items sorted by ID (which main.py sorted by date)
             const { data, error } = await _supabase
                 .from('live_feed')
                 .select('*')
-                .order('id', { ascending: true }); // ID order preserves the specific sort from Bot
+                .order('id', { ascending: true });
 
             if (data && data.length > 0) {
                 container.innerHTML = '';
-                
-                // Set Header Timestamp from the very first (newest) item
-                if (data[0].timestamp) {
-                    // Extract just the date part if possible, or use full string
-                    pageTime.innerText = data[0].timestamp;
-                } else {
-                    pageTime.innerText = "Recently";
-                }
-
                 data.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'bill-item';
                     
-                    // Link Logic
+                    // Buttons
                     let linkHtml = '';
                     if (item.link) {
                         const isPdf = item.link.toLowerCase().endsWith('pdf');
-                        linkHtml = `<a href="${item.link}" target="_blank" class="link-tag">${isPdf ? 'PDF' : 'XML'}</a>`;
+                        linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'XML'}</a>`;
                     }
 
-                    // Extract Bill Number for Bold styling
-                    // We split by "—" to separate ID from Title if present
-                    let titleHtml = item.title;
-                    const parts = item.title.split('—');
-                    if (parts.length > 1) {
-                        titleHtml = `<span class="bill-id">${parts[0]}</span> — ${parts.slice(1).join('—')}`;
-                    } else {
-                        titleHtml = `<span class="bill-id">${item.title}</span>`; // Fallback if no dash
-                    }
+                    // Metadata Text (Red)
+                    // e.g. "Added 12/21/2025 at 03:56 PM"
+                    const timestamp = item.timestamp || "Recently";
 
                     div.innerHTML = `
-                        <div class="bill-main">
-                            ${titleHtml}
-                            <span class="bill-links">${linkHtml}</span>
+                        <div class="bill-top">
+                            <div class="bill-title">${item.title}</div>
+                            ${linkHtml}
                         </div>
-                        <div class="bill-details">
-                            <span class="bill-category">${item.category}</span>
-                            ${item.timestamp}
+                        <div class="bill-meta-row">
+                            <span class="cat-badge">${item.category}</span>
+                            • ${timestamp}
                         </div>
                     `;
                     container.appendChild(div);
                 });
             } else {
-                container.innerHTML = '<div style="padding:30px; text-align:center; color:#666;">No active schedule items found.</div>';
-                pageTime.innerText = "No Data";
+                container.innerHTML = '<div style="padding:40px; text-align:center; color:#6b7280;">No active legislation found.</div>';
             }
         } catch (e) {
             console.error(e);
-            container.innerHTML = '<div style="padding:30px; text-align:center; color:red;">Unable to load feed.</div>';
+            container.innerHTML = '<div style="padding:40px; text-align:center; color:#dc2626;">Unable to load feed.</div>';
         }
     }
-    
     initFeed();
 
-    // Modal Logic
-    const modal = document.getElementById('modal');
-    function openModal() { modal.style.display = 'flex'; }
-    function closeModal() { modal.style.display = 'none'; }
-
-    // Subscribe Logic
-    const submitBtn = document.getElementById('submitBtn');
+    // --- SUBSCRIBE LOGIC ---
     const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submitBtn');
     const statusDiv = document.getElementById('status');
 
     submitBtn.addEventListener('click', async () => {
       const email = emailInput.value.trim();
       if (!email || !email.includes('@')) {
-        statusDiv.textContent = "Please enter a valid email.";
-        statusDiv.style.color = "red";
+        statusDiv.textContent = "Please enter a valid email address.";
+        statusDiv.className = "status-msg error";
         return;
       }
       submitBtn.disabled = true;
@@ -262,20 +274,18 @@
       
       if (error) {
           if (error.code === '23505') {
-             statusDiv.textContent = "You are already on the list.";
-             statusDiv.style.color = "green";
+             statusDiv.textContent = "You are already on the list!";
+             statusDiv.className = "status-msg success";
           } else {
-             statusDiv.textContent = "Error. Try again.";
-             statusDiv.style.color = "red";
+             statusDiv.textContent = "Error joining list. Please try again.";
+             statusDiv.className = "status-msg error";
           }
       } else {
-          statusDiv.textContent = "Success! You are subscribed.";
-          statusDiv.style.color = "green";
+          statusDiv.textContent = "Success! You are now subscribed.";
+          statusDiv.className = "status-msg success";
           emailInput.value = "";
-          setTimeout(closeModal, 2000);
       }
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Subscribe Free";
+      setTimeout(() => { submitBtn.disabled = false; submitBtn.textContent = "Subscribe Free"; }, 3000);
     });
   </script>
 </body>
