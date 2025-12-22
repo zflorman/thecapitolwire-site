@@ -2,290 +2,217 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>The Capitol Wire - Official House Floor Schedule</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Capitol Wire | Official House Floor Schedule</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+
   <style>
-    /* --- VARIABLES --- */
+    /* VARIABLES */
     :root {
-      --house-blue: #1e3a8a;
-      --house-red: #b91c1c;
-      --bg: #f3f4f6;
-      --text: #1f2937;
-      --white: #ffffff;
-      --border: #e5e7eb;
+      --primary: #0f172a;
+      --accent: #1e3a8a;
+      --gold: #b45309;
+      --bg: #ffffff;
+      --bg-gray: #f8fafc;
+      --text: #334155;
+      --border: #e2e8f0;
     }
-    
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.5; }
-    
-    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
 
-    /* --- HERO SECTION (Restored from your old site) --- */
-    .hero { 
-      background: var(--white); 
-      padding: 50px 30px; 
-      border-radius: 12px; 
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
-      margin-bottom: 40px; 
-      text-align: center; 
-    }
+    /* LAYOUT */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 60px 0; }
+    .section-gray { background: var(--bg-gray); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 15px 0; }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.2rem; color: var(--primary); }
+    .logo span { color: var(--gold); }
+    .nav-btn { background: var(--accent); color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+
+    /* HERO */
+    .hero { text-align: center; padding: 80px 0 60px; }
+    .hero h1 { font-family: 'Merriweather', serif; font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; }
+    .hero p { font-size: 1.1rem; color: #64748b; max-width: 600px; margin: 0 auto 40px; }
+
+    /* FORM */
+    .form-wrapper { max-width: 450px; margin: 0 auto; display: flex; gap: 10px; }
+    input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; }
+    button.sub-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .msg { margin-top: 10px; font-size: 0.9rem; min-height: 20px; }
+
+    /* FEED STYLES */
+    .feed-container { margin-top: 20px; }
     
-    h1 { 
+    /* Box Headers */
+    .box-header { 
       font-family: 'Merriweather', serif; 
-      font-size: 2.5rem; 
-      font-weight: 900; 
-      color: var(--house-blue); 
-      margin: 0 0 10px 0; 
-      letter-spacing: -0.5px; 
-    }
-    
-    .tagline { font-size: 1.1rem; color: #4b5563; margin-bottom: 25px; }
-    
-    /* Subscribe Form */
-    .input-group { display: flex; gap: 10px; justify-content: center; max-width: 480px; margin: 0 auto; }
-    input { padding: 12px 16px; border: 2px solid var(--border); border-radius: 6px; flex: 1; font-size: 16px; outline: none; }
-    input:focus { border-color: var(--house-blue); }
-    
-    button { 
-      background: var(--house-blue); 
-      color: white; 
-      border: none; 
-      padding: 12px 24px; 
-      border-radius: 6px; 
-      font-weight: 600; 
-      cursor: pointer; 
-      font-size: 16px; 
-      transition: background 0.2s; 
-    }
-    button:hover { background: #1e40af; }
-    button:disabled { opacity: 0.7; cursor: not-allowed; }
-    
-    .status-msg { margin-top: 15px; font-size: 0.9rem; font-weight: 500; height: 20px; }
-    .success { color: #059669; }
-    .error { color: #dc2626; }
-
-    /* --- OFFICIAL FEED SECTION --- */
-    .feed-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 15px;
-      padding: 0 5px;
-    }
-    .feed-title {
-      font-weight: 700;
-      color: #374151;
-      text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
-    }
-    .feed-meta {
-      font-size: 0.85rem;
-      color: #6b7280;
+      font-size: 1.1rem; 
+      font-weight: 700; 
+      padding: 15px 20px; 
+      border-radius: 8px 8px 0 0; 
+      border: 1px solid;
+      border-bottom: none;
+      display: flex; align-items: center; gap: 8px;
     }
 
-    /* The "Sheet" of Paper Look */
-    .feed-sheet {
-      background: var(--white);
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      overflow: hidden;
-    }
-
-    /* Individual Bill Item (Styled like the Email) */
-    .bill-item {
-      padding: 20px 25px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      transition: background 0.1s;
-    }
+    /* Yellow "Latest" Box */
+    .latest-box .box-header { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
+    .latest-box .feed-list { border-color: #fcd34d; }
+    
+    /* Blue "Full Schedule" Box */
+    .schedule-box { margin-top: 40px; }
+    .schedule-box .box-header { background: #f1f5f9; color: var(--primary); border-color: var(--border); }
+    
+    /* List Items */
+    .feed-list { border: 1px solid var(--border); border-radius: 0 0 8px 8px; background: white; overflow: hidden; }
+    
+    .bill-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
     .bill-item:last-child { border-bottom: none; }
-    .bill-item:hover { background: #f9fafb; }
-
-    /* Title Row */
-    .bill-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-    }
     
-    .bill-title {
-      font-family: 'Merriweather', serif; /* Serif for official look */
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--house-blue);
-      line-height: 1.4;
-    }
-
-    /* Metadata Row (Red Text) */
-    .bill-meta-row {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--house-red);
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .bill-title { font-weight: 600; color: var(--primary); font-size: 1rem; }
+    .bill-meta { font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 8px; }
+    .meta-cat { text-transform: uppercase; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
+    .meta-time { color: #dc2626; font-weight: 600; }
     
-    /* Category Badge (Small grey text) */
-    .cat-badge {
-      text-transform: uppercase;
-      color: #6b7280;
-      font-size: 0.75rem;
-      border: 1px solid #e5e7eb;
-      padding: 1px 5px;
-      border-radius: 3px;
-      margin-right: 5px;
-    }
+    .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
 
-    /* PDF / XML Buttons */
-    .doc-link {
-      background: #f3f4f6;
-      color: #374151;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 4px;
-      text-decoration: none;
-      border: 1px solid #d1d5db;
-      white-space: nowrap;
-    }
-    .doc-link:hover { background: #e5e7eb; border-color: #9ca3af; }
-
-    /* Footer */
-    footer { margin-top: 50px; border-top: 1px solid #e5e7eb; padding-top: 20px; font-size: 0.85rem; color: #9ca3af; text-align: center; }
-    footer a { color: #6b7280; text-decoration: none; margin: 0 10px; }
-
-    @media (max-width: 600px) {
-      h1 { font-size: 2rem; }
-      .input-group { flex-direction: column; }
-      button { width: 100%; }
-    }
+    /* FOOTER */
+    footer { padding: 40px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; margin-top: 60px; border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    
-    <div class="hero">
-      <h1>🏛️ The Capitol Wire</h1>
-      <p class="tagline">Official House Floor Schedule Alerts</p>
+  <nav>
+    <div class="container nav-inner">
+      <div class="logo">🏛️ The Capitol <span>Wire</span></div>
+      <a href="#hero" class="nav-btn">Subscribe</a>
+    </div>
+  </nav>
+
+  <section id="hero" class="hero">
+    <div class="container">
+      <h1>Official House Floor Schedule</h1>
+      <p>Real-time feed from the Office of the Clerk. <br>Get an email instantly when the schedule changes.</p>
       
-      <div class="input-group">
+      <div class="form-wrapper">
         <input type="email" id="email" placeholder="Enter work email..." required />
-        <button id="submitBtn">Subscribe Free</button>
+        <button id="submitBtn" class="sub-btn">Subscribe Free</button>
       </div>
-      <div id="status" class="status-msg"></div>
+      <div id="status" class="msg"></div>
     </div>
+  </section>
 
-    <div class="feed-header">
-      <div class="feed-title">Latest Updates & Schedule</div>
-      <div class="feed-meta">Live from the Clerk's Desk</div>
+  <section class="section section-gray">
+    <div class="container">
+      
+      <div class="feed-container latest-box" id="latest-container" style="display:none;">
+        <div class="box-header">⚡ LATEST ACTIVITY (WHAT CHANGED)</div>
+        <div class="feed-list" id="latest-list"></div>
+      </div>
+
+      <div class="feed-container schedule-box">
+        <div class="box-header">📋 CURRENT SCHEDULE SNAPSHOT</div>
+        <div class="feed-list" id="schedule-list">
+          <div style="padding:40px; text-align:center; color:#94a3b8;">Loading official data...</div>
+        </div>
+      </div>
+
     </div>
+  </section>
 
-    <div id="feed-container" class="feed-sheet">
-      <div style="padding:40px; text-align:center; color:#9ca3af;">Loading official schedule...</div>
+  <footer>
+    <div class="container">
+      &copy; 2025 The Capitol Wire. Data sourced directly from docs.house.gov.
     </div>
-
-    <footer>
-      <p>© 2025 The Capitol Wire. Data sourced directly from docs.house.gov.</p>
-      <p><a href="#">Privacy</a> • <a href="#">Terms</a></p>
-    </footer>
-
-  </div>
+  </footer>
 
   <script>
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // --- FEED LOGIC ---
     async function initFeed() {
-        const container = document.getElementById('feed-container');
+        const latestContainer = document.getElementById('latest-container');
+        const latestList = document.getElementById('latest-list');
+        const scheduleList = document.getElementById('schedule-list');
+
         try {
-            // Fetch items sorted by ID (which main.py sorted by date)
-            const { data, error } = await _supabase
-                .from('live_feed')
-                .select('*')
-                .order('id', { ascending: true });
+            // Fetch items sorted by ID (Bot sorts them Newest -> Oldest)
+            const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
 
             if (data && data.length > 0) {
-                container.innerHTML = '';
+                scheduleList.innerHTML = '';
+                latestList.innerHTML = '';
+                
+                // LOGIC: The Top item (ID 1) is the newest.
+                // We define "Latest" as items matching the timestamp of the newest item.
+                const newestTimestamp = data[0].timestamp;
+                let hasLatest = false;
+
                 data.forEach(item => {
+                    // Create HTML Element
                     const div = document.createElement('div');
                     div.className = 'bill-item';
                     
-                    // Buttons
                     let linkHtml = '';
                     if (item.link) {
                         const isPdf = item.link.toLowerCase().endsWith('pdf');
-                        linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'XML'}</a>`;
+                        linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
                     }
 
-                    // Metadata Text (Red)
-                    // e.g. "Added 12/21/2025 at 03:56 PM"
-                    const timestamp = item.timestamp || "Recently";
-
                     div.innerHTML = `
-                        <div class="bill-top">
-                            <div class="bill-title">${item.title}</div>
+                        <div class="bill-title">${item.title}</div>
+                        <div class="bill-meta">
+                            <span class="meta-cat">${item.category}</span>
+                            <span class="meta-time">${item.timestamp}</span>
                             ${linkHtml}
                         </div>
-                        <div class="bill-meta-row">
-                            <span class="cat-badge">${item.category}</span>
-                            • ${timestamp}
-                        </div>
                     `;
-                    container.appendChild(div);
+
+                    // Logic: Add to BOTH lists? Or Split?
+                    // Email style: "What Changed" (Top) + "Full Schedule" (Bottom)
+                    // We will put matching timestamps in TOP, and ALL items in BOTTOM.
+                    
+                    if (item.timestamp === newestTimestamp) {
+                        // Clone for top list
+                        const clone = div.cloneNode(true);
+                        latestList.appendChild(clone);
+                        hasLatest = true;
+                    }
+                    
+                    // Always add to full schedule
+                    scheduleList.appendChild(div);
                 });
+
+                if (hasLatest) {
+                    latestContainer.style.display = 'block';
+                }
+
             } else {
-                container.innerHTML = '<div style="padding:40px; text-align:center; color:#6b7280;">No active legislation found.</div>';
+                scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">No active schedule.</div>';
             }
         } catch (e) {
             console.error(e);
-            container.innerHTML = '<div style="padding:40px; text-align:center; color:#dc2626;">Unable to load feed.</div>';
         }
     }
     initFeed();
 
-    // --- SUBSCRIBE LOGIC ---
-    const emailInput = document.getElementById('email');
-    const submitBtn = document.getElementById('submitBtn');
-    const statusDiv = document.getElementById('status');
+    // Subscribe
+    const btn = document.getElementById('submitBtn');
+    const input = document.getElementById('email');
+    const stat = document.getElementById('status');
 
-    submitBtn.addEventListener('click', async () => {
-      const email = emailInput.value.trim();
-      if (!email || !email.includes('@')) {
-        statusDiv.textContent = "Please enter a valid email address.";
-        statusDiv.className = "status-msg error";
-        return;
-      }
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Processing...";
-      
-      const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
-      
-      if (error) {
-          if (error.code === '23505') {
-             statusDiv.textContent = "You are already on the list!";
-             statusDiv.className = "status-msg success";
-          } else {
-             statusDiv.textContent = "Error joining list. Please try again.";
-             statusDiv.className = "status-msg error";
-          }
-      } else {
-          statusDiv.textContent = "Success! You are now subscribed.";
-          statusDiv.className = "status-msg success";
-          emailInput.value = "";
-      }
-      setTimeout(() => { submitBtn.disabled = false; submitBtn.textContent = "Subscribe Free"; }, 3000);
+    btn.addEventListener('click', async () => {
+      if (!input.value.includes('@')) { stat.textContent = "Invalid email"; return; }
+      btn.disabled = true; btn.textContent = "...";
+      await _supabase.from('subscribers').insert([{ email: input.value }]);
+      stat.textContent = "Subscribed!";
+      stat.style.color = "green";
+      btn.disabled = false; btn.textContent = "Subscribe Free";
     });
   </script>
 </body>
