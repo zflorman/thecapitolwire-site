@@ -1,262 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Capitol Wire | Legislative Alerts</title>
-  <meta name="description" content="Instant email alerts for legislation scheduled for consideration on the U.S. House Floor.">
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@300;700;900&display=swap" rel="stylesheet">
-
-  <style>
-    /* --- VARIABLES --- */
-    :root {
-      --primary: #0f172a; /* Deep Navy */
-      --accent: #2563eb; /* Professional Blue */
-      --text-main: #334155;
-      --text-light: #64748b;
-      --bg-white: #ffffff;
-      --bg-gray: #f8fafc;
-      --border: #e2e8f0;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      color: var(--text-main);
-      background: var(--bg-white);
-      line-height: 1.5;
-    }
-
-    h1, h2, h3 { font-family: 'Merriweather', serif; color: var(--primary); }
-    a { text-decoration: none; color: inherit; transition: color 0.2s; }
-
-    /* --- LAYOUT --- */
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
-    .section { padding: 60px 0; } 
-    .section-gray { background: var(--bg-gray); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-
-    /* --- NAV --- */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 0;
-    }
-    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-    .nav-links { display: flex; gap: 24px; align-items: center; font-size: 0.9rem; font-weight: 500; color: var(--text-light); }
-    .nav-links a:hover { color: var(--primary); }
-    .nav-btn { background: var(--primary); color: white; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; transition: background 0.2s; }
-    .nav-btn:hover { background: #1e293b; }
-
-    /* --- HERO --- */
-    .hero { padding: 60px 0 40px; text-align: center; }
-    .hero h1 { font-size: 2.75rem; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.02em; }
-    .hero-sub { font-size: 1.1rem; color: var(--text-light); max-width: 680px; margin: 0 auto 32px; }
-
-    /* --- SUBSCRIPTION FORM --- */
-    .form-wrapper { max-width: 500px; margin: 0 auto 40px; }
-    .input-group { display: flex; gap: 8px; background: white; padding: 5px; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: var(--shadow-sm); }
-    input[type="email"] { flex: 1; border: none; outline: none; padding: 10px 16px; font-size: 0.95rem; border-radius: 6px; }
-    button.submit-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; cursor: pointer; }
-    button.submit-btn:hover { background: #1d4ed8; }
-    button.submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
-    .status-msg { margin-top: 10px; font-size: 0.85rem; height: 20px; font-weight: 500; }
-    .status-success { color: #059669; }
-    .status-error { color: #dc2626; }
-    .secure-note { font-size: 0.8rem; color: #94a3b8; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; }
-
-    /* --- LAPTOP MOCKUP --- */
-    .laptop-wrapper { margin-top: 20px; display: flex; justify-content: center; perspective: 1000px; }
-    .laptop-screen { background: #fff; border: 1px solid #d1d5db; border-radius: 8px 8px 0 0; width: 700px; height: 400px; position: relative; box-shadow: var(--shadow-lg); overflow: hidden; border-bottom: none; z-index: 10; }
-    .laptop-base { width: 820px; height: 24px; background: linear-gradient(to bottom, #f1f5f9, #cbd5e1); border-radius: 0 0 12px 12px; margin: 0 auto; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
-    .laptop-base::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 8px; background: #94a3b8; border-radius: 0 0 8px 8px; }
-
-    /* --- EMAIL PREVIEW CONTENT --- */
-    .browser-bar { background: #f1f5f9; padding: 8px 12px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 6px; align-items: center; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot.red { background: #ef4444; }
-    .dot.yellow { background: #f59e0b; }
-    .dot.green { background: #22c55e; }
-    .url-bar { background: white; margin-left: 10px; padding: 2px 10px; border-radius: 4px; font-size: 10px; color: #94a3b8; flex: 1; text-align: center; border: 1px solid #e2e8f0; }
-
-    .email-content { padding: 30px; font-family: 'Arial', sans-serif; font-size: 14px; color: #333; height: 100%; overflow-y: auto; text-align: left; }
-    .email-meta { border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
-    .email-from { font-weight: bold; color: var(--primary); display: flex; justify-content: space-between; }
-    .email-date { font-weight: normal; color: #888; font-size: 11px; }
-    .email-subject { font-size: 1.1em; margin-top: 4px; }
-    
-    .highlight-box { background: #fffbeb; border: 1px solid #fcd34d; padding: 10px; border-radius: 4px; margin: 15px 0; font-size: 13px; color: #92400e; }
-    
-    .bill-item { margin-bottom: 12px; padding-left: 12px; border-left: 3px solid #e2e8f0; }
-    .bill-title { font-weight: bold; color: #1e3a8a; }
-    .bill-meta { font-size: 11px; color: #dc2626; margin-top: 2px; }
-    .tag { display: inline-block; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 10px; color: #555; border: 1px solid #e5e7eb; margin-left: 6px; }
-
-    /* --- FEATURES GRID --- */
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-    .feature-card { padding: 20px; }
-    .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--primary); }
-    .feature-card p { font-size: 0.95rem; color: var(--text-light); }
-
-    /* --- FAQ --- */
-    .faq-container { max-width: 700px; margin: 0 auto; }
-    .faq-item { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
-    .faq-q { font-weight: 600; color: var(--primary); margin-bottom: 6px; }
-    .faq-a { color: var(--text-light); font-size: 0.95rem; }
-
-    /* --- FOOTER --- */
-    footer { padding: 40px 0; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--text-light); margin-top: 40px; }
-    .footer-flex { display: flex; justify-content: space-between; align-items: center; }
-
-    /* --- RESPONSIVE --- */
-    @media (max-width: 800px) {
-      .hero h1 { font-size: 2rem; }
-      .laptop-screen { width: 100%; height: 300px; }
-      .laptop-base { width: 95%; }
-      .nav-links { display: none; }
-    }
-  </style>
-</head>
-<body>
-
-  <nav>
-    <div class="container nav-inner">
-      <div class="logo">🏛️ The Capitol Wire</div>
-      <div class="nav-links">
-        <a href="#features">How it Works</a>
-        <a href="#subscribe" class="nav-btn">Get Alerts</a>
-      </div>
-    </div>
-  </nav>
-
-  <header class="section hero">
-    <div class="container">
-      <h1>Track Legislation to be Considered.<br><span style="color: var(--accent);">Instantly.</span></h1>
-      
-      <p class="hero-sub">
-        The official Floor Schedule <code>docs.house.gov/floor</code> is monitored 24/7. 
-        Alerts are sent the second a bill is added, removed, or updated.
-      </p>
-
-      <div id="subscribe" class="form-wrapper">
-        <div class="input-group">
-          <input type="email" id="email" placeholder="Enter work email..." required />
-          <button id="submitBtn" class="submit-btn">Subscribe Free</button>
-        </div>
-        <div id="status" class="status-msg"></div>
-        <div class="secure-note">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-          Secure. Spam-free. Unsubscribe anytime.
-        </div>
-      </div>
-
-      <div class="laptop-wrapper">
-        <div>
-          <div class="laptop-screen">
-            <div class="browser-bar">
-              <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
-              <div class="url-bar">mail.house.gov - Inbox</div>
-            </div>
-            <div class="email-content">
-              <div class="email-meta">
-                <div class="email-from">The Capitol Wire <span class="email-date" id="live-date">Just now</span></div>
-                <div class="email-subject" id="live-subject">House Floor updates: Loading live data...</div>
-                <div style="font-size: 11px; color: #888; margin-top: 4px;">To: subscriber@mail.house.gov</div>
-              </div>
-              
-              <p><strong>Bills This Week — Schedule Updates</strong></p>
-              
-              <div class="highlight-box">
-                <strong>⚡ WHAT CHANGED (LIVE FEED)</strong>
-                <div style="margin-top:4px;">Real-time data fetched from official House Clerk servers:</div>
-              </div>
-
-              <div id="live-feed-container">
-                <div class="bill-item" style="opacity: 0.5;">
-                  <div class="bill-title">Connecting to House server...</div>
-                </div>
-              </div>
-
-              <div style="font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 10px; margin-top: 20px;">
-                Official Source: docs.house.gov/floor
-              </div>
-            </div>
-          </div>
-          <div class="laptop-base"></div>
-        </div>
-      </div>
-
-    </div>
-  </header>
-
-  <section id="features" class="section section-gray">
-    <div class="container">
-      <div class="features-grid">
-        <div class="feature-card">
-          <h3>Faster than Refreshing</h3>
-          <p>The official server is pinged every 60 seconds. Changes are detected and delivered to inboxes immediately.</p>
-        </div>
-        <div class="feature-card">
-          <h3>Change Detection</h3>
-          <p>Links are not just forwarded. The old schedule is compared to the new one, highlighting exactly what changed (e.g., "Added H.R. 5457").</p>
-        </div>
-        <div class="feature-card">
-          <h3>Zero Noise</h3>
-          <p>No newsletters. No fundraising. Alerts are sent ONLY when the official House Floor Schedule is updated.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container faq-container">
-      <h2 style="margin-bottom: 32px; font-size: 1.5rem;">Frequently Asked Questions</h2>
-      
-      <div class="faq-item">
-        <div class="faq-q">Does it cost anything?</div>
-        <div class="faq-a">No. It is completely free.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q">Is this affiliated with the House?</div>
-        <div class="faq-a">No. This is an independent utility tool built to monitor public government data efficiently.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q">How do I stop the emails?</div>
-        <div class="faq-a">Every email includes a one-click unsubscribe link in the footer.</div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="container footer-flex">
-      <div>
-        <strong>The Capitol Wire</strong>
-        <span style="margin: 0 10px; color: #cbd5e1;">|</span>
-        Monitoring the People's House.
-      </div>
-      <div>
-        <a href="privacy.html" style="margin-right: 15px;">Privacy</a>
-        <a href="terms.html">Terms</a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // 1. SUPABASE SUBSCRIPTION LOGIC
+<script>
+    // 1. SUPABASE SUBSCRIPTION LOGIC (Unchanged)
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -300,68 +43,79 @@
       }, 2000);
     });
 
-    // 2. LIVE FEED LOGIC FOR LAPTOP MOCKUP
+    // 2. LIVE FEED LOGIC (STRICT REAL DATA ONLY)
     async function initLiveMockup() {
         const feedContainer = document.getElementById('live-feed-container');
         const subjectLine = document.getElementById('live-subject');
         const dateDisplay = document.getElementById('live-date');
-        const RSS_URL = "https://docs.house.gov/BillsThisWeek-RSS.xml";
-        const API_ENDPOINT = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+        
+        // Helper: Format relative time (e.g. "2 hours ago")
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " mins ago";
+            return "Just now";
+        }
 
         try {
+            // Set initial loading state
+            feedContainer.innerHTML = '<div class="bill-item" style="color:#94a3b8; font-style:italic;">Connecting to House Clerk server...</div>';
+            
+            // Use public RSS-to-JSON bridge
+            const RSS_URL = "https://docs.house.gov/BillsThisWeek-RSS.xml";
+            const API_ENDPOINT = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+            
             const response = await fetch(API_ENDPOINT);
             const data = await response.json();
 
-            if (data.status === 'ok') {
-                // Clear loading state
+            if (data.status === 'ok' && data.items && data.items.length > 0) {
+                // SUCCESS: Clear loading and show REAL data
                 feedContainer.innerHTML = '';
                 
-                // Set Date to today
+                // Update timestamp to now
                 const now = new Date();
                 dateDisplay.innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-                // Take first 3 items
+                
+                // Take top 3 items
                 const items = data.items.slice(0, 3);
                 
                 // Update Subject Line
                 subjectLine.innerText = `House Floor updates: ${items.length} items (Live)`;
 
                 items.forEach(item => {
-                    // Try to clean title. Official feed usually looks like "Added: H.R. 1234" or "Updated: H.R. 5678"
-                    let titleText = item.title;
-                    let timestamp = new Date(item.pubDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
-
+                    // Clean the title: remove "Added:" or "Updated:" prefix
+                    let cleanTitle = item.title.replace(/^(Added|Updated):?\s*/i, '').trim();
+                    let dateObj = new Date(item.pubDate);
+                    
                     const div = document.createElement('div');
                     div.className = 'bill-item';
                     
-                    // Add PDF tag if link ends in PDF (simple heuristic)
-                    const isPdf = item.link.toLowerCase().endsWith('pdf');
-                    const tagHtml = isPdf ? `<span class="tag">PDF</span>` : `<span class="tag">LINK</span>`;
+                    // Determine tag type
+                    let tagHtml = `<span class="tag">LINK</span>`;
+                    if (item.link.toLowerCase().endsWith('pdf')) tagHtml = `<span class="tag">PDF</span>`;
+                    if (item.link.toLowerCase().endsWith('xml')) tagHtml = `<span class="tag">XML</span>`;
 
                     div.innerHTML = `
-                        <div class="bill-title">${titleText} ${tagHtml}</div>
-                        <div class="bill-meta">${timestamp}</div>
+                        <div class="bill-title">${cleanTitle} ${tagHtml}</div>
+                        <div class="bill-meta">${timeAgo(dateObj)} • ${dateObj.toLocaleDateString()}</div>
                     `;
                     feedContainer.appendChild(div);
                 });
             } else {
-                feedContainer.innerHTML = '<div class="bill-item">No live data available right now.</div>';
-                subjectLine.innerText = 'House Floor updates: Schedule updated';
+                // FAILURE: Show honest empty state
+                subjectLine.innerText = 'House Floor updates: No recent activity';
+                feedContainer.innerHTML = '<div class="bill-item" style="color:#64748b;">No active items found in the current House feed.</div>';
             }
         } catch (e) {
-            console.error(e);
-            feedContainer.innerHTML = `
-                <div class="bill-item">
-                  <div class="bill-title">H.R. 4776 — SPEED Act <span class="tag">PDF</span></div>
-                  <div class="bill-meta">Added 12/21/2025 (Fallback Mode)</div>
-                </div>
-            `;
-            subjectLine.innerText = 'House Floor updates: 1 added (Suspension)';
+            // ERROR: Show honest error state
+            console.error("Feed Error:", e);
+            subjectLine.innerText = 'House Floor updates: Connection Error';
+            feedContainer.innerHTML = '<div class="bill-item" style="color:#dc2626;">Unable to reach docs.house.gov. <br><span style="font-size:11px; color:#999;">The House server may be blocking the connection.</span></div>';
         }
     }
 
-    // Run the live fetch
+    // Run the logic
     initLiveMockup();
   </script>
-</body>
-</html>
