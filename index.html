@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
-    /* SHARED STYLES WITH DASHBOARD */
+    /* SHARED STYLES */
     :root {
       --primary: #0f172a; /* Navy */
       --header-bg: #1e3a8a; /* House Blue */
@@ -93,10 +93,8 @@
         color: var(--accent);
         vertical-align: bottom; 
         line-height: 1.3;
-        /* text-indent pushes text right to reveal italic 'A' foot */
         text-indent: 6px; 
         padding-right: 8px; 
-        /* 14 steps for "Weekly Agenda." */
         animation: typing 2s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
     }
     @keyframes typing { from { width: 0; } to { width: 100%; } }
@@ -183,8 +181,30 @@
     footer a:hover { text-decoration: underline; color: var(--accent); }
     .footer-links { margin-top: 10px; display: flex; justify-content: center; gap: 15px; }
     
+    /* --- MOBILE CLEANUP --- */
     @media (max-width: 768px) { 
-        .hero h1 { font-size: 2.2rem; }
+        /* Stack nav items so they don't squish */
+        .nav-inner { flex-direction: column; gap: 10px; padding-bottom: 5px; }
+        
+        /* Reduce Headline Size */
+        .hero h1 { font-size: 1.8rem; margin-bottom: 20px; }
+        
+        /* Fix the Weird Typewriter Indentation */
+        .typing-wrapper { 
+            display: block;        /* Forces it to its own line */
+            margin: 5px auto 0;    /* Centers it */
+            width: fit-content;    /* Shrinks box to text size */
+        }
+        .typing-text {
+            text-indent: 0;        /* Removes the awkward gap */
+        }
+
+        /* Stack form button for easier tapping */
+        .form-wrapper { flex-direction: column; }
+        button.form-btn { width: 100%; }
+        
+        /* Adjust checklist size */
+        .hero-checklist { font-size: 1rem; text-align: left; padding-left: 10px; }
     }
   </style>
 </head>
@@ -215,7 +235,8 @@
     <div class="container">
       <h1>
         Real-Time Alerts for the<br>
-        <span style="color:var(--primary);">House Floor</span> <span class="typing-wrapper"><span class="typing-text"><span>Weekly Agenda.</span></span></span>
+        <span style="color:var(--primary);">House Floor</span> 
+        <span class="typing-wrapper"><span class="typing-text">Weekly Agenda.</span></span>
       </h1>
       
       <div class="hero-checklist">
@@ -351,7 +372,6 @@
             timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
         }
 
-        // --- TITLE PARSING LOGIC ---
         let fullTitle = item.title;
         let boldPart = fullTitle;
         let normalPart = "";
@@ -396,6 +416,7 @@
 
       const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
 
+      // --- LOGIC FOR MULTIPLE SUBMISSIONS ---
       if (error) {
           if (error.code === '23505') {
               stat.textContent = "You are already subscribed!";
@@ -404,13 +425,22 @@
               stat.textContent = "Error. Please try again.";
               stat.style.color = "#dc2626"; 
           }
+          // Re-enable immediately on error
           btn.disabled = false; 
           btn.textContent = "Subscribe for Free";
       } else {
+          // SUCCESS CASE
           stat.textContent = "Success! You are subscribed.";
           stat.style.color = "#16a34a"; 
           input.value = "";
-          btn.textContent = "Subscribed";
+          btn.textContent = "Success!";
+          
+          // WAIT 3 SECONDS, THEN UNLOCK FOR NEXT USER
+          setTimeout(() => {
+              btn.disabled = false;
+              btn.textContent = "Subscribe Another";
+              stat.textContent = ""; // Clear the success message
+          }, 3000);
       }
     });
   </script>
