@@ -15,62 +15,55 @@
   <title>The Capitol Wire | House Floor Alerts</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
-    /* VARIABLES */
+    /* SHARED STYLES WITH DASHBOARD */
     :root {
-      --primary: #0f172a;
-      --accent: #1e3a8a;
-      --light-blue: #3b82f6;
-      --bg: #ffffff;
-      --bg-alt: #f8fafc;
-      --text: #334155;
-      --border: #e2e8f0;
-      --nav-height: 60px;
+      --primary: #0f172a; /* Navy */
+      --header-bg: #1e3a8a; /* House Blue */
+      --bg: #f3f4f6; /* Light Grey Background */
+      --text: #1f2937;
+      --border: #e5e7eb;
+      --accent: #2563eb;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-height) + 20px); }
+    html { scroll-behavior: smooth; }
     body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
 
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 25px; }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
     
-    /* NAV */
+    /* NAV BAR - MATCHING DASHBOARD */
     nav { 
-      position: sticky; top: 0; z-index: 50; 
-      background: rgba(255,255,255,0.98); 
-      backdrop-filter: blur(8px); 
-      border-bottom: 1px solid var(--border); 
-      height: var(--nav-height);
-      display: flex; align-items: center;
+        background: var(--header-bg); 
+        color: white; 
+        padding: 15px 0; 
+        border-bottom: 4px solid #1e40af;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: sticky; top: 0; z-index: 50;
     }
-    .nav-inner { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-    .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.2rem; color: var(--primary); text-decoration: none; }
-    .logo span { color: var(--light-blue); }
+    .nav-inner { 
+        max-width: 1200px; margin: 0 auto; padding: 0 20px; 
+        display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo { 
+        font-family: 'Merriweather', serif; font-weight: 700; font-size: 1.3rem; 
+        color: white; text-decoration: none; display: flex; align-items: center; gap: 8px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 20px; }
+    .nav-link { color: #dbeafe; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-link:hover { color: white; text-decoration: underline; }
+    .sub-btn { background: white; color: var(--header-bg); padding: 5px 12px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; }
 
-    .nav-links { display: flex; align-items: center; gap: 25px; }
-    .nav-link { color: var(--text); font-weight: 500; font-size: 0.9rem; text-decoration: none; cursor: pointer; }
-    .nav-link:hover { color: var(--accent); }
-    .sub-btn { background: var(--accent); color: white; padding: 6px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.85rem; }
-    .sub-btn:hover { background: #1e40af; }
-
-    /* DROPDOWN */
-    .dropdown { position: relative; display: inline-block; }
-    .dropdown-content { display: none; position: absolute; background-color: white; min-width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border); border-radius: 8px; z-index: 1; top: 25px; left: 50%; transform: translateX(-50%); padding: 5px 0; }
-    .dropdown:hover .dropdown-content { display: block; }
-    .dropdown-content a { color: var(--text); padding: 8px 16px; text-decoration: none; display: block; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; }
-    .dropdown-content a:last-child { border-bottom: none; }
-    .dropdown-content a:hover { background-color: #f8fafc; color: var(--accent); }
-
-    /* HERO */
-    .hero { text-align: center; padding: 30px 0 30px; } 
+    /* HERO SECTION */
+    .hero { text-align: center; padding: 50px 0 30px; } 
     
     .hero h1 { 
         font-family: 'Merriweather', serif; 
-        font-size: 3rem; 
+        font-size: 2.8rem; 
         color: var(--primary); 
-        margin-bottom: 20px; 
+        margin-bottom: 25px; 
         line-height: 1.2;
         letter-spacing: -0.5px;
     }
@@ -85,111 +78,97 @@
         margin: 0;
         width: 0;
         font-style: italic;
-        color: var(--light-blue);
+        color: var(--accent);
         vertical-align: bottom; 
         line-height: 1.3;
-        
-        /* FIX: Push text slightly right to reveal the italic foot of the 'A' */
-        text-indent: 6px;
-        padding-right: 8px; 
-        
+        text-indent: 6px; padding-right: 8px; 
         animation: typing 1.5s steps(7, end) forwards, blink-caret 0.8s step-end infinite;
     }
     @keyframes typing { from { width: 0; } to { width: 100%; } }
     @keyframes blink-caret { from, to { border-color: transparent; } 50% { border-color: #3b82f6; } }
     
-    /* HERO CHECKLIST */
+    /* CHECKLIST */
     .hero-checklist {
         display: inline-block;
         text-align: left;
-        color: #475569;
-        font-size: 1.15rem;
-        line-height: 1.9;
-        margin: 0 auto 25px;
-        max-width: 720px;
+        color: #4b5563;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        margin: 0 auto 30px;
+        max-width: 680px;
     }
     .hero-checklist strong { color: var(--primary); font-weight: 700; }
     .check { color: #22c55e; margin-right: 10px; font-weight: bold; }
 
-    /* FORM */
+    /* SUBSCRIBE FORM */
     .form-wrapper { max-width: 420px; margin: 0 auto; display: flex; gap: 8px; }
     input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; transition: border-color 0.2s; }
-    input:focus { border-color: var(--light-blue); outline: none; }
+    input:focus { border-color: var(--accent); outline: none; }
     button.form-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
     button.form-btn:disabled { background: #94a3b8; cursor: not-allowed; }
     button.form-btn:hover:not(:disabled) { background: #1e40af; }
-    
-    /* MSG */
-    .msg { margin-top: 5px; font-size: 0.8rem; min-height: 20px; } 
+    .msg { margin-top: 8px; font-size: 0.85rem; min-height: 20px; } 
 
-    /* DATA SOURCE LINE */
+    /* TRUST BADGE */
     .source-wrapper { margin-top: 25px; } 
     .source-line { 
-        font-size: 0.95rem; 
-        color: #1e293b; 
+        font-size: 0.85rem; 
+        color: #334155; 
         background: #e2e8f0;
-        padding: 10px 20px;
+        padding: 8px 16px;
         border-radius: 99px;
         display: inline-block;
-        font-weight: 700;
+        font-weight: 600;
         border: 1px solid #cbd5e1;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     .source-line a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
 
-    /* LIVE FEED SECTION */
-    .feed-wrapper { margin-top: 0; padding-top: 30px; padding-bottom: 60px; border-top: 1px solid #e2e8f0; background: var(--bg-alt); }
+    /* FEED STYLING (MATCHING DASHBOARD) */
+    .feed-wrapper { padding-bottom: 60px; }
     
-    .feed-banner { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    
-    /* BREATHING ANIMATION */
-    @keyframes pulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    .status-bar {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;
+        background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .live-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    .feed-section { background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; }
+    .section-header {
+        background: #f9fafb;
+        padding: 12px 20px;
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--primary);
+        border-bottom: 1px solid var(--border);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
-    .live-dot { 
-        width: 12px; 
-        height: 12px; 
-        background: #22c55e; 
-        border-radius: 50%; 
-        animation: pulse 2s infinite; 
-    }
-    
-    .feed-banner h2 { font-family: 'Merriweather', serif; font-size: 1.4rem; color: var(--primary); margin: 0; }
-
-    .last-updated { font-size: 0.85rem; color: #64748b; margin-bottom: 15px; font-family: 'Inter', sans-serif; }
-    .last-updated strong { font-weight: 600; color: #334155; }
-
-    .box-header { font-family: 'Merriweather', serif; font-size: 0.95rem; font-weight: 700; padding: 12px 20px; border-radius: 6px 6px 0 0; border: 1px solid; border-bottom: none; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .latest-box { margin-bottom: 25px; }
-    .latest-box .box-header { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
-    .latest-box .feed-list { border-color: #fcd34d; }
-    
-    .schedule-box .box-header { background: #f1f5f9; color: var(--primary); border-color: var(--border); }
-    
-    .feed-list { border: 1px solid var(--border); border-radius: 0 0 6px 6px; background: white; overflow: hidden; }
-    .category-header { background: #f8fafc; color: var(--accent); font-family: 'Merriweather', serif; font-weight: 700; font-size: 0.85rem; padding: 10px 20px; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; margin-top: -1px; }
-
-    .bill-item { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+    .bill-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; transition: background 0.1s; }
     .bill-item:last-child { border-bottom: none; }
-    .bill-title { font-weight: 600; color: var(--primary); font-size: 0.95rem; line-height: 1.3; }
-    .bill-meta { font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .meta-cat { text-transform: uppercase; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; border: 1px solid #e2e8f0; }
-    .meta-time { color: #dc2626; font-weight: 600; font-family: monospace; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
-    .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
+    .bill-item:hover { background: #f8fafc; }
+    
+    .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+    .bill-title { color: #111827; font-size: 1rem; line-height: 1.4; flex: 1; font-weight: 400; }
+    .bill-title strong { font-weight: 700; color: var(--primary); }
+    
+    .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    .doc-link { color: var(--accent); text-decoration: none; background: #eff6ff; padding: 2px 6px; border-radius: 4px; }
     .doc-link:hover { background: #dbeafe; }
+    
+    .bill-meta { font-size: 0.8rem; color: #6b7280; display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .meta-time { color: #dc2626; font-weight: 600; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
 
-    footer { padding: 30px 0; text-align: center; color: #94a3b8; font-size: 0.8rem; background: white; border-top: 1px solid #e2e8f0; }
+    footer { padding: 30px 0; text-align: center; color: #94a3b8; font-size: 0.8rem; background: white; border-top: 1px solid #e2e8f0; margin-top: 40px; }
     footer a { color: #6b7280; text-decoration: none; }
     footer a:hover { text-decoration: underline; color: var(--accent); }
     .footer-links { margin-top: 10px; display: flex; justify-content: center; gap: 15px; }
     
     @media (max-width: 768px) { 
-        .container { padding: 0 15px; } 
-        .nav-links { display: none; } 
         .hero h1 { font-size: 2.2rem; }
     }
   </style>
@@ -197,21 +176,11 @@
 <body>
 
   <nav>
-    <div class="container nav-inner">
-      <a href="index.html" class="logo">🏛️ The Capitol <span>Wire</span></a>
+    <div class="nav-inner">
+      <a href="/" class="logo">🏛️ The Capitol Wire</a>
       <div class="nav-links">
-        
-        <div class="dropdown">
-          <a href="#live-feed" class="nav-link">Live Feed ▾</a>
-          <div class="dropdown-content">
-            <a href="#latest-container">⚡ What Changed</a>
-            <a href="#cat-suspension">Suspensions</a>
-            <a href="#cat-rule">Rules</a>
-            <a href="#cat-possible-consideration">Possible Consideration</a>
-          </div>
-        </div>
-        
-        <a href="dashboard/" class="nav-link" style="color:var(--light-blue);">Dashboard</a>
+        <a href="#live-feed" class="nav-link">Live Feed</a>
+        <a href="dashboard/" class="nav-link">Dashboard</a>
         <a href="#hero" class="sub-btn">Subscribe</a>
       </div>
     </div>
@@ -221,7 +190,7 @@
     <div class="container">
       <h1>
         Real-Time Alerts for the<br>
-        <span style="color:var(--primary);">House Floor</span> <span class="typing-wrapper"><span class="typing-text">Agenda.</span></span>
+        <span style="color:var(--primary);">House Floor</span> <span class="typing-wrapper"><span class="typing-text"><span>Agenda.</span></span></span>
       </h1>
       
       <div class="hero-checklist">
@@ -234,7 +203,6 @@
         <input type="email" id="email" placeholder="Your Email Here" required />
         <button id="submitBtn" class="form-btn">Subscribe for Free</button>
       </div>
-      
       <div id="status" class="msg"></div>
       
       <div class="source-wrapper">
@@ -248,23 +216,18 @@
   <div id="live-feed" class="feed-wrapper">
     <div class="container">
         
-      <div class="feed-banner">
-        <span class="live-dot"></span>
-        <h2>Live Feed</h2>
+      <div class="status-bar">
+          <div class="live-dot"></div>
+          <div id="status-line">System Active. Monitoring for updates...</div>
       </div>
 
-      <div id="last-updated" class="last-updated">Checking status...</div>
-
-      <div class="latest-box" id="latest-container" style="display:none;">
-        <div class="box-header">⚡ LATEST ACTIVITY (WHAT CHANGED)</div>
-        <div class="feed-list" id="latest-list"></div>
+      <div id="latest-container" class="feed-section" style="display:none; border-color:#fcd34d;">
+          <div class="section-header" style="background:#fffbeb; color:#92400e; border-bottom-color:#fcd34d;">⚡ Latest Activity (New)</div>
+          <div id="latest-list"></div>
       </div>
 
-      <div class="schedule-box">
-        <div class="box-header">📋 CURRENT SCHEDULE SNAPSHOT</div>
-        <div class="feed-list" id="schedule-list">
+      <div id="schedule-list">
           <div style="padding:40px; text-align:center; color:#94a3b8;">Loading official data...</div>
-        </div>
       </div>
     </div>
   </div>
@@ -297,7 +260,7 @@
         const latestContainer = document.getElementById('latest-container');
         const latestList = document.getElementById('latest-list');
         const scheduleList = document.getElementById('schedule-list');
-        const lastUpdatedEl = document.getElementById('last-updated');
+        const statusLine = document.getElementById('status-line');
 
         try {
             const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
@@ -312,34 +275,33 @@
                     latestList.innerHTML = '';
                     
                     if (newestTimestamp && newestTimestamp.trim() !== "") {
-                        lastUpdatedEl.innerHTML = "Latest update from the Clerk: " + newestTimestamp;
-                        lastUpdatedEl.style.display = 'block';
-                    } else {
-                        lastUpdatedEl.style.display = 'none';
+                        statusLine.innerHTML = "Last update from the Clerk: <b>" + newestTimestamp + "</b>";
                     }
 
                     let hasLatest = false;
                     if (newestTimestamp && newestTimestamp.trim() !== "") {
                         data.forEach(item => {
                             if (item.timestamp === newestTimestamp) {
-                                const div = createBillItem(item);
-                                latestList.appendChild(div);
+                                latestList.appendChild(createBillItem(item));
                                 hasLatest = true;
                             }
                         });
                     }
-                    if (hasLatest) { latestContainer.style.display = 'block'; } else { latestContainer.style.display = 'none'; }
+                    latestContainer.style.display = hasLatest ? 'block' : 'none';
 
                     CATEGORIES.forEach(cat => {
                         const catItems = data.filter(i => i.category === cat.key);
                         if (catItems.length > 0) {
-                            const anchorId = 'cat-' + cat.key.toLowerCase().replace(' ', '-');
+                            const section = document.createElement('div');
+                            section.className = 'feed-section';
+                            
                             const header = document.createElement('div');
-                            header.className = 'category-header';
-                            header.id = anchorId;
+                            header.className = 'section-header';
                             header.innerText = cat.label;
-                            scheduleList.appendChild(header);
-                            catItems.forEach(item => scheduleList.appendChild(createBillItem(item)));
+                            section.appendChild(header);
+                            
+                            catItems.forEach(item => section.appendChild(createBillItem(item)));
+                            scheduleList.appendChild(section);
                         }
                     });
                 }
@@ -352,16 +314,38 @@
     function createBillItem(item) {
         const div = document.createElement('div');
         div.className = 'bill-item';
+        
         let linkHtml = '';
         if (item.link) {
             const isPdf = item.link.toLowerCase().endsWith('pdf');
-            linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
+            linkHtml = `<div class="bill-links"><a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a></div>`;
         }
+        
         let timeHtml = '';
         if (item.timestamp && item.timestamp.trim() !== "") {
-            timeHtml = `<span class="meta-time">${item.timestamp}</span>`;
+            timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
         }
-        div.innerHTML = `<div class="bill-title">${item.title}</div><div class="bill-meta"><span class="meta-cat">${item.category}</span>${timeHtml}${linkHtml}</div>`;
+
+        // --- TITLE PARSING LOGIC (Copied from Dashboard) ---
+        let fullTitle = item.title;
+        let boldPart = fullTitle;
+        let normalPart = "";
+
+        let splitIndex = fullTitle.indexOf("—");
+        if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
+
+        if (splitIndex !== -1) {
+            boldPart = fullTitle.substring(0, splitIndex).trim(); 
+            normalPart = fullTitle.substring(splitIndex); 
+        }
+
+        div.innerHTML = `
+            <div class="bill-row">
+                <div class="bill-title"><strong>${boldPart}</strong> ${normalPart}</div>
+                ${linkHtml}
+            </div>
+            ${timeHtml}
+        `;
         return div;
     }
     
