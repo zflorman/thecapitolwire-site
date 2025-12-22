@@ -12,67 +12,115 @@
   </script>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Staff Dashboard | The Capitol Wire</title>
+  <title>Dashboard | The Capitol Wire</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --primary: #0f172a;
-      --accent: #1e3a8a;
-      --light-blue: #3b82f6;
-      --bg: #f8fafc;
-      --text: #334155;
-      --border: #e2e8f0;
+      --primary: #0f172a; /* Navy */
+      --header-bg: #1e3a8a; /* House Blue */
+      --bg: #f3f4f6; /* Light Grey Background */
+      --text: #1f2937;
+      --border: #e5e7eb;
+      --accent: #2563eb;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.4; }
+    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
 
-    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    /* NAV BAR */
+    nav { 
+        background: var(--header-bg); 
+        color: white; 
+        padding: 15px 0; 
+        border-bottom: 4px solid #1e40af;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .nav-inner { 
+        max-width: 1200px; margin: 0 auto; padding: 0 20px; 
+        display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo { 
+        font-family: 'Merriweather', serif; font-weight: 700; font-size: 1.3rem; 
+        color: white; text-decoration: none; display: flex; align-items: center; gap: 8px;
+    }
+    .nav-links a { color: #dbeafe; text-decoration: none; font-size: 0.9rem; margin-left: 20px; transition: color 0.2s; }
+    .nav-links a:hover { color: white; text-decoration: underline; }
+    .sub-btn { background: white; color: var(--header-bg); padding: 5px 12px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; margin-left: 15px; }
 
-    /* NAV */
-    nav { background: white; border-bottom: 1px solid var(--border); padding: 12px 0; margin-bottom: 25px; }
-    .nav-inner { display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.2rem; color: var(--primary); text-decoration: none; }
-    .logo span { color: var(--light-blue); }
-    
-    .nav-right { display: flex; align-items: center; gap: 20px; }
-    .back-link { font-size: 0.9rem; color: var(--text); text-decoration: none; }
-    .back-link:hover { text-decoration: underline; }
-    
-    .sub-btn { background: var(--accent); color: white; padding: 6px 14px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; }
-    .sub-btn:hover { background: #1e40af; }
+    /* LAYOUT GRID */
+    .main-container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: 1fr 300px; /* Main Content | Sidebar */
+        gap: 30px;
+    }
 
-    /* STATUS WITH BREATHING DOT */
-    .status-container { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 20px; }
-    .status-line { font-size: 0.85rem; color: #64748b; font-weight: 500; }
-    .status-line span { color: #dc2626; font-weight: 700; }
-
-    /* BREATHING ANIMATION */
-    @keyframes pulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    /* MAIN FEED (LEFT COLUMN) */
+    .page-title {
+        font-family: 'Merriweather', serif;
+        font-size: 1.8rem;
+        color: var(--primary);
+        margin-bottom: 5px;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 15px;
+    }
+    .status-bar {
+        display: flex; align-items: center; gap: 10px;
+        font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;
+        background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);
     }
     .live-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-    .box-header { font-family: 'Merriweather', serif; font-size: 0.95rem; font-weight: 700; padding: 12px 20px; border-radius: 6px 6px 0 0; border: 1px solid; border-bottom: none; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .latest-box { margin-bottom: 25px; }
-    .latest-box .box-header { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
-    .latest-box .feed-list { border-color: #fcd34d; }
-    .schedule-box .box-header { background: white; color: var(--primary); border-color: var(--border); }
-    
-    .feed-list { border: 1px solid var(--border); border-radius: 0 0 6px 6px; background: white; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .category-header { background: #f8fafc; color: var(--accent); font-family: 'Merriweather', serif; font-weight: 700; font-size: 0.85rem; padding: 10px 20px; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; margin-top: -1px; }
-
-    .bill-item { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+    .feed-section { background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; }
+    .section-header {
+        background: #f9fafb;
+        padding: 12px 20px;
+        font-family: 'Merriweather', serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--primary);
+        border-bottom: 1px solid var(--border);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .bill-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; transition: background 0.1s; }
     .bill-item:last-child { border-bottom: none; }
-    .bill-title { font-weight: 600; color: var(--primary); font-size: 0.95rem; line-height: 1.3; }
-    .bill-meta { font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .meta-cat { text-transform: uppercase; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; border: 1px solid #e2e8f0; }
-    .meta-time { color: #dc2626; font-weight: 600; font-family: monospace; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
-    .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
+    .bill-item:hover { background: #f8fafc; }
+    
+    .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+    .bill-title { font-weight: 600; color: #111827; font-size: 1rem; line-height: 1.4; flex: 1; }
+    .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; }
+    .doc-link { color: var(--accent); text-decoration: none; background: #eff6ff; padding: 2px 6px; border-radius: 4px; }
     .doc-link:hover { background: #dbeafe; }
+    
+    .bill-meta { font-size: 0.8rem; color: #6b7280; display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .meta-time { color: #dc2626; font-weight: 600; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
+
+    /* SIDEBAR (RIGHT COLUMN) */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .widget { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .widget h3 { font-family: 'Merriweather', serif; font-size: 1rem; color: var(--header-bg); margin-bottom: 15px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
+
+    /* CALENDAR WIDGET */
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; }
+    .cal-day-header { font-weight: 700; color: #6b7280; padding-bottom: 5px; }
+    .cal-day { padding: 6px 0; color: #374151; border-radius: 4px; }
+    
+    /* Calendar Status Colors */
+    .cal-session { background: #fcd34d; color: #92400e; font-weight: 700; } /* Yellow/Gold for Session (Matches Scalise Image) */
+    .cal-today { border: 2px solid #2563eb; font-weight:900; } /* Blue Outline for Today */
+    
+    .cal-month { text-align: center; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
+
+    /* RESOURCES WIDGET */
+    .res-link { display: block; padding: 8px 0; color: var(--accent); text-decoration: none; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; }
+    .res-link:last-child { border-bottom: none; }
+    .res-link:hover { color: var(--header-bg); text-decoration: underline; }
+    .res-desc { font-size: 0.75rem; color: #6b7280; margin-top: 2px; }
 
     /* MODAL */
     .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index:100; }
@@ -81,39 +129,83 @@
     .modal h3 { margin-bottom:15px; color:var(--primary); font-family: 'Merriweather', serif; }
     .modal input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:10px; }
     .modal button { width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; }
-    .modal button:disabled { background: #94a3b8; cursor: not-allowed; }
+    .modal button:disabled { background: #94a3b8; }
     .modal-msg { margin-top:10px; font-size:0.85rem; }
+
+    @media (max-width: 768px) {
+        .main-container { grid-template-columns: 1fr; }
+        .sidebar { order: -1; }
+    }
   </style>
 </head>
 <body>
 
   <nav>
-    <div class="container nav-inner">
-      <a href="/" class="logo">🏛️ The Capitol <span>Wire</span></a>
-      <div class="nav-right">
-        <a href="/" class="back-link">← Main Site</a>
+    <div class="nav-inner">
+      <a href="/" class="logo">🏛️ The Capitol Wire</a>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="https://docs.house.gov/floor/" target="_blank">Official Source</a>
         <button class="sub-btn" onclick="openModal()">Subscribe</button>
       </div>
     </div>
   </nav>
 
-  <div class="container">
+  <div class="main-container">
     
-    <div class="status-container">
-        <div class="live-dot"></div>
-        <div id="status-line" class="status-line">Loading...</div>
+    <div class="content-area">
+        <h1 class="page-title">Bills to be Considered on the House Floor</h1>
+        
+        <div class="status-bar">
+            <div class="live-dot"></div>
+            <div id="status-line">System Active. Monitoring for updates...</div>
+        </div>
+
+        <div id="latest-container" class="feed-section" style="display:none; border-color:#fcd34d;">
+            <div class="section-header" style="background:#fffbeb; color:#92400e; border-bottom-color:#fcd34d;">⚡ Latest Activity (New)</div>
+            <div id="latest-list"></div>
+        </div>
+
+        <div id="schedule-list">
+            <div style="padding:40px; text-align:center; color:#94a3b8;">Loading legislative data...</div>
+        </div>
     </div>
 
-    <div class="latest-box" id="latest-container" style="display:none;">
-      <div class="box-header">⚡ LATEST ACTIVITY</div>
-      <div class="feed-list" id="latest-list"></div>
-    </div>
+    <div class="sidebar">
+        
+        <div class="widget">
+            <h3>Legislative Calendar</h3>
+            <div id="calendar-month" class="cal-month">December 2025</div>
+            <div class="calendar-grid" id="calendar-grid">
+                <div class="cal-day-header">S</div>
+                <div class="cal-day-header">M</div>
+                <div class="cal-day-header">T</div>
+                <div class="cal-day-header">W</div>
+                <div class="cal-day-header">T</div>
+                <div class="cal-day-header">F</div>
+                <div class="cal-day-header">S</div>
+                </div>
+            <div style="font-size:0.75rem; color:#6b7280; margin-top:10px; text-align:center;">
+                <span style="display:inline-block; width:8px; height:8px; background:#fcd34d; margin-right:4px; border-radius:2px;"></span> In Session
+            </div>
+        </div>
 
-    <div class="schedule-box">
-      <div class="box-header">📋 FULL SCHEDULE</div>
-      <div class="feed-list" id="schedule-list">
-        <div style="padding:40px; text-align:center; color:#94a3b8;">Loading data...</div>
-      </div>
+        <div class="widget">
+            <h3>Online Resources</h3>
+            <a href="https://clerk.house.gov/" target="_blank" class="res-link">
+                Office of the Clerk
+                <div class="res-desc">Official vote counts and floor proceedings.</div>
+            </a>
+            <a href="https://rules.house.gov/" target="_blank" class="res-link">
+                Committee on Rules
+                <div class="res-desc">Texts of rules and amendments.</div>
+            </a>
+            <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank" class="res-link">
+                Majority Leader's Schedule
+                <div class="res-desc">Weekly outlook and colloquy.</div>
+            </a>
+        </div>
+
     </div>
   </div>
 
@@ -139,9 +231,109 @@
         { key: 'Possible Consideration', label: 'Items that may be considered' }
     ];
 
-    // Tracker for polling
     let lastKnownTimestamp = "";
 
+    // --- HARDCODED SESSION CALENDAR (2025 & 2026) ---
+    const SESSION_DATES = [
+        // 2025 (Partial - Dec Only for Context)
+        "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04",
+        "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11",
+        "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18",
+        
+        // 2026 HOUSE CALENDAR
+        // Jan
+        "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09",
+        "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15",
+        "2026-01-20", "2026-01-21", "2026-01-22",
+        "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30",
+        // Feb
+        "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05",
+        "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12",
+        "2026-02-24", "2026-02-25", "2026-02-26",
+        // March
+        "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05",
+        "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12",
+        "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19",
+        "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26",
+        // April
+        "2026-04-13", "2026-04-14", "2026-04-15", "2026-04-16",
+        "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23",
+        "2026-04-28", "2026-04-29", "2026-04-30",
+        // May
+        "2026-05-04", "2026-05-05", "2026-05-06", "2026-05-07",
+        "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15",
+        "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21",
+        // June
+        "2026-06-02", "2026-06-03", "2026-06-04",
+        "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11",
+        "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18",
+        "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25",
+        "2026-06-29", "2026-06-30",
+        // July
+        "2026-07-07", "2026-07-08", "2026-07-09",
+        "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16",
+        "2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23",
+        "2026-07-27", "2026-07-28", "2026-07-29", "2026-07-30",
+        // Sept
+        "2026-09-08", "2026-09-09", "2026-09-10",
+        "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17",
+        "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24",
+        "2026-09-28", "2026-09-29", "2026-09-30",
+        // Nov
+        "2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19",
+        "2026-11-30",
+        // Dec
+        "2026-12-01", "2026-12-02", "2026-12-03",
+        "2026-12-07", "2026-12-08", "2026-12-09", "2026-12-10",
+        "2026-12-14", "2026-12-15", "2026-12-16", "2026-12-17"
+    ];
+    
+    // Create a Set for fast lookup
+    const SESSION_SET = new Set(SESSION_DATES);
+
+    // --- RENDER CALENDAR ---
+    function renderCalendar() {
+        const date = new Date(); // Defaults to Today
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('calendar-month').innerText = monthNames[date.getMonth()] + " " + date.getFullYear();
+        
+        const grid = document.getElementById('calendar-grid');
+        while (grid.children.length > 7) { grid.removeChild(grid.lastChild); }
+
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+        const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        const today = date.getDate();
+
+        // Empty slots
+        for (let i = 0; i < firstDay; i++) {
+            const div = document.createElement('div');
+            grid.appendChild(div);
+        }
+
+        // Days
+        for (let i = 1; i <= daysInMonth; i++) {
+            const div = document.createElement('div');
+            div.className = 'cal-day';
+            div.innerText = i;
+            
+            // Format current date string YYYY-MM-DD
+            const monthStr = (date.getMonth() + 1).toString().padStart(2, '0');
+            const dayStr = i.toString().padStart(2, '0');
+            const dateString = `${date.getFullYear()}-${monthStr}-${dayStr}`;
+
+            // Check Hardcoded Set
+            if (SESSION_SET.has(dateString)) {
+                div.classList.add('cal-session');
+            }
+
+            if (i === today) div.classList.add('cal-today');
+            
+            grid.appendChild(div);
+        }
+    }
+    renderCalendar();
+
+    // --- FEED LOGIC (UNCHANGED) ---
     async function initFeed() {
         const latestContainer = document.getElementById('latest-container');
         const latestList = document.getElementById('latest-list');
@@ -154,17 +346,13 @@
             if (data && data.length > 0) {
                 const newestTimestamp = data[0].timestamp;
                 
-                // ONLY UPDATE DOM IF TIMESTAMP CHANGED
                 if (newestTimestamp !== lastKnownTimestamp) {
                     lastKnownTimestamp = newestTimestamp;
-
                     scheduleList.innerHTML = '';
                     latestList.innerHTML = '';
                     
                     if (newestTimestamp && newestTimestamp.trim() !== "") {
-                        statusLine.innerHTML = "Last Updated: <span>" + newestTimestamp + "</span>";
-                    } else {
-                        statusLine.innerText = "System Active";
+                        statusLine.innerHTML = "Last update from the Clerk: <b>" + newestTimestamp + "</b>";
                     }
 
                     let hasLatest = false;
@@ -176,16 +364,21 @@
                             }
                         });
                     }
-                    if (hasLatest) { latestContainer.style.display = 'block'; } else { latestContainer.style.display = 'none'; }
+                    latestContainer.style.display = hasLatest ? 'block' : 'none';
 
                     CATEGORIES.forEach(cat => {
                         const catItems = data.filter(i => i.category === cat.key);
                         if (catItems.length > 0) {
+                            const section = document.createElement('div');
+                            section.className = 'feed-section';
+                            
                             const header = document.createElement('div');
-                            header.className = 'category-header';
+                            header.className = 'section-header';
                             header.innerText = cat.label;
-                            scheduleList.appendChild(header);
-                            catItems.forEach(item => scheduleList.appendChild(createBillItem(item)));
+                            section.appendChild(header);
+                            
+                            catItems.forEach(item => section.appendChild(createBillItem(item)));
+                            scheduleList.appendChild(section);
                         }
                     });
                 }
@@ -198,16 +391,25 @@
     function createBillItem(item) {
         const div = document.createElement('div');
         div.className = 'bill-item';
+        
         let linkHtml = '';
         if (item.link) {
             const isPdf = item.link.toLowerCase().endsWith('pdf');
-            linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
+            linkHtml = `<div class="bill-links"><a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a></div>`;
         }
+        
         let timeHtml = '';
         if (item.timestamp && item.timestamp.trim() !== "") {
-            timeHtml = `<span class="meta-time">${item.timestamp}</span>`;
+            timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
         }
-        div.innerHTML = `<div class="bill-title">${item.title}</div><div class="bill-meta"><span class="meta-cat">${item.category}</span>${timeHtml}${linkHtml}</div>`;
+
+        div.innerHTML = `
+            <div class="bill-row">
+                <div class="bill-title">${item.title}</div>
+                ${linkHtml}
+            </div>
+            ${timeHtml}
+        `;
         return div;
     }
     
@@ -223,21 +425,15 @@
     function openModal() { modal.style.display = 'flex'; }
     function closeModal() { modal.style.display = 'none'; }
     
-    // AUTO OPEN MODAL ON LOAD
-    window.addEventListener('load', () => {
-        setTimeout(openModal, 2000);
-    });
+    window.addEventListener('load', () => { setTimeout(openModal, 2000); });
 
     modalBtn.addEventListener('click', async () => {
         const email = modalInput.value.trim();
-        
         if (!email || !email.includes('@')) {
             modalStatus.innerText = "Please enter a valid email.";
             modalStatus.style.color = "#dc2626";
             return;
         }
-
-        // DISABLE BUTTON INSTANTLY
         modalBtn.disabled = true;
         modalBtn.innerText = "Processing...";
         modalStatus.innerText = "";
@@ -245,30 +441,20 @@
         const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
         
         if (error) {
-            // Check for duplicate
             if (error.code === '23505') {
                 modalStatus.innerText = "You are already subscribed!";
-                modalStatus.style.color = "#2563eb"; // Blue
+                modalStatus.style.color = "#2563eb";
             } else {
-                modalStatus.innerText = "Something went wrong. Try again.";
-                modalStatus.style.color = "#dc2626"; // Red
+                modalStatus.innerText = "Error. Try again.";
+                modalStatus.style.color = "#dc2626";
             }
-            // Re-enable button for retry
             modalBtn.disabled = false;
             modalBtn.innerText = "Subscribe Free";
         } else {
-            modalStatus.innerText = "Subscribed successfully!";
-            modalStatus.style.color = "#16a34a"; // Green
+            modalStatus.innerText = "Subscribed!";
+            modalStatus.style.color = "#16a34a";
             modalInput.value = "";
-            
-            // Close modal automatically after success
-            setTimeout(() => {
-                closeModal();
-                // Reset button for next time
-                modalBtn.disabled = false; 
-                modalBtn.innerText = "Subscribe Free";
-                modalStatus.innerText = "";
-            }, 2000);
+            setTimeout(closeModal, 2000);
         }
     });
   </script>
