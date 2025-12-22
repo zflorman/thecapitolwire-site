@@ -72,15 +72,14 @@
     .feature-card p { font-size: 0.9rem; color: #64748b; margin: 0; line-height: 1.5; }
 
     /* LIVE FEED SECTION */
-    /* Added lots of top margin to separate it from features */
     .feed-wrapper { margin-top: 80px; padding-top: 40px; border-top: 1px dashed #e2e8f0; }
     
     /* CASUAL LAST UPDATED LINE */
     .last-updated {
         font-size: 0.85rem;
-        color: #64748b; /* Muted Grey */
+        color: #64748b;
         margin-bottom: 15px;
-        text-align: left; /* Align with boxes */
+        text-align: left;
         font-family: 'Inter', sans-serif;
     }
     .last-updated strong { font-weight: 600; color: #334155; }
@@ -105,7 +104,11 @@
     .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
     .doc-link:hover { background: #dbeafe; }
 
-    footer { padding: 25px 0; text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 60px; }
+    /* FOOTER */
+    footer { padding: 40px 0; text-align: center; color: #94a3b8; font-size: 0.85rem; margin-top: 60px; border-top: 1px solid #e5e7eb; }
+    .footer-links { margin-top: 10px; display: flex; justify-content: center; gap: 15px; }
+    .footer-links a { color: #6b7280; text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
     
     @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } .container { padding: 0 15px; } .nav-links { display: none; } }
   </style>
@@ -135,7 +138,7 @@
   <section id="hero" class="hero">
     <div class="container">
       <h1>House Floor Updates</h1>
-      <p>The official House site is the gold standard for data, but it doesn't alert you when things change. We do. Get an email the second a bill is added, removed, or updated on the Floor Schedule.</p>
+      <p>Official scheduling data sourced directly from docs.house.gov/floor, delivered to your inbox the moment it is published. Stop refreshing the page and start getting instant email alerts.</p>
       
       <div class="form-wrapper">
         <input type="email" id="email" placeholder="Your Email Here" required />
@@ -148,16 +151,16 @@
   <div id="features" class="container">
     <div class="features-grid">
       <div class="feature-card">
-        <h3>⚡ Beat the Refresh Button</h3>
-        <p>We monitor the Clerk's website every 60 seconds. You will know about a schedule change before your colleagues even finish downloading the PDF.</p>
+        <h3>⚡ Seconds Count</h3>
+        <p>Monitoring occurs every 60 seconds. Alerts are dispatched immediately, ensuring the information reaches your inbox the moment it is published.</p>
       </div>
       <div class="feature-card">
         <h3>🚫 Official Business Only</h3>
-        <p>No newsletters, no fundraising, no opinion pieces. You only receive an alert when the actual House Floor Schedule is updated.</p>
+        <p>No newsletters, fundraising, or opinion pieces. Alerts are sent strictly when the official House Floor Schedule is updated.</p>
       </div>
       <div class="feature-card">
         <h3>📝 Instant Summaries</h3>
-        <p>We don't just send a link. Our alerts highlight exactly what changed (e.g. "Added H.R. 1234") so you don't have to hunt for it.</p>
+        <p>Emails highlight exactly what changed—new bills, rule updates, or time modifications—so you don't have to hunt for details.</p>
       </div>
     </div>
   </div>
@@ -183,7 +186,12 @@
 
   <footer>
     <div class="container">
-      &copy; 2025 The Capitol Wire. Data sourced directly from docs.house.gov.
+      <div>© 2025 The Capitol Wire. Data sourced directly from docs.house.gov/floor.</div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="mailto:zach@thecapitolwire.com">Contact</a>
+      </div>
     </div>
   </footer>
 
