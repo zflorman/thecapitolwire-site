@@ -34,9 +34,18 @@
     .sub-btn { background: var(--accent); color: white; padding: 6px 14px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; }
     .sub-btn:hover { background: #1e40af; }
 
-    /* UPDATE HEADER */
-    .status-line { margin-bottom: 20px; text-align: right; font-size: 0.85rem; color: #64748b; font-weight: 500; }
+    /* UPDATE HEADER WITH BREATHING DOT */
+    .status-container { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .status-line { font-size: 0.85rem; color: #64748b; font-weight: 500; }
     .status-line span { color: #dc2626; font-weight: 700; }
+    
+    /* BREATHING ANIMATION */
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+    .live-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
 
     .box-header { font-family: 'Merriweather', serif; font-size: 0.95rem; font-weight: 700; padding: 12px 20px; border-radius: 6px 6px 0 0; border: 1px solid; border-bottom: none; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
     .latest-box { margin-bottom: 25px; }
@@ -79,7 +88,11 @@
   </nav>
 
   <div class="container">
-    <div id="status-line" class="status-line">Loading...</div>
+    
+    <div class="status-container">
+        <div class="live-dot"></div>
+        <div id="status-line" class="status-line">Loading...</div>
+    </div>
 
     <div class="latest-box" id="latest-container" style="display:none;">
       <div class="box-header">⚡ LATEST ACTIVITY</div>
@@ -116,6 +129,9 @@
         { key: 'Possible Consideration', label: 'Items that may be considered' }
     ];
 
+    // Tracker for polling
+    let lastKnownTimestamp = "";
+
     async function initFeed() {
         const latestContainer = document.getElementById('latest-container');
         const latestList = document.getElementById('latest-list');
@@ -126,37 +142,45 @@
             const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
 
             if (data && data.length > 0) {
-                scheduleList.innerHTML = '';
-                latestList.innerHTML = '';
-                
                 const newestTimestamp = data[0].timestamp;
-                if (newestTimestamp && newestTimestamp.trim() !== "") {
-                    statusLine.innerHTML = "Last Updated: <span>" + newestTimestamp + "</span>";
-                } else {
-                    statusLine.innerText = "System Active";
-                }
+                
+                // ONLY UPDATE DOM IF TIMESTAMP CHANGED
+                if (newestTimestamp !== lastKnownTimestamp) {
+                    lastKnownTimestamp = newestTimestamp;
 
-                let hasLatest = false;
-                if (newestTimestamp && newestTimestamp.trim() !== "") {
-                    data.forEach(item => {
-                        if (item.timestamp === newestTimestamp) {
-                            latestList.appendChild(createBillItem(item));
-                            hasLatest = true;
+                    scheduleList.innerHTML = '';
+                    latestList.innerHTML = '';
+                    
+                    if (newestTimestamp && newestTimestamp.trim() !== "") {
+                        statusLine.innerHTML = "Last Updated: <span>" + newestTimestamp + "</span>";
+                    } else {
+                        statusLine.innerText = "System Active";
+                    }
+
+                    let hasLatest = false;
+                    if (newestTimestamp && newestTimestamp.trim() !== "") {
+                        data.forEach(item => {
+                            if (item.timestamp === newestTimestamp) {
+                                latestList.appendChild(createBillItem(item));
+                                hasLatest = true;
+                            }
+                        });
+                    }
+                    if (hasLatest) { latestContainer.style.display = 'block'; } else { latestContainer.style.display = 'none'; }
+
+                    CATEGORIES.forEach(cat => {
+                        const catItems = data.filter(i => i.category === cat.key);
+                        if (catItems.length > 0) {
+                            const header = document.createElement('div');
+                            header.className = 'category-header';
+                            header.innerText = cat.label;
+                            scheduleList.appendChild(header);
+                            catItems.forEach(item => scheduleList.appendChild(createBillItem(item)));
                         }
                     });
+                    
+                    console.log("Dashboard refreshed at " + new Date().toLocaleTimeString());
                 }
-                if (hasLatest) { latestContainer.style.display = 'block'; }
-
-                CATEGORIES.forEach(cat => {
-                    const catItems = data.filter(i => i.category === cat.key);
-                    if (catItems.length > 0) {
-                        const header = document.createElement('div');
-                        header.className = 'category-header';
-                        header.innerText = cat.label;
-                        scheduleList.appendChild(header);
-                        catItems.forEach(item => scheduleList.appendChild(createBillItem(item)));
-                    }
-                });
             } else {
                 scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">No active schedule.</div>';
             }
@@ -180,6 +204,9 @@
     }
     
     initFeed();
+    
+    // Auto-Refresh every 10 seconds
+    setInterval(initFeed, 10000);
 
     // MODAL LOGIC
     const modal = document.getElementById('modal');
@@ -190,7 +217,7 @@
     function openModal() { modal.style.display = 'flex'; }
     function closeModal() { modal.style.display = 'none'; }
     
-    // AUTO OPEN MODAL ON LOAD (2 Second Delay)
+    // AUTO OPEN MODAL ON LOAD
     window.addEventListener('load', () => {
         setTimeout(openModal, 2000);
     });
