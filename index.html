@@ -111,7 +111,8 @@
     input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; transition: border-color 0.2s; }
     input:focus { border-color: var(--light-blue); outline: none; }
     button.form-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    button.form-btn:hover { background: #1e40af; }
+    button.form-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+    button.form-btn:hover:not(:disabled) { background: #1e40af; }
     .msg { margin-top: 8px; font-size: 0.8rem; min-height: 20px; }
 
     /* DATA SOURCE LINE */
@@ -377,12 +378,44 @@
     const stat = document.getElementById('status');
 
     btn.addEventListener('click', async () => {
-      if (!input.value.includes('@')) { stat.textContent = "Invalid email"; return; }
-      btn.disabled = true; btn.textContent = "...";
-      await _supabase.from('subscribers').insert([{ email: input.value }]);
-      stat.textContent = "Subscribed!";
-      stat.style.color = "green";
-      btn.disabled = false; btn.textContent = "Subscribe Free";
+      const email = input.value.trim();
+      
+      // 1. Validate
+      if (!email.includes('@')) { 
+          stat.textContent = "Please enter a valid email."; 
+          stat.style.color = "#dc2626"; // Red
+          return; 
+      }
+
+      // 2. Disable Button IMMEDIATELY
+      btn.disabled = true; 
+      btn.textContent = "Processing...";
+      stat.textContent = "";
+
+      // 3. Send
+      const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
+
+      // 4. Handle Result
+      if (error) {
+          // Check for Duplicate
+          if (error.code === '23505') {
+              stat.textContent = "You are already subscribed!";
+              stat.style.color = "#2563eb"; // Blue
+          } else {
+              stat.textContent = "Error. Please try again.";
+              stat.style.color = "#dc2626"; // Red
+          }
+          // Re-enable to try again
+          btn.disabled = false; 
+          btn.textContent = "Subscribe Free";
+      } else {
+          // Success
+          stat.textContent = "Success! You are subscribed.";
+          stat.style.color = "#16a34a"; // Green
+          input.value = "";
+          btn.textContent = "Subscribed";
+          // Keep disabled to prevent re-submit
+      }
     });
   </script>
 </body>
