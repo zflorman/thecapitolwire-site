@@ -18,9 +18,9 @@
 
   <style>
     :root {
-      --primary: #0f172a; /* Navy */
-      --header-bg: #1e3a8a; /* House Blue */
-      --bg: #f3f4f6; /* Light Grey Background */
+      --primary: #0f172a;
+      --header-bg: #1e3a8a;
+      --bg: #f3f4f6;
       --text: #1f2937;
       --border: #e5e7eb;
       --accent: #2563eb;
@@ -28,108 +28,55 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
 
-    /* NAV BAR - MINIMAL RESTORED */
-    nav { 
-        background: var(--header-bg); 
-        color: white; 
-        padding: 15px 0; 
-        border-bottom: 4px solid #1e40af;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .nav-inner { 
-        max-width: 1200px; margin: 0 auto; padding: 0 20px; 
-        display: flex; justify-content: space-between; align-items: center; 
-    }
-    .logo { 
-        font-family: 'Merriweather', serif; font-weight: 700; font-size: 1.3rem; 
-        color: white; text-decoration: none; display: flex; align-items: center; gap: 8px;
-    }
+    /* NAV */
+    nav { background: var(--header-bg); color: white; padding: 15px 0; border-bottom: 4px solid #1e40af; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: 'Merriweather', serif; font-weight: 700; font-size: 1.3rem; color: white; text-decoration: none; display: flex; align-items: center; gap: 8px; }
     .sub-btn { background: white; color: var(--header-bg); padding: 5px 12px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; }
 
-    /* LAYOUT GRID */
-    .main-container {
-        max-width: 1200px;
-        margin: 30px auto;
-        padding: 0 20px;
-        display: grid;
-        grid-template-columns: 1fr 300px; /* Main Content | Sidebar */
-        gap: 30px;
-    }
+    /* LAYOUT */
+    .main-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 300px; gap: 30px; }
 
-    /* WEEKLY HEADER BOX */
-    .week-header-box {
-        background: white;
-        padding: 20px 25px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        margin-bottom: 25px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .week-header-text {
-        font-family: 'Merriweather', serif;
-        font-size: 1.5rem;
-        color: var(--primary);
-        font-weight: 400; /* Regular weight like example */
-    }
+    /* WEEKLY HEADER */
+    .week-header-box { background: white; padding: 20px 25px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .week-header-text { font-family: 'Merriweather', serif; font-size: 1.5rem; color: var(--primary); font-weight: 400; }
 
-    /* MAIN FEED (LEFT COLUMN) */
-    .status-bar {
-        display: flex; align-items: center; gap: 10px;
-        font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;
-        background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);
-    }
+    /* FEED */
+    .status-bar { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #6b7280; margin-bottom: 20px; background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border); }
     .live-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
     .feed-section { background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; }
-    .section-header {
-        background: #f9fafb;
-        padding: 12px 20px;
-        font-family: 'Merriweather', serif;
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: var(--primary);
-        border-bottom: 1px solid var(--border);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+    .section-header { background: #f9fafb; padding: 12px 20px; font-family: 'Merriweather', serif; font-weight: 700; font-size: 0.95rem; color: var(--primary); border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
     .bill-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; transition: background 0.1s; }
     .bill-item:last-child { border-bottom: none; }
     .bill-item:hover { background: #f8fafc; }
     
     .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
-    
-    /* Bill Title Styling - Specific Bold Logic handled in JS/HTML */
     .bill-title { color: #111827; font-size: 1rem; line-height: 1.4; flex: 1; font-weight: 400; }
     .bill-title strong { font-weight: 700; color: var(--primary); }
     
     .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
     .doc-link { color: var(--accent); text-decoration: none; background: #eff6ff; padding: 2px 6px; border-radius: 4px; }
     .doc-link:hover { background: #dbeafe; }
-    
     .bill-meta { font-size: 0.8rem; color: #6b7280; display: flex; align-items: center; gap: 10px; margin-top: 4px; }
     .meta-time { color: #dc2626; font-weight: 600; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
 
-    /* SIDEBAR (RIGHT COLUMN) */
+    /* SIDEBAR */
     .sidebar { display: flex; flex-direction: column; gap: 20px; }
     .widget { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .widget h3 { font-family: 'Merriweather', serif; font-size: 1rem; color: var(--header-bg); margin-bottom: 15px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
 
-    /* CALENDAR WIDGET */
     .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .cal-btn { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--accent); font-size: 1.1rem; padding: 0 5px; }
     .cal-btn:hover { color: var(--primary); }
     .cal-month { font-weight: 700; color: var(--primary); }
-    
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; }
     .cal-day-header { font-weight: 700; color: #6b7280; padding-bottom: 5px; }
     .cal-day { padding: 6px 0; color: #374151; border-radius: 4px; }
-    
-    /* Calendar Status Colors */
     .cal-session { background: #fcd34d; color: #92400e; font-weight: 700; } 
     .cal-today { border: 2px solid #2563eb; font-weight:900; } 
     
-    /* RESOURCES WIDGET */
     .res-link { display: block; padding: 8px 0; color: var(--accent); text-decoration: none; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; }
     .res-link:last-child { border-bottom: none; }
     .res-link:hover { color: var(--header-bg); text-decoration: underline; }
@@ -164,7 +111,7 @@
     
     <div class="content-area">
         <div class="week-header-box">
-            <h2 id="weekly-header" class="week-header-text">Text of Bills for the Week...</h2>
+            <h2 id="weekly-header" class="week-header-text">Loading Week...</h2>
         </div>
 
         <div class="status-bar">
@@ -188,7 +135,7 @@
             <h3>Legislative Calendar</h3>
             <div class="cal-header">
                 <button class="cal-btn" onclick="changeMonth(-1)">&lt;</button>
-                <div id="calendar-month" class="cal-month">December 2025</div>
+                <div id="calendar-month" class="cal-month">Loading...</div>
                 <button class="cal-btn" onclick="changeMonth(1)">&gt;</button>
             </div>
             <div class="calendar-grid" id="calendar-grid">
@@ -248,32 +195,12 @@
 
     let lastKnownTimestamp = "";
 
-    // --- 1. DYNAMIC WEEKLY HEADER ---
-    function setWeeklyHeader() {
-        // Calculate the "Monday" of the current week
-        const d = new Date();
-        const day = d.getDay();
-        const diff = d.getDate() - day + (day == 0 ? -6 : 1); // Adjust when day is Sunday
-        const monday = new Date(d.setDate(diff));
-        
-        const options = { month: 'short', day: 'numeric', year: 'numeric' };
-        const weekStr = monday.toLocaleDateString('en-US', options);
-        
-        document.getElementById('weekly-header').innerText = "Text of Bills for the Week of " + weekStr;
-    }
-    setWeeklyHeader();
-
-
-    // --- 2. CLICKABLE CALENDAR LOGIC ---
-    let calendarCursor = new Date(); // Keeps track of displayed month
-
-    // Hardcoded Session Dates (2025-2026)
+    // --- CALENDAR LOGIC (2025-2026 Session Dates) ---
     const SESSION_DATES = [
         "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04",
         "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11",
         "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18",
         
-        // 2026 HOUSE CALENDAR
         "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09",
         "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15",
         "2026-01-20", "2026-01-21", "2026-01-22",
@@ -287,10 +214,31 @@
         "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26",
         "2026-04-13", "2026-04-14", "2026-04-15", "2026-04-16",
         "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23",
-        "2026-04-28", "2026-04-29", "2026-04-30"
-        // Add more 2026 dates here if needed
+        "2026-04-28", "2026-04-29", "2026-04-30",
+        "2026-05-04", "2026-05-05", "2026-05-06", "2026-05-07",
+        "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15",
+        "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21",
+        "2026-06-02", "2026-06-03", "2026-06-04",
+        "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11",
+        "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18",
+        "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25",
+        "2026-06-29", "2026-06-30",
+        "2026-07-07", "2026-07-08", "2026-07-09",
+        "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16",
+        "2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23",
+        "2026-07-27", "2026-07-28", "2026-07-29", "2026-07-30",
+        "2026-09-08", "2026-09-09", "2026-09-10",
+        "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17",
+        "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24",
+        "2026-09-28", "2026-09-29", "2026-09-30",
+        "2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19",
+        "2026-11-30",
+        "2026-12-01", "2026-12-02", "2026-12-03",
+        "2026-12-07", "2026-12-08", "2026-12-09", "2026-12-10",
+        "2026-12-14", "2026-12-15", "2026-12-16", "2026-12-17"
     ];
     const SESSION_SET = new Set(SESSION_DATES);
+    let calendarCursor = new Date(); 
 
     function changeMonth(delta) {
         calendarCursor.setMonth(calendarCursor.getMonth() + delta);
@@ -311,13 +259,11 @@
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        // Empty slots
         for (let i = 0; i < firstDay; i++) {
             const div = document.createElement('div');
             grid.appendChild(div);
         }
 
-        // Days
         for (let i = 1; i <= daysInMonth; i++) {
             const div = document.createElement('div');
             div.className = 'cal-day';
@@ -327,21 +273,46 @@
             const dayStr = i.toString().padStart(2, '0');
             const dateString = `${year}-${monthStr}-${dayStr}`;
 
-            if (SESSION_SET.has(dateString)) {
-                div.classList.add('cal-session');
-            }
-
-            // Check if it's actually today
+            if (SESSION_SET.has(dateString)) div.classList.add('cal-session');
             if (year === todayObj.getFullYear() && month === todayObj.getMonth() && i === todayObj.getDate()) {
                 div.classList.add('cal-today');
             }
-            
             grid.appendChild(div);
         }
     }
     renderCalendar();
 
-    // --- 3. FEED LOGIC (With Smart Title Boldness) ---
+    // --- AUTOMATIC WEEK HEADER ---
+    function updateWeeklyHeader(dateStringFromDB) {
+        // dateStringFromDB example: "Updated 12/15/2025 at 02:27 PM"
+        
+        // 1. Try to extract date
+        const dateRegex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+        const match = dateStringFromDB.match(dateRegex);
+        
+        let referenceDate = new Date(); // Default to today if parsing fails
+        
+        if (match) {
+            // JS months are 0-11
+            const month = parseInt(match[1]) - 1;
+            const day = parseInt(match[2]);
+            const year = parseInt(match[3]);
+            referenceDate = new Date(year, month, day);
+        }
+
+        // 2. Find Monday of that week
+        const day = referenceDate.getDay(); // 0 (Sun) - 6 (Sat)
+        // If Sunday (0), subtract 6 days to get prev Monday. Else subtract day-1.
+        const diff = referenceDate.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(referenceDate);
+        monday.setDate(diff);
+
+        // 3. Update DOM
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        document.getElementById('weekly-header').innerText = "Text of Bills for the Week of " + monday.toLocaleDateString('en-US', options);
+    }
+
+    // --- FEED LOGIC ---
     async function initFeed() {
         const latestContainer = document.getElementById('latest-container');
         const latestList = document.getElementById('latest-list');
@@ -352,8 +323,13 @@
             const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
 
             if (data && data.length > 0) {
-                const newestTimestamp = data[0].timestamp;
+                const newestTimestamp = data[0].timestamp; // "Updated 12/15/2025..."
                 
+                // UPDATE HEADER BASED ON DATA DATE
+                if (newestTimestamp) {
+                    updateWeeklyHeader(newestTimestamp);
+                }
+
                 if (newestTimestamp !== lastKnownTimestamp) {
                     lastKnownTimestamp = newestTimestamp;
                     scheduleList.innerHTML = '';
@@ -379,12 +355,10 @@
                         if (catItems.length > 0) {
                             const section = document.createElement('div');
                             section.className = 'feed-section';
-                            
                             const header = document.createElement('div');
                             header.className = 'section-header';
                             header.innerText = cat.label;
                             section.appendChild(header);
-                            
                             catItems.forEach(item => section.appendChild(createBillItem(item)));
                             scheduleList.appendChild(section);
                         }
@@ -411,22 +385,19 @@
             timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
         }
 
-        // --- TITLE PARSING LOGIC ---
-        // We look for an "em-dash" (—) or a "hyphen" (-) 
-        // Example: "H.R. 972 — Sloan Canyon Act"
+        // --- TITLE BOLD LOGIC ---
         let fullTitle = item.title;
         let boldPart = fullTitle;
         let normalPart = "";
 
-        // Check for em-dash first (common in these feeds)
+        // Check for em-dash (—) or hyphen (-)
         let splitIndex = fullTitle.indexOf("—");
         if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
 
         if (splitIndex !== -1) {
-            // Include the dash in the normal part? Or keep it separate?
-            // User example: "S. 222" bold, "— Whole Milk" normal
+            // Include dash in normal part
             boldPart = fullTitle.substring(0, splitIndex).trim(); 
-            normalPart = fullTitle.substring(splitIndex); // Includes the dash
+            normalPart = fullTitle.substring(splitIndex); 
         }
 
         div.innerHTML = `
@@ -442,7 +413,7 @@
     initFeed();
     setInterval(initFeed, 10000);
 
-    // MODAL LOGIC
+    // MODAL
     const modal = document.getElementById('modal');
     const modalInput = document.getElementById('modal-email');
     const modalBtn = document.getElementById('modal-submit');
@@ -450,7 +421,6 @@
 
     function openModal() { modal.style.display = 'flex'; }
     function closeModal() { modal.style.display = 'none'; }
-    
     window.addEventListener('load', () => { setTimeout(openModal, 2000); });
 
     modalBtn.addEventListener('click', async () => {
