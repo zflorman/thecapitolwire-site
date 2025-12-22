@@ -189,6 +189,11 @@
 
     function openModal() { modal.style.display = 'flex'; }
     function closeModal() { modal.style.display = 'none'; }
+    
+    // AUTO OPEN MODAL ON LOAD (2 Second Delay)
+    window.addEventListener('load', () => {
+        setTimeout(openModal, 2000);
+    });
 
     modalBtn.addEventListener('click', async () => {
         const email = modalInput.value.trim();
