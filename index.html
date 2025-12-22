@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Capitol Wire | Official House Floor Schedule</title>
+  <title>The Capitol Wire | Real-time House Floor Alerts</title>
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
     /* VARIABLES */
@@ -14,7 +15,7 @@
       --accent: #1e3a8a;
       --gold: #b45309;
       --bg: #ffffff;
-      --bg-gray: #f8fafc;
+      --bg-alt: #f8fafc;
       --text: #334155;
       --border: #e2e8f0;
     }
@@ -22,9 +23,9 @@
     body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
 
     /* LAYOUT */
-    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-    .section { padding: 60px 0; }
-    .section-gray { background: var(--bg-gray); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 80px 0; }
+    .section-gray { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
     /* NAV */
     nav { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 15px 0; }
@@ -33,9 +34,9 @@
     .logo span { color: var(--gold); }
     .nav-btn { background: var(--accent); color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
 
-    /* HERO */
+    /* HERO (Restored) */
     .hero { text-align: center; padding: 80px 0 60px; }
-    .hero h1 { font-family: 'Merriweather', serif; font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; }
+    .hero h1 { font-family: 'Merriweather', serif; font-size: 2.8rem; color: var(--primary); margin-bottom: 20px; line-height: 1.2; }
     .hero p { font-size: 1.1rem; color: #64748b; max-width: 600px; margin: 0 auto 40px; }
 
     /* FORM */
@@ -44,19 +45,24 @@
     button.sub-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; }
     .msg { margin-top: 10px; font-size: 0.9rem; min-height: 20px; }
 
-    /* FEED STYLES */
+    /* FEATURES GRID (Restored) */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 60px; }
+    .feature-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .feature-card h3 { font-family: 'Merriweather', serif; font-size: 1.1rem; margin-bottom: 10px; color: var(--primary); }
+    .feature-card p { font-size: 0.95rem; color: #64748b; }
+
+    /* FEED STYLES (Email Look) */
     .feed-container { margin-top: 20px; }
     
-    /* Box Headers */
     .box-header { 
       font-family: 'Merriweather', serif; 
-      font-size: 1.1rem; 
+      font-size: 1rem; 
       font-weight: 700; 
       padding: 15px 20px; 
       border-radius: 8px 8px 0 0; 
       border: 1px solid;
       border-bottom: none;
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;
     }
 
     /* Yellow "Latest" Box */
@@ -70,15 +76,19 @@
     /* List Items */
     .feed-list { border: 1px solid var(--border); border-radius: 0 0 8px 8px; background: white; overflow: hidden; }
     
-    .bill-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
+    .bill-item { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
     .bill-item:last-child { border-bottom: none; }
     
     .bill-title { font-weight: 600; color: var(--primary); font-size: 1rem; }
-    .bill-meta { font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 8px; }
-    .meta-cat { text-transform: uppercase; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
-    .meta-time { color: #dc2626; font-weight: 600; }
+    .bill-meta { font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     
-    .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
+    .meta-cat { text-transform: uppercase; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; border: 1px solid #e2e8f0; }
+    
+    /* Timestamp only shows if present */
+    .meta-time { color: #dc2626; font-weight: 600; font-family: monospace; background: #fef2f2; padding: 2px 5px; border-radius: 3px; }
+    
+    .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.75rem; padding: 3px 10px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
+    .doc-link:hover { background: #dbeafe; }
 
     /* FOOTER */
     footer { padding: 40px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; margin-top: 60px; border-top: 1px solid var(--border); }
@@ -106,7 +116,24 @@
     </div>
   </section>
 
-  <section class="section section-gray">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>⚡ Instant Detection</h3>
+        <p>We check the Clerk's site every 60 seconds. You'll know about changes before the PDF finishes downloading.</p>
+      </div>
+      <div class="feature-card">
+        <h3>🚫 Zero Noise</h3>
+        <p>No newsletters or opinion pieces. You only get an alert when the official Floor Schedule actually changes.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📝 Change Summaries</h3>
+        <p>Our alerts highlight exactly what changed—new bills, rule changes, or updated times—so you don't have to hunt for them.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="section section-gray" style="margin-top: 60px;">
     <div class="container">
       
       <div class="feed-container latest-box" id="latest-container" style="display:none;">
@@ -148,8 +175,9 @@
                 scheduleList.innerHTML = '';
                 latestList.innerHTML = '';
                 
-                // LOGIC: The Top item (ID 1) is the newest.
-                // We define "Latest" as items matching the timestamp of the newest item.
+                // Logic: The first item (ID 1) is the NEWEST because the bot sorted them.
+                // If ID 1 has a timestamp, that timestamp is the "Newest Time".
+                // Any other items matching that time go in the Yellow Box.
                 const newestTimestamp = data[0].timestamp;
                 let hasLatest = false;
 
@@ -164,21 +192,24 @@
                         linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
                     }
 
+                    // Only show timestamp span if it exists
+                    let timeHtml = '';
+                    if (item.timestamp && item.timestamp.trim() !== "") {
+                        timeHtml = `<span class="meta-time">${item.timestamp}</span>`;
+                    }
+
                     div.innerHTML = `
                         <div class="bill-title">${item.title}</div>
                         <div class="bill-meta">
                             <span class="meta-cat">${item.category}</span>
-                            <span class="meta-time">${item.timestamp}</span>
+                            ${timeHtml}
                             ${linkHtml}
                         </div>
                     `;
 
-                    // Logic: Add to BOTH lists? Or Split?
-                    // Email style: "What Changed" (Top) + "Full Schedule" (Bottom)
-                    // We will put matching timestamps in TOP, and ALL items in BOTTOM.
-                    
-                    if (item.timestamp === newestTimestamp) {
-                        // Clone for top list
+                    // LOGIC: Should this go in the Yellow Box?
+                    // ONLY if it has a timestamp AND matches the newest timestamp.
+                    if (item.timestamp && item.timestamp === newestTimestamp && item.timestamp.trim() !== "") {
                         const clone = div.cloneNode(true);
                         latestList.appendChild(clone);
                         hasLatest = true;
