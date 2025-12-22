@@ -255,12 +255,59 @@
     </div>
   </footer>
 
-  <script>
-    // 1. SUPABASE SUBSCRIPTION LOGIC
+ <script>
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // 1. LIVE FEED LOGIC (READ FROM SUPABASE)
+    async function initLiveMockup() {
+        const feedContainer = document.getElementById('live-feed-container');
+        const subjectLine = document.getElementById('live-subject');
+        const dateDisplay = document.getElementById('live-date');
+
+        try {
+            // Fetch directly from your database (Fast & Reliable)
+            const { data, error } = await _supabase
+                .from('live_feed')
+                .select('*')
+                .order('id', { ascending: true });
+
+            if (data && data.length > 0) {
+                feedContainer.innerHTML = '';
+                
+                // Update Subject Line
+                subjectLine.innerText = `House Floor updates: ${data.length} items (Live)`;
+                
+                // Update Date
+                dateDisplay.innerText = "Just now";
+
+                data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'bill-item';
+                    
+                    let tagHtml = `<span class="tag">LINK</span>`;
+                    if (item.link && item.link.toLowerCase().endsWith('pdf')) tagHtml = `<span class="tag">PDF</span>`;
+
+                    div.innerHTML = `
+                        <div class="bill-title">${item.title} ${tagHtml}</div>
+                        <div class="bill-meta">${item.category} • ${item.timestamp}</div>
+                    `;
+                    feedContainer.appendChild(div);
+                });
+            } else {
+                feedContainer.innerHTML = '<div style="color:#666; font-style:italic;">No active schedule items found.</div>';
+            }
+        } catch (e) {
+            console.error("Feed Error:", e);
+            feedContainer.innerHTML = '<div style="color:#dc2626;">Unable to load live feed.</div>';
+        }
+    }
+    
+    // Run immediately
+    initLiveMockup();
+
+    // 2. SUBSCRIPTION LOGIC
     const emailInput = document.getElementById('email');
     const submitBtn = document.getElementById('submitBtn');
     const statusDiv = document.getElementById('status');
@@ -272,8 +319,6 @@
         statusDiv.className = "status-msg status-error";
         return;
       }
-
-      const originalText = submitBtn.textContent;
       submitBtn.disabled = true;
       submitBtn.textContent = "Processing...";
 
@@ -286,119 +331,17 @@
         } else {
           statusDiv.textContent = "Error joining list. Please try again.";
           statusDiv.className = "status-msg status-error";
-          console.error(error);
         }
       } else {
         statusDiv.textContent = "Success! You are now subscribed.";
         statusDiv.className = "status-msg status-success";
         emailInput.value = "";
       }
-      
       setTimeout(() => {
         submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
+        submitBtn.textContent = "Subscribe Free";
       }, 2000);
     });
-
-    // 2. LIVE FEED LOGIC (RAW XML PARSER)
-    async function initLiveMockup() {
-        const feedContainer = document.getElementById('live-feed-container');
-        const subjectLine = document.getElementById('live-subject');
-        const dateDisplay = document.getElementById('live-date');
-        
-        // REAL BACKUP DATA (From your specific PDF examples)
-        // Used ONLY if connection fails to ensure screen is never blank.
-        const snapshotData = [
-            { title: "H.R. 4776 — SPEED Act", link: "https://docs.house.gov/floor/Default.aspx", date: "Recent" },
-            { title: "H.R. 1366 — Mining Regulatory Clarity Act", link: "https://docs.house.gov/floor/Default.aspx", date: "Recent" },
-            { title: "S. 222 — Whole Milk for Healthy Kids Act", link: "https://docs.house.gov/floor/Default.aspx", date: "Recent" }
-        ];
-
-        function renderItems(items, statusMode) {
-            feedContainer.innerHTML = '';
-            
-            // Update Subject Line based on status
-            if (statusMode === 'live') {
-                subjectLine.innerText = `House Floor updates: ${items.length} items (Live)`;
-            } else {
-                subjectLine.innerText = `House Floor updates: Current Schedule (Snapshot)`;
-            }
-
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'bill-item';
-                
-                // Determine tag type based on link content
-                let tagHtml = `<span class="tag">LINK</span>`;
-                if (item.link && item.link.toLowerCase().endsWith('pdf')) tagHtml = `<span class="tag">PDF</span>`;
-                if (item.link && item.link.toLowerCase().endsWith('xml')) tagHtml = `<span class="tag">XML</span>`;
-
-                // Clean title (Remove "Added:" "Updated:" etc)
-                let cleanTitle = item.title.replace(/^(Added|Updated):?\s*/i, '').trim();
-
-                div.innerHTML = `
-                    <div class="bill-title">${cleanTitle} ${tagHtml}</div>
-                    <div class="bill-meta">${item.date}</div>
-                `;
-                feedContainer.appendChild(div);
-            });
-        }
-
-        try {
-            // Set Loading State
-            feedContainer.innerHTML = '<div class="bill-item" style="color:#64748b; font-style:italic;">Connecting to House Clerk server...</div>';
-
-            // Use Raw CORS Proxy (Handles large files better than rss2json)
-            const RSS_URL = "https://docs.house.gov/BillsThisWeek-RSS.xml";
-            // 'allorigins' returns a JSON wrapper with the raw string in .contents
-            const PROXY_URL = `https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`;
-
-            const response = await fetch(PROXY_URL);
-            const data = await response.json();
-
-            if (data.contents) {
-                // Parse the XML string in the browser
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-                const items = xmlDoc.querySelectorAll("item");
-                
-                if (items.length > 0) {
-                    // Success! Process first 3 items
-                    const parsedItems = Array.from(items).slice(0, 3).map(node => {
-                        const title = node.querySelector("title")?.textContent || "Untitled Item";
-                        const link = node.querySelector("link")?.textContent || "#";
-                        const pubDate = node.querySelector("pubDate")?.textContent;
-                        
-                        // Format Date
-                        let dateStr = "Recently";
-                        if (pubDate) {
-                            const d = new Date(pubDate);
-                            dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + " " + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                        }
-
-                        return { title, link, date: dateStr };
-                    });
-                    
-                    // Update Time Display to Now
-                    const now = new Date();
-                    dateDisplay.innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    
-                    renderItems(parsedItems, 'live');
-                    return;
-                }
-            }
-            // If parsing failed or no items, throw to catch block
-            throw new Error("No items found in feed");
-
-        } catch (e) {
-            console.warn("Live feed failed, switching to snapshot:", e);
-            // Fallback to the real bills from your PDF so screen isn't blank
-            renderItems(snapshotData, 'snapshot');
-        }
-    }
-
-    // Run immediately
-    initLiveMockup();
-  </script>
+</script>
 </body>
 </html>
