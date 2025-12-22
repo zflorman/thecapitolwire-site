@@ -63,14 +63,14 @@
     .dropdown-content a:last-child { border-bottom: none; }
     .dropdown-content a:hover { background-color: #f8fafc; color: var(--accent); }
 
-    /* HERO */
-    .hero { text-align: center; padding: 60px 0 10px; } 
+    /* HERO - STRICT SPACING (30px Top/Bottom) */
+    .hero { text-align: center; padding: 30px 0 30px; } 
     
     .hero h1 { 
         font-family: 'Merriweather', serif; 
         font-size: 3rem; 
         color: var(--primary); 
-        margin-bottom: 25px; 
+        margin-bottom: 20px; 
         line-height: 1.2;
         letter-spacing: -0.5px;
     }
@@ -101,7 +101,7 @@
         color: #475569;
         font-size: 1.15rem;
         line-height: 1.9;
-        margin: 0 auto 35px;
+        margin: 0 auto 25px; /* Tighter to button */
         max-width: 720px;
     }
     .hero-checklist strong { color: var(--primary); font-weight: 700; }
@@ -118,17 +118,18 @@
     /* MSG */
     .msg { margin-top: 5px; font-size: 0.8rem; min-height: 20px; } 
 
-    /* DATA SOURCE LINE */
-    .source-wrapper { margin-top: 15px; } 
+    /* DATA SOURCE LINE - PROMINENT & SPACED */
+    .source-wrapper { margin-top: 30px; } /* Matches Live Feed padding */
     .source-line { 
-        font-size: 0.9rem; 
-        color: #334155; 
-        background: #f1f5f9;
-        padding: 8px 16px;
+        font-size: 0.95rem; 
+        color: #1e293b; /* Darker Text */
+        background: #e2e8f0; /* Darker BG */
+        padding: 10px 20px;
         border-radius: 99px;
         display: inline-block;
-        font-weight: 600;
-        border: 1px solid #e2e8f0;
+        font-weight: 700; /* Bolder */
+        border: 1px solid #cbd5e1; /* Visible Border */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Subtle Lift */
     }
     .source-line a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
 
@@ -220,9 +221,9 @@
       </h1>
       
       <div class="hero-checklist">
-        <div><span class="check">✓</span> Tracks the <strong>full weekly docket</strong>: Suspensions, Rules, and Possible Considerations.</div>
-        <div><span class="check">✓</span> <strong>Official data</strong> sourced directly from docs.house.gov/floor.</div>
-        <div><span class="check">✓</span> <strong>Instant email alerts</strong> sent the moment the Clerk updates the schedule.</div>
+        <div><span class="check">✓</span> Monitors the weekly docket for <strong>bill additions, drops, and updates</strong>.</div>
+        <div><span class="check">✓</span> Tracks <strong>bills for Suspensions, Rules, and for Possible Considerations</strong>.</div>
+        <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly from official Clerk data.</div>
       </div>
       
       <div class="form-wrapper">
