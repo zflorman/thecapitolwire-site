@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Capitol Wire | Real-time House Floor Alerts</title>
+  <title>The Capitol Wire | Official House Floor Schedule</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
     .logo span { color: var(--gold); }
     .nav-btn { background: var(--accent); color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
 
-    /* HERO (Restored) */
+    /* HERO */
     .hero { text-align: center; padding: 80px 0 60px; }
     .hero h1 { font-family: 'Merriweather', serif; font-size: 2.8rem; color: var(--primary); margin-bottom: 20px; line-height: 1.2; }
     .hero p { font-size: 1.1rem; color: #64748b; max-width: 600px; margin: 0 auto 40px; }
@@ -45,13 +45,13 @@
     button.sub-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; }
     .msg { margin-top: 10px; font-size: 0.9rem; min-height: 20px; }
 
-    /* FEATURES GRID (Restored) */
+    /* FEATURES GRID */
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 60px; }
     .feature-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
     .feature-card h3 { font-family: 'Merriweather', serif; font-size: 1.1rem; margin-bottom: 10px; color: var(--primary); }
     .feature-card p { font-size: 0.95rem; color: #64748b; }
 
-    /* FEED STYLES (Email Look) */
+    /* FEED STYLES */
     .feed-container { margin-top: 20px; }
     
     .box-header { 
@@ -76,6 +76,19 @@
     /* List Items */
     .feed-list { border: 1px solid var(--border); border-radius: 0 0 8px 8px; background: white; overflow: hidden; }
     
+    /* CATEGORY HEADER (NEW) */
+    .category-header {
+      background: #f8fafc;
+      color: #1e3a8a; /* House Blue */
+      font-family: 'Merriweather', serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     .bill-item { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
     .bill-item:last-child { border-bottom: none; }
     
@@ -84,7 +97,6 @@
     
     .meta-cat { text-transform: uppercase; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; border: 1px solid #e2e8f0; }
     
-    /* Timestamp only shows if present */
     .meta-time { color: #dc2626; font-weight: 600; font-family: monospace; background: #fef2f2; padding: 2px 5px; border-radius: 3px; }
     
     .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.75rem; padding: 3px 10px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
@@ -162,6 +174,13 @@
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // Categories to sort by (Order matters)
+    const CATEGORIES = [
+        { key: 'Suspension', label: 'Items that may be considered under suspension of the rules' },
+        { key: 'Rule', label: 'Items that may be considered pursuant to a rule' },
+        { key: 'Possible Consideration', label: 'Items that may be considered' }
+    ];
+
     async function initFeed() {
         const latestContainer = document.getElementById('latest-container');
         const latestList = document.getElementById('latest-list');
@@ -175,52 +194,54 @@
                 scheduleList.innerHTML = '';
                 latestList.innerHTML = '';
                 
-                // Logic: The first item (ID 1) is the NEWEST because the bot sorted them.
-                // If ID 1 has a timestamp, that timestamp is the "Newest Time".
-                // Any other items matching that time go in the Yellow Box.
+                // 1. POPULATE LATEST CHANGES (Yellow Box)
+                // Use the timestamp of the very first item (newest) as the reference.
                 const newestTimestamp = data[0].timestamp;
                 let hasLatest = false;
 
-                data.forEach(item => {
-                    // Create HTML Element
-                    const div = document.createElement('div');
-                    div.className = 'bill-item';
-                    
-                    let linkHtml = '';
-                    if (item.link) {
-                        const isPdf = item.link.toLowerCase().endsWith('pdf');
-                        linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
-                    }
-
-                    // Only show timestamp span if it exists
-                    let timeHtml = '';
-                    if (item.timestamp && item.timestamp.trim() !== "") {
-                        timeHtml = `<span class="meta-time">${item.timestamp}</span>`;
-                    }
-
-                    div.innerHTML = `
-                        <div class="bill-title">${item.title}</div>
-                        <div class="bill-meta">
-                            <span class="meta-cat">${item.category}</span>
-                            ${timeHtml}
-                            ${linkHtml}
-                        </div>
-                    `;
-
-                    // LOGIC: Should this go in the Yellow Box?
-                    // ONLY if it has a timestamp AND matches the newest timestamp.
-                    if (item.timestamp && item.timestamp === newestTimestamp && item.timestamp.trim() !== "") {
-                        const clone = div.cloneNode(true);
-                        latestList.appendChild(clone);
-                        hasLatest = true;
-                    }
-                    
-                    // Always add to full schedule
-                    scheduleList.appendChild(div);
-                });
+                if (newestTimestamp && newestTimestamp.trim() !== "") {
+                    data.forEach(item => {
+                        if (item.timestamp === newestTimestamp) {
+                            const div = createBillItem(item);
+                            latestList.appendChild(div);
+                            hasLatest = true;
+                        }
+                    });
+                }
 
                 if (hasLatest) {
                     latestContainer.style.display = 'block';
+                }
+
+                // 2. POPULATE FULL SCHEDULE (Blue Box)
+                // Group by Category
+                CATEGORIES.forEach(cat => {
+                    const catItems = data.filter(i => i.category === cat.key);
+                    
+                    if (catItems.length > 0) {
+                        // Header
+                        const header = document.createElement('div');
+                        header.className = 'category-header';
+                        header.innerText = cat.label;
+                        scheduleList.appendChild(header);
+
+                        // Items
+                        catItems.forEach(item => {
+                            const div = createBillItem(item);
+                            scheduleList.appendChild(div);
+                        });
+                    }
+                });
+
+                // Handle items with unknown categories if any
+                const knownKeys = CATEGORIES.map(c => c.key);
+                const leftovers = data.filter(i => !knownKeys.includes(i.category));
+                if (leftovers.length > 0) {
+                    const header = document.createElement('div');
+                    header.className = 'category-header';
+                    header.innerText = 'Other Items';
+                    scheduleList.appendChild(header);
+                    leftovers.forEach(item => scheduleList.appendChild(createBillItem(item)));
                 }
 
             } else {
@@ -230,9 +251,38 @@
             console.error(e);
         }
     }
+
+    // Helper to create HTML for a bill
+    function createBillItem(item) {
+        const div = document.createElement('div');
+        div.className = 'bill-item';
+        
+        let linkHtml = '';
+        if (item.link) {
+            const isPdf = item.link.toLowerCase().endsWith('pdf');
+            linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
+        }
+
+        // Only show timestamp if it exists
+        let timeHtml = '';
+        if (item.timestamp && item.timestamp.trim() !== "") {
+            timeHtml = `<span class="meta-time">${item.timestamp}</span>`;
+        }
+
+        div.innerHTML = `
+            <div class="bill-title">${item.title}</div>
+            <div class="bill-meta">
+                <span class="meta-cat">${item.category}</span>
+                ${timeHtml}
+                ${linkHtml}
+            </div>
+        `;
+        return div;
+    }
+    
     initFeed();
 
-    // Subscribe
+    // Subscribe Logic
     const btn = document.getElementById('submitBtn');
     const input = document.getElementById('email');
     const stat = document.getElementById('status');
