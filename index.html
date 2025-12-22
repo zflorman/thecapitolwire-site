@@ -34,7 +34,7 @@
 
     .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
     
-    /* NAV BAR - MATCHING DASHBOARD */
+    /* NAV BAR */
     nav { 
         background: var(--header-bg); 
         color: white; 
@@ -59,7 +59,6 @@
     /* DROPDOWN MENU */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-content { display: none; position: absolute; background-color: white; min-width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border); border-radius: 8px; z-index: 100; top: 100%; left: 50%; transform: translateX(-50%); padding: 5px 0; margin-top: 10px; }
-    /* Small arrow for dropdown */
     .dropdown-content::before {
         content: ""; position: absolute; bottom: 100%; left: 50%; margin-left: -5px;
         border-width: 5px; border-style: solid; border-color: transparent transparent white transparent;
@@ -82,7 +81,7 @@
     }
 
     /* TYPEWRITER ANIMATION */
-    .typing-wrapper { display: inline-block; margin-left: 4px; /* Reduced from 8px */ }
+    .typing-wrapper { display: inline-block; margin-left: 4px; }
     .typing-text {
         display: inline-block;
         overflow: hidden;
@@ -136,7 +135,7 @@
     }
     .source-line a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
 
-    /* FEED STYLING (MATCHING DASHBOARD) */
+    /* FEED STYLING */
     .feed-wrapper { padding-bottom: 60px; }
     
     .status-bar {
@@ -217,7 +216,7 @@
       </h1>
       
       <div class="hero-checklist">
-        <div><span class="check">✓</span> Monitors the weekly docket for <strong>real-time floor activity</strong>.</div>
+        <div><span class="check">✓</span> Monitors the <strong>House floor</strong> for changes to the weekly docket.</div>
         <div><span class="check">✓</span> Tracks <strong>Suspensions, Rules, and Possible Considerations</strong>.</div>
         <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly from official Clerk data.</div>
       </div>
@@ -349,7 +348,7 @@
             timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
         }
 
-        // --- TITLE PARSING LOGIC (From Dashboard) ---
+        // --- TITLE PARSING LOGIC ---
         let fullTitle = item.title;
         let boldPart = fullTitle;
         let normalPart = "";
