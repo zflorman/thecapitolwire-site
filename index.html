@@ -6,60 +6,110 @@
   <title>The Capitol Wire | Official House Floor Schedule</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
     /* VARIABLES */
     :root {
       --primary: #0f172a;
       --accent: #1e3a8a;
-      --gold: #b45309;
+      --light-blue: #3b82f6; /* New Lighter Blue for "Wire" */
       --bg: #ffffff;
       --bg-alt: #f8fafc;
       --text: #334155;
       --border: #e2e8f0;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
+    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.4; scroll-behavior: smooth; }
 
-    /* LAYOUT */
+    /* LAYOUT UTILS */
     .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
-    .section { padding: 80px 0; }
+    /* Reduced padding to kill dead space */
+    .section { padding: 40px 0; } 
     .section-gray { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 
-    /* NAV */
-    nav { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 15px 0; }
+    /* --- NAVIGATION --- */
+    nav { 
+      position: sticky; top: 0; z-index: 50; 
+      background: rgba(255,255,255,0.98); 
+      backdrop-filter: blur(8px); 
+      border-bottom: 1px solid var(--border); 
+      padding: 10px 0; 
+    }
     .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+    
     .logo { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1.2rem; color: var(--primary); }
-    .logo span { color: var(--gold); }
-    .nav-btn { background: var(--accent); color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+    .logo span { color: var(--light-blue); } /* UPDATED COLOR */
 
-    /* HERO */
-    .hero { text-align: center; padding: 80px 0 60px; }
-    .hero h1 { font-family: 'Merriweather', serif; font-size: 2.8rem; color: var(--primary); margin-bottom: 20px; line-height: 1.2; }
-    .hero p { font-size: 1.1rem; color: #64748b; max-width: 600px; margin: 0 auto 40px; }
+    /* Nav Links Container */
+    .nav-links { display: flex; align-items: center; gap: 25px; }
+    
+    .nav-link { 
+      color: var(--text); font-weight: 500; font-size: 0.9rem; text-decoration: none; 
+      transition: color 0.2s; cursor: pointer;
+    }
+    .nav-link:hover { color: var(--accent); }
+
+    .sub-btn { background: var(--accent); color: white; padding: 6px 16px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.85rem; }
+    .sub-btn:hover { background: #1e40af; }
+
+    /* DROPDOWN MENU */
+    .dropdown { position: relative; display: inline-block; }
+    .dropbtn { padding-bottom: 15px; /* Invisible bridge for hover */ } 
+    
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: white;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      z-index: 1;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 0;
+    }
+    .dropdown:hover .dropdown-content { display: block; }
+    
+    .dropdown-content a {
+      color: var(--text);
+      padding: 10px 16px;
+      text-decoration: none;
+      display: block;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .dropdown-content a:last-child { border-bottom: none; }
+    .dropdown-content a:hover { background-color: #f8fafc; color: var(--accent); }
+
+    /* --- HERO --- */
+    .hero { text-align: center; padding: 50px 0 30px; } /* Reduced padding */
+    .hero h1 { font-family: 'Merriweather', serif; font-size: 2.2rem; color: var(--primary); margin-bottom: 10px; line-height: 1.1; }
+    .hero p { font-size: 1rem; color: #64748b; max-width: 600px; margin: 0 auto 25px; }
 
     /* FORM */
-    .form-wrapper { max-width: 450px; margin: 0 auto; display: flex; gap: 10px; }
-    input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; }
-    button.sub-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-    .msg { margin-top: 10px; font-size: 0.9rem; min-height: 20px; }
+    .form-wrapper { max-width: 420px; margin: 0 auto; display: flex; gap: 8px; }
+    input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; }
+    button.form-btn { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .msg { margin-top: 8px; font-size: 0.85rem; min-height: 20px; }
 
-    /* FEATURES GRID */
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 60px; }
-    .feature-card { background: white; padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .feature-card h3 { font-family: 'Merriweather', serif; font-size: 1.1rem; margin-bottom: 10px; color: var(--primary); }
-    .feature-card p { font-size: 0.95rem; color: #64748b; }
+    /* --- FEATURES (Compact) --- */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 40px; }
+    .feature-card { background: white; padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
+    .feature-card h3 { font-family: 'Merriweather', serif; font-size: 1rem; margin-bottom: 6px; color: var(--primary); }
+    .feature-card p { font-size: 0.85rem; color: #64748b; margin: 0; }
 
-    /* FEED STYLES */
-    .feed-container { margin-top: 20px; }
+    /* --- FEED STYLES (Compacted) --- */
+    .feed-container { margin-top: 30px; }
     
     .box-header { 
       font-family: 'Merriweather', serif; 
-      font-size: 1rem; 
+      font-size: 0.95rem; 
       font-weight: 700; 
-      padding: 15px 20px; 
-      border-radius: 8px 8px 0 0; 
+      padding: 12px 18px; 
+      border-radius: 6px 6px 0 0; 
       border: 1px solid;
       border-bottom: none;
       display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;
@@ -70,40 +120,41 @@
     .latest-box .feed-list { border-color: #fcd34d; }
     
     /* Blue "Full Schedule" Box */
-    .schedule-box { margin-top: 40px; }
+    .schedule-box { margin-top: 30px; }
     .schedule-box .box-header { background: #f1f5f9; color: var(--primary); border-color: var(--border); }
     
     /* List Items */
-    .feed-list { border: 1px solid var(--border); border-radius: 0 0 8px 8px; background: white; overflow: hidden; }
+    .feed-list { border: 1px solid var(--border); border-radius: 0 0 6px 6px; background: white; overflow: hidden; }
     
-    /* CATEGORY HEADER (NEW) */
+    /* NEW COMPACT HEADER */
     .category-header {
       background: #f8fafc;
-      color: #1e3a8a; /* House Blue */
+      color: var(--accent);
       font-family: 'Merriweather', serif;
       font-weight: 700;
-      font-size: 0.9rem;
-      padding: 12px 24px;
+      font-size: 0.85rem;
+      padding: 10px 20px;
       border-bottom: 1px solid var(--border);
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      margin-top: -1px; /* Overlap border */
     }
 
-    .bill-item { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+    /* TIGHTER BILL ITEM */
+    .bill-item { padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
     .bill-item:last-child { border-bottom: none; }
     
-    .bill-title { font-weight: 600; color: var(--primary); font-size: 1rem; }
-    .bill-meta { font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .bill-title { font-weight: 600; color: var(--primary); font-size: 0.95rem; line-height: 1.3; }
+    .bill-meta { font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     
-    .meta-cat { text-transform: uppercase; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; border: 1px solid #e2e8f0; }
+    .meta-cat { text-transform: uppercase; font-weight: 700; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; border: 1px solid #e2e8f0; }
+    .meta-time { color: #dc2626; font-weight: 600; font-family: monospace; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
     
-    .meta-time { color: #dc2626; font-weight: 600; font-family: monospace; background: #fef2f2; padding: 2px 5px; border-radius: 3px; }
-    
-    .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.75rem; padding: 3px 10px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
+    .doc-link { margin-left: auto; background: #eff6ff; color: var(--accent); font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; text-decoration: none; font-weight: 600; border: 1px solid #dbeafe; }
     .doc-link:hover { background: #dbeafe; }
 
     /* FOOTER */
-    footer { padding: 40px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; margin-top: 60px; border-top: 1px solid var(--border); }
+    footer { padding: 30px 0; text-align: center; color: #94a3b8; font-size: 0.85rem; margin-top: 40px; border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -111,41 +162,56 @@
   <nav>
     <div class="container nav-inner">
       <div class="logo">🏛️ The Capitol <span>Wire</span></div>
-      <a href="#hero" class="nav-btn">Subscribe</a>
+      
+      <div class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        
+        <div class="dropdown">
+          <a href="#feed" class="nav-link">Live Feed ▾</a>
+          <div class="dropdown-content">
+            <a href="#latest-container">⚡ What Changed</a>
+            <a href="#cat-suspension">Suspensions</a>
+            <a href="#cat-rule">Rules</a>
+            <a href="#cat-possible-consideration">Possible Consideration</a>
+          </div>
+        </div>
+
+        <a href="#hero" class="sub-btn">Subscribe</a>
+      </div>
     </div>
   </nav>
 
   <section id="hero" class="hero">
     <div class="container">
       <h1>Official House Floor Schedule</h1>
-      <p>Real-time feed from the Office of the Clerk. <br>Get an email instantly when the schedule changes.</p>
+      <p>Real-time feed from the Office of the Clerk. <br>Sorted by latest activity.</p>
       
       <div class="form-wrapper">
         <input type="email" id="email" placeholder="Enter work email..." required />
-        <button id="submitBtn" class="sub-btn">Subscribe Free</button>
+        <button id="submitBtn" class="form-btn">Subscribe Free</button>
       </div>
       <div id="status" class="msg"></div>
     </div>
   </section>
 
-  <div class="container">
+  <div id="features" class="container">
     <div class="features-grid">
       <div class="feature-card">
         <h3>⚡ Instant Detection</h3>
-        <p>We check the Clerk's site every 60 seconds. You'll know about changes before the PDF finishes downloading.</p>
+        <p>Checks every 60 seconds. Know before the PDF downloads.</p>
       </div>
       <div class="feature-card">
         <h3>🚫 Zero Noise</h3>
-        <p>No newsletters or opinion pieces. You only get an alert when the official Floor Schedule actually changes.</p>
+        <p>Only alerts on official schedule changes. No opinion pieces.</p>
       </div>
       <div class="feature-card">
         <h3>📝 Change Summaries</h3>
-        <p>Our alerts highlight exactly what changed—new bills, rule changes, or updated times—so you don't have to hunt for them.</p>
+        <p>Highlights exactly what changed so you don't have to hunt.</p>
       </div>
     </div>
   </div>
 
-  <section class="section section-gray" style="margin-top: 60px;">
+  <section id="feed" class="section section-gray" style="margin-top: 40px;">
     <div class="container">
       
       <div class="feed-container latest-box" id="latest-container" style="display:none;">
@@ -174,7 +240,6 @@
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Categories to sort by (Order matters)
     const CATEGORIES = [
         { key: 'Suspension', label: 'Items that may be considered under suspension of the rules' },
         { key: 'Rule', label: 'Items that may be considered pursuant to a rule' },
@@ -187,15 +252,13 @@
         const scheduleList = document.getElementById('schedule-list');
 
         try {
-            // Fetch items sorted by ID (Bot sorts them Newest -> Oldest)
             const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
 
             if (data && data.length > 0) {
                 scheduleList.innerHTML = '';
                 latestList.innerHTML = '';
                 
-                // 1. POPULATE LATEST CHANGES (Yellow Box)
-                // Use the timestamp of the very first item (newest) as the reference.
+                // 1. POPULATE LATEST CHANGES
                 const newestTimestamp = data[0].timestamp;
                 let hasLatest = false;
 
@@ -213,19 +276,20 @@
                     latestContainer.style.display = 'block';
                 }
 
-                // 2. POPULATE FULL SCHEDULE (Blue Box)
-                // Group by Category
+                // 2. POPULATE FULL SCHEDULE (Grouped)
                 CATEGORIES.forEach(cat => {
                     const catItems = data.filter(i => i.category === cat.key);
                     
                     if (catItems.length > 0) {
-                        // Header
+                        // Create Anchor for Dropdown Navigation
+                        const anchorId = 'cat-' + cat.key.toLowerCase().replace(' ', '-');
+                        
                         const header = document.createElement('div');
                         header.className = 'category-header';
+                        header.id = anchorId; // Assign ID
                         header.innerText = cat.label;
                         scheduleList.appendChild(header);
 
-                        // Items
                         catItems.forEach(item => {
                             const div = createBillItem(item);
                             scheduleList.appendChild(div);
@@ -233,7 +297,7 @@
                     }
                 });
 
-                // Handle items with unknown categories if any
+                // Leftovers
                 const knownKeys = CATEGORIES.map(c => c.key);
                 const leftovers = data.filter(i => !knownKeys.includes(i.category));
                 if (leftovers.length > 0) {
@@ -252,7 +316,6 @@
         }
     }
 
-    // Helper to create HTML for a bill
     function createBillItem(item) {
         const div = document.createElement('div');
         div.className = 'bill-item';
@@ -263,7 +326,6 @@
             linkHtml = `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
         }
 
-        // Only show timestamp if it exists
         let timeHtml = '';
         if (item.timestamp && item.timestamp.trim() !== "") {
             timeHtml = `<span class="meta-time">${item.timestamp}</span>`;
