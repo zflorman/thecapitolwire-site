@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Unsubscribe - The Capitol Wire</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   
@@ -26,7 +27,6 @@
     h1 { color: #1e3a8a; margin-bottom: 10px; font-size: 1.5rem; } 
     p { color: #4b5563; margin-bottom: 20px; }
     
-    /* The Two-Step Button Style */
     .unsub-btn { 
         background-color: #dc2626; 
         color: white; 
@@ -41,7 +41,7 @@
     .unsub-btn:hover { background-color: #b91c1c; }
     .unsub-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
-    #email-display { font-weight: bold; color: #1f2937; }
+    #email-display { font-weight: bold; color: #1f2937; font-size: 1.1em; }
     #status { margin-top: 25px; font-weight: 500; min-height: 24px; }
   </style>
 </head>
@@ -52,76 +52,72 @@
     
     <div id="content-area">
         <p>Are you sure you want to stop receiving House Floor Updates for:</p>
-        <p id="email-display">Loading...</p>
+        <p id="email-display">...</p>
         
-        <button id="confirm-btn" class="unsub-btn" onclick="confirmUnsubscribe()">Yes, Unsubscribe Me</button>
+        <button id="confirm-btn" class="unsub-btn">Yes, Unsubscribe Me</button>
     </div>
 
     <div id="status"></div>
   </div>
 
   <script>
-    // --- CONFIGURATION ---
-    // These keys are taken from your uploaded index.html file
-    const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
-    // ---------------------
+    // Wait for the browser to be fully ready before running anything
+    window.addEventListener('DOMContentLoaded', (event) => {
+        
+        // --- CONFIGURATION ---
+        const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
+        // ---------------------
 
-    // Initialize Supabase
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // 1. Get the email from the URL link (e.g. ?email=user@example.com)
-    const params = new URLSearchParams(window.location.search);
-    const emailToUnsubscribe = params.get("email");
-    const displayElement = document.getElementById("email-display");
-    const btn = document.getElementById("confirm-btn");
-    const statusDiv = document.getElementById("status");
+        // Get Elements
+        const params = new URLSearchParams(window.location.search);
+        const emailToUnsubscribe = params.get("email");
+        const displayElement = document.getElementById("email-display");
+        const btn = document.getElementById("confirm-btn");
+        const statusDiv = document.getElementById("status");
 
-    // Check if link is valid
-    if (emailToUnsubscribe) {
-        displayElement.innerText = emailToUnsubscribe;
-    } else {
-        displayElement.innerText = "Error: No email found in link.";
-        displayElement.style.color = "#dc2626";
-        btn.style.display = "none";
-    }
-
-    // 2. The Action Function (Only runs when YOU click the button)
-    async function confirmUnsubscribe() {
-        // UI Feedback
-        btn.innerText = "Processing...";
-        btn.disabled = true;
-        statusDiv.innerText = "";
-
-        try {
-            // Attempt 1: Try Standard Delete
-            let { error } = await supabase
-                .from('subscribers')
-                .delete()
-                .eq('email', emailToUnsubscribe);
-
-            // If standard delete fails, it might be an RLS issue or RPC requirement.
-            // We can try the RPC method you had before as a backup.
-            if (error) {
-                console.log("Standard delete failed, trying RPC fallback...");
-                const rpcResponse = await supabase.rpc('unsubscribe_user', { _target_email: emailToUnsubscribe });
-                if (rpcResponse.error) throw rpcResponse.error;
-            }
-
-            // Success State
-            statusDiv.innerText = "Success. You have been unsubscribed.";
-            statusDiv.style.color = "#059669"; // Green
+        // Display the email immediately
+        if (emailToUnsubscribe) {
+            displayElement.innerText = emailToUnsubscribe;
+        } else {
+            displayElement.innerText = "Error: No email link found.";
+            displayElement.style.color = "#dc2626";
             btn.style.display = "none";
-            document.getElementById("content-area").style.display = "none"; // Hide the button area
-
-        } catch (err) {
-            console.error(err);
-            statusDiv.innerText = "Error: Could not unsubscribe. Please reply to the email instead.";
-            statusDiv.style.color = "#dc2626"; // Red
-            btn.innerText = "Try Again";
-            btn.disabled = false;
         }
-    }
+
+        // Add Click Listener to Button
+        btn.addEventListener('click', async () => {
+            if (!emailToUnsubscribe) return;
+
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+            statusDiv.innerText = "";
+
+            try {
+                // Call the new SQL function we created in Part 1
+                const { error } = await supabase.rpc('unsubscribe_user', { 
+                    email_input: emailToUnsubscribe 
+                });
+
+                if (error) throw error;
+
+                // Success
+                statusDiv.innerText = "Success. You have been unsubscribed.";
+                statusDiv.style.color = "#059669"; 
+                document.getElementById("content-area").style.display = "none"; 
+
+            } catch (err) {
+                console.error(err);
+                statusDiv.innerText = "Error: Could not unsubscribe. Please reply to the email.";
+                statusDiv.style.color = "#dc2626";
+                btn.innerText = "Try Again";
+                btn.disabled = false;
+            }
+        });
+    });
   </script>
 </body>
 </html>
