@@ -1,29 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Terms of Service - The Capitol Wire</title>
+  <meta charset="UTF-8" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CEV5ME0C6L');
+  </script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service | The Capitol Wire</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: sans-serif; padding: 40px 20px; max-width: 800px; margin: 0 auto; line-height: 1.6; color: #333; }
-    h1 { color: #1e3a8a; }
-    h2 { font-size: 1.2rem; margin-top: 30px; color: #1f2937; }
+    /* --- MODERN THEME VARIABLES --- */
+    :root {
+      --bg-main: #ffffff;
+      --bg-subtle: #f8fafc;
+      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%);
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      
+      --brand-primary: #2563eb;
+      --brand-dark: #1e3a8a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    
+    body { 
+        font-family: 'Inter', sans-serif; 
+        color: var(--text-main); 
+        background: var(--bg-main); 
+        background-image: var(--bg-gradient);
+        background-attachment: fixed;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- GLASS NAV --- */
+    nav { 
+        background: rgba(255, 255, 255, 0.8); 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 16px 0; 
+        position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner { 
+        max-width: 1000px; margin: 0 auto; padding: 0 24px; 
+        display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo { 
+        font-family: 'Merriweather', serif; font-weight: 800; font-size: 1.2rem; 
+        color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
+        letter-spacing: -0.5px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-link { 
+        color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; 
+        transition: color 0.2s; cursor: pointer; 
+    }
+    .nav-link:hover { color: var(--brand-primary); }
+    
+    .sub-btn { 
+        background: var(--brand-primary); 
+        color: white; 
+        padding: 8px 16px; 
+        border-radius: 6px; 
+        font-weight: 600; 
+        text-decoration: none; 
+        font-size: 0.85rem; 
+        transition: background 0.1s;
+    }
+    .sub-btn:hover { background: var(--brand-dark); }
+
+    /* --- CONTENT LAYOUT --- */
+    .policy-container { 
+        max-width: 800px; margin: 60px auto; padding: 0 24px; 
+    }
+
+    h1 { 
+        font-family: 'Merriweather', serif; 
+        font-size: 2.5rem; 
+        color: var(--text-main); 
+        margin-bottom: 10px; 
+        letter-spacing: -1px;
+    }
+    
+    .last-updated {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 50px;
+        font-weight: 500;
+    }
+
+    h2 { 
+        font-family: 'Merriweather', serif;
+        font-size: 1.25rem; 
+        color: var(--text-main); 
+        margin-top: 40px; 
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    p, li { 
+        color: #334155; 
+        margin-bottom: 16px; 
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+    
+    ul { margin-left: 20px; margin-bottom: 20px; }
+    li { margin-bottom: 8px; }
+
+    a { 
+        color: var(--brand-primary); 
+        text-decoration: none; 
+        font-weight: 600;
+        border-bottom: 1px dotted var(--brand-primary);
+    }
+    a:hover { border-bottom-style: solid; color: var(--brand-dark); }
+
+    /* --- FOOTER --- */
+    footer { 
+        padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; 
+        border-top: 1px solid #e2e8f0; margin-top: 80px;
+    }
+    footer a { color: #64748b; text-decoration: none; border: none; font-weight: 400; }
+    footer a:hover { color: var(--brand-primary); text-decoration: underline; }
+    .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 2rem; }
+        .policy-container { margin-top: 40px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Terms of Service</h1>
-  <p>By using The Capitol Wire, you agree to these terms.</p>
 
-  <h2>1. Service Description</h2>
-  <p>The Capitol Wire provides automated email alerts based on public data from <code>docs.house.gov</code>. We are an independent service and are <strong>not affiliated</strong> with the U.S. House of Representatives.</p>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">🏛️ The Capitol Wire</a>
+      <div class="nav-links">
+        <a href="dashboard/" class="nav-link">Dashboard</a>
+        <a href="/#hero" class="sub-btn">Get Alerts</a>
+      </div>
+    </div>
+  </nav>
 
-  <h2>2. Disclaimer</h2>
-  <p>Alerts are provided "as-is." While we strive for accuracy, we are not responsible for errors in the official House schedule, delays in delivery, or any actions taken based on these alerts.</p>
+  <div class="policy-container">
+    <h1>Terms of Service</h1>
+    <div class="last-updated">Last Updated: January 6, 2026</div>
 
-  <h2>3. Usage</h2>
-  <p>You agree to use this service for its intended purpose. We reserve the right to unsubscribe users who abuse the system.</p>
+    <p>By accessing or subscribing to The Capitol Wire, you agree to be bound by these Terms of Service. If you do not agree to these terms, please discontinue use of the service.</p>
 
-  <h2>4. Changes</h2>
-  <p>We reserve the right to modify or discontinue this service at any time.</p>
+    <h2>1. Service Description</h2>
+    <p>The Capitol Wire is an independent legislative intelligence service. We provide automated monitoring and alerts based on public data aggregated from:</p>
+    <ul>
+        <li><strong>Docs.House.Gov:</strong> The official repository of the U.S. House of Representatives.</li>
+        <li><strong>MajorityLeader.Gov:</strong> The official scheduling site of the House Majority Leader.</li>
+    </ul>
+    <p>We are a private entity and are <strong>not affiliated with, endorsed by, or a part of the United States Government</strong> or the U.S. House of Representatives.</p>
+
+    <h2>2. Data Accuracy & Availability</h2>
+    <p>Our service relies on the availability and accuracy of third-party government servers. While our "Gap Analysis" engine is designed to detect changes rapidly:</p>
+    <ul>
+        <li>We cannot guarantee 100% uptime or accuracy if the underlying government source data is delayed, redacted, or offline.</li>
+        <li>Alerts are provided "as-is" and should be used as a supplementary intelligence tool, not as the sole legal record of House proceedings.</li>
+    </ul>
+
+    <h2>3. Acceptable Use</h2>
+    <p>You agree to use this service for its intended purpose of legislative tracking. You may not:</p>
+    <ul>
+        <li>Attempt to reverse engineer, scrape, or overload our API infrastructure.</li>
+        <li>Use the service to distribute spam or malicious content.</li>
+        <li> resell or redistribute our real-time alert feed without express written permission.</li>
+    </ul>
+
+    <h2>4. Limitation of Liability</h2>
+    <p>To the fullest extent permitted by law, The Capitol Wire shall not be liable for any direct, indirect, incidental, or consequential damages resulting from:</p>
+    <ul>
+        <li>Errors or omissions in the legislative data provided by government sources.</li>
+        <li>Delays in email delivery caused by third-party providers (e.g., AWS, internet service providers).</li>
+        <li>Any reliance placed on the alerts for legislative or trading decisions.</li>
+    </ul>
+
+    <h2>5. Modifications to Service</h2>
+    <p>We reserve the right to modify, suspend, or discontinue any part of the service at any time, with or without notice. We may also update these Terms of Service periodically; continued use of the service constitutes acceptance of the new terms.</p>
+
+    <h2>6. Contact</h2>
+    <p>If you have questions regarding these terms, please contact us at <a href="mailto:zach@thecapitolwire.com">zach@thecapitolwire.com</a>.</p>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>
