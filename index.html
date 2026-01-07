@@ -208,6 +208,19 @@
         /* Adjust checklist size */
         .hero-checklist { font-size: 1rem; text-align: left; padding-left: 10px; }
     }
+    
+    /* --- NEW UPDATES --- */
+    /* Tighten spacing between button and source line */
+    .source-wrapper { margin-top: 10px !important; }
+
+    /* Style the new checklist links */
+    .hero-checklist a {
+        color: var(--primary);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        font-weight: 700;
+    }
+    .hero-checklist a:hover { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -237,11 +250,18 @@
     <div class="container">
       <h1>
         Real-Time Alerts for the<br>
-        <span style="color:var(--primary);">House Floor Weekly Agenda.</span>
+        <span style="color:var(--primary);">House Floor</span> 
+        <span class="typing-wrapper"><span class="typing-text">Weekly Agenda.</span></span>
       </h1>
       
       <div class="hero-checklist">
-        <div><span class="check">✓</span> Monitors <strong>docs.house.gov</strong> and <strong>MajorityLeader.gov</strong> every 60 seconds.</div>
+        <div>
+          <span class="check">✓</span> Monitors 
+          <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a> 
+          and 
+          <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.gov</a> 
+          every 60 seconds.
+        </div>
         <div><span class="check">✓</span> Auto-detects <strong>Advance Notices</strong> (items not yet filed with the Clerk).</div>
         <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly to you for free.</div>
       </div>
@@ -254,7 +274,7 @@
       
       <div class="source-wrapper">
           <div class="source-line">
-            Official data sourced directly from <a href="https://docs.house.gov/floor/Default.aspx" target="_blank">docs.house.gov/floor</a>.
+            Official data sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.
           </div>
       </div>
     </div>
@@ -281,7 +301,7 @@
 
   <footer>
     <div class="container">
-      <div>© 2025 The Capitol Wire. Data sourced directly from <a href="https://docs.house.gov/floor/Default.aspx" target="_blank">docs.house.gov/floor</a>.</div>
+      <div>© 2026 The Capitol Wire. Data sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
       <div class="footer-links">
         <a href="privacy.html">Privacy Policy</a>
         <a href="terms.html">Terms of Service</a>
