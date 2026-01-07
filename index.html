@@ -78,7 +78,8 @@
         font-size: 2.8rem; 
         color: var(--primary); 
         margin-bottom: 25px; 
-        line-height: 1.2;
+        /* UPDATED: Tightened line-height to reduce gap */
+        line-height: 1.1; 
         letter-spacing: -0.5px;
     }
 
@@ -123,20 +124,6 @@
     button.form-btn:disabled { background: #94a3b8; cursor: not-allowed; }
     button.form-btn:hover:not(:disabled) { background: #1e40af; }
     .msg { margin-top: 8px; font-size: 0.85rem; min-height: 20px; } 
-
-    /* TRUST BADGE */
-    .source-wrapper { margin-top: 25px; } 
-    .source-line { 
-        font-size: 0.85rem; 
-        color: #334155; 
-        background: #e2e8f0;
-        padding: 8px 16px;
-        border-radius: 99px;
-        display: inline-block;
-        font-weight: 600;
-        border: 1px solid #cbd5e1;
-    }
-    .source-line a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
 
     /* FEED STYLING */
     .feed-wrapper { padding-bottom: 60px; }
@@ -210,17 +197,19 @@
     }
     
     /* --- NEW UPDATES --- */
-    /* Tighten spacing between button and source line */
-    .source-wrapper { margin-top: 10px !important; }
-
-    /* Style the new checklist links */
+    
+    /* Style the new checklist links with DOTTED underline */
     .hero-checklist a {
-        color: var(--primary);
-        text-decoration: underline;
-        text-underline-offset: 2px;
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--accent);
         font-weight: 700;
+        transition: all 0.2s;
     }
-    .hero-checklist a:hover { color: var(--accent); }
+    .hero-checklist a:hover { 
+        color: var(--header-bg);
+        border-bottom-style: solid; 
+    }
   </style>
 </head>
 <body>
@@ -257,7 +246,7 @@
       <div class="hero-checklist">
         <div>
           <span class="check">✓</span> Monitors 
-          <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a> 
+          <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov/floor</a> 
           and 
           <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.gov</a> 
           every 60 seconds.
@@ -271,12 +260,6 @@
         <button id="submitBtn" class="form-btn">Subscribe for Free</button>
       </div>
       <div id="status" class="msg"></div>
-      
-      <div class="source-wrapper">
-          <div class="source-line">
-            Official data sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.
-          </div>
-      </div>
     </div>
   </section>
 
