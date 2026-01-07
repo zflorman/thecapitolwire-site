@@ -71,15 +71,15 @@
     .dropdown-content a:hover { background-color: #f8fafc; color: var(--accent); }
 
     /* HERO SECTION */
-    .hero { text-align: center; padding: 50px 0 30px; } 
+    /* Updated padding to pull feed closer */
+    .hero { text-align: center; padding: 50px 0 10px; } 
     
     .hero h1 { 
         font-family: 'Merriweather', serif; 
         font-size: 2.8rem; 
         color: var(--primary); 
         margin-bottom: 25px; 
-        /* UPDATED: Tightened line-height to reduce gap */
-        line-height: 1.1; 
+        line-height: 1.1;
         letter-spacing: -0.5px;
     }
 
@@ -115,6 +115,19 @@
     }
     .hero-checklist strong { color: var(--primary); font-weight: 700; }
     .check { color: #22c55e; margin-right: 10px; font-weight: bold; }
+    
+    /* New Checklist Link Style (Dotted) */
+    .hero-checklist a {
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--accent);
+        font-weight: 700;
+        transition: all 0.2s;
+    }
+    .hero-checklist a:hover { 
+        color: var(--header-bg);
+        border-bottom-style: solid; 
+    }
 
     /* SUBSCRIBE FORM */
     .form-wrapper { max-width: 420px; margin: 0 auto; display: flex; gap: 8px; }
@@ -126,7 +139,7 @@
     .msg { margin-top: 8px; font-size: 0.85rem; min-height: 20px; } 
 
     /* FEED STYLING */
-    .feed-wrapper { padding-bottom: 60px; }
+    .feed-wrapper { padding-bottom: 60px; padding-top: 10px; }
     
     .status-bar {
         display: flex; align-items: center; gap: 10px;
@@ -134,10 +147,37 @@
         background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border);
         box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
-    .live-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    
+    /* NEW: Ripple Animation for Live Dot */
+    .live-dot { 
+        width: 10px; height: 10px; 
+        background: #22c55e; 
+        border-radius: 50%; 
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        animation: ripple 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    @keyframes ripple {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
 
-    .feed-section { background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; }
+    .feed-section { 
+        background: white; border: 1px solid var(--border); border-radius: 8px; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; 
+        
+        /* NEW: Hidden by default for scroll animation */
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    
+    /* NEW: Class added by JS when visible */
+    .feed-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     .section-header {
         background: #f9fafb;
         padding: 12px 20px;
@@ -172,43 +212,13 @@
     
     /* --- MOBILE CLEANUP --- */
     @media (max-width: 768px) { 
-        /* Stack nav items so they don't squish */
         .nav-inner { flex-direction: column; gap: 10px; padding-bottom: 5px; }
-        
-        /* Reduce Headline Size */
         .hero h1 { font-size: 1.8rem; margin-bottom: 20px; }
-        
-        /* Fix the Weird Typewriter Indentation */
-        .typing-wrapper { 
-            display: block;        /* Forces it to its own line */
-            margin: 5px auto 0;    /* Centers it */
-            width: fit-content;    /* Shrinks box to text size */
-        }
-        .typing-text {
-            text-indent: 0;        /* Removes the awkward gap */
-        }
-
-        /* Stack form button for easier tapping */
+        .typing-wrapper { display: block; margin: 5px auto 0; width: fit-content; }
+        .typing-text { text-indent: 0; }
         .form-wrapper { flex-direction: column; }
         button.form-btn { width: 100%; }
-        
-        /* Adjust checklist size */
         .hero-checklist { font-size: 1rem; text-align: left; padding-left: 10px; }
-    }
-    
-    /* --- NEW UPDATES --- */
-    
-    /* Style the new checklist links with DOTTED underline */
-    .hero-checklist a {
-        color: var(--accent);
-        text-decoration: none;
-        border-bottom: 1px dotted var(--accent);
-        font-weight: 700;
-        transition: all 0.2s;
-    }
-    .hero-checklist a:hover { 
-        color: var(--header-bg);
-        border-bottom-style: solid; 
     }
   </style>
 </head>
@@ -306,6 +316,17 @@
 
     let lastKnownTimestamp = "";
 
+    // --- NEW: Scroll Observer Setup ---
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target); // Only fade in once
+            }
+        });
+    }, observerOptions);
+
     async function initFeed() {
         const latestContainer = document.getElementById('latest-container');
         const latestList = document.getElementById('latest-list');
@@ -338,6 +359,8 @@
                         });
                     }
                     latestContainer.style.display = hasLatest ? 'block' : 'none';
+                    // Observe the Latest container
+                    if(hasLatest) observer.observe(latestContainer);
 
                     CATEGORIES.forEach(cat => {
                         const catItems = data.filter(i => i.category === cat.key);
@@ -352,6 +375,9 @@
                             
                             catItems.forEach(item => section.appendChild(createBillItem(item)));
                             scheduleList.appendChild(section);
+                            
+                            // --- NEW: Observe this section for scroll effect ---
+                            observer.observe(section);
                         }
                     });
                 }
