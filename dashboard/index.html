@@ -7,94 +7,243 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-CEV5ME0C6L');
   </script>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard | The Capitol Wire</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
 
   <style>
+    /* --- MODERN THEME VARIABLES --- */
     :root {
-      --primary: #0f172a;
-      --header-bg: #1e3a8a;
-      --bg: #f3f4f6;
-      --text: #1f2937;
-      --border: #e5e7eb;
-      --accent: #2563eb;
+      --bg-main: #ffffff;
+      --bg-subtle: #f8fafc;
+      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%);
+      
+      --card-bg: #ffffff;
+      --card-border: 1px solid #e2e8f0;
+      --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      
+      --brand-primary: #2563eb;
+      --brand-dark: #1e3a8a;
+      
+      --success: #10b981;
+      --warning-bg: #fffbeb;
+      --warning-text: #92400e;
+      --warning-border: #fcd34d;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); line-height: 1.5; }
 
-    /* NAV */
-    nav { background: var(--header-bg); color: white; padding: 15px 0; border-bottom: 4px solid #1e40af; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-family: 'Merriweather', serif; font-weight: 700; font-size: 1.3rem; color: white; text-decoration: none; display: flex; align-items: center; gap: 8px; }
-    .sub-btn { background: white; color: var(--header-bg); padding: 5px 12px; border-radius: 4px; font-weight: 600; text-decoration: none; font-size: 0.85rem; border: none; cursor: pointer; }
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    
+    body { 
+        font-family: 'Inter', sans-serif; 
+        color: var(--text-main); 
+        background: var(--bg-main); 
+        background-image: var(--bg-gradient);
+        background-attachment: fixed;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
 
-    /* LAYOUT */
-    .main-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 300px; gap: 30px; }
+    /* --- GLASS NAV --- */
+    nav { 
+        background: rgba(255, 255, 255, 0.8); 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 16px 0; 
+        position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner { 
+        max-width: 1200px; margin: 0 auto; padding: 0 24px; 
+        display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo { 
+        font-family: 'Merriweather', serif; font-weight: 800; font-size: 1.2rem; 
+        color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
+        letter-spacing: -0.5px;
+    }
+    
+    /* Subscribe Button */
+    .sub-btn { 
+        background: var(--brand-primary); 
+        color: white; 
+        padding: 8px 16px; 
+        border-radius: 6px; 
+        font-weight: 600; 
+        text-decoration: none; 
+        font-size: 0.85rem; 
+        border: none;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+    .sub-btn:hover { background: var(--brand-dark); }
 
-    /* WEEKLY HEADER */
-    .week-header-box { background: white; padding: 20px 25px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .week-header-text { font-family: 'Merriweather', serif; font-size: 1.5rem; color: var(--primary); font-weight: 400; }
+    /* --- LAYOUT --- */
+    .main-container { 
+        max-width: 1200px; margin: 40px auto; padding: 0 24px; 
+        display: grid; grid-template-columns: 1fr 320px; gap: 40px; 
+    }
 
-    /* FEED */
-    .status-bar { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #6b7280; margin-bottom: 20px; background: white; padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border); }
-    .live-dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    /* --- WEEKLY HEADER --- */
+    .week-header-box { 
+        margin-bottom: 25px; 
+    }
+    .week-header-text { 
+        font-family: 'Merriweather', serif; 
+        font-size: 2rem; 
+        color: var(--text-main); 
+        font-weight: 700; 
+        letter-spacing: -1px;
+    }
 
-    .feed-section { background: white; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 30px; overflow: hidden; }
-    .section-header { background: #f9fafb; padding: 12px 20px; font-family: 'Merriweather', serif; font-weight: 700; font-size: 0.95rem; color: var(--primary); border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
-    .bill-item { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; transition: background 0.1s; }
+    /* --- FEED STYLES --- */
+    .status-bar { 
+        display: flex; align-items: center; gap: 12px;
+        font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
+        background: white; padding: 10px 16px; border-radius: 8px; 
+        border: 1px solid #e2e8f0; margin-bottom: 25px; 
+        box-shadow: var(--card-shadow);
+        width: fit-content;
+    }
+    
+    /* Ripple Dot Animation */
+    .live-dot { 
+        width: 8px; height: 8px; 
+        background: #22c55e; 
+        border-radius: 50%; 
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        animation: ripple 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    @keyframes ripple {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    .feed-section { 
+        background: var(--card-bg); 
+        border: var(--card-border); 
+        border-radius: 12px; 
+        box-shadow: var(--card-shadow); 
+        margin-bottom: 30px; overflow: hidden; 
+    }
+    .section-header { 
+        background: #f8fafc; 
+        padding: 14px 24px; 
+        font-family: 'Inter', sans-serif; 
+        font-weight: 700; font-size: 0.8rem; 
+        color: var(--text-muted); 
+        border-bottom: 1px solid #e2e8f0; 
+        text-transform: uppercase; letter-spacing: 0.5px; 
+    }
+    .bill-item { 
+        padding: 20px 24px; 
+        border-bottom: 1px solid #f1f5f9; 
+        display: flex; flex-direction: column; gap: 6px; 
+        transition: background 0.1s; 
+    }
     .bill-item:last-child { border-bottom: none; }
     .bill-item:hover { background: #f8fafc; }
     
-    .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
-    .bill-title { color: #111827; font-size: 1rem; line-height: 1.4; flex: 1; font-weight: 400; }
-    .bill-title strong { font-weight: 700; color: var(--primary); }
+    .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+    .bill-title { color: var(--text-main); font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; }
+    .bill-title strong { font-weight: 700; color: var(--text-main); font-family: 'Merriweather', serif; }
     
     .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
-    .doc-link { color: var(--accent); text-decoration: none; background: #eff6ff; padding: 2px 6px; border-radius: 4px; }
-    .doc-link:hover { background: #dbeafe; }
-    .bill-meta { font-size: 0.8rem; color: #6b7280; display: flex; align-items: center; gap: 10px; margin-top: 4px; }
-    .meta-time { color: #dc2626; font-weight: 600; background: #fef2f2; padding: 1px 5px; border-radius: 3px; }
-
-    /* SIDEBAR */
-    .sidebar { display: flex; flex-direction: column; gap: 20px; }
-    .widget { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .widget h3 { font-family: 'Merriweather', serif; font-size: 1rem; color: var(--header-bg); margin-bottom: 15px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
-
-    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .cal-btn { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--accent); font-size: 1.1rem; padding: 0 5px; }
-    .cal-btn:hover { color: var(--primary); }
-    .cal-month { font-weight: 700; color: var(--primary); }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; }
-    .cal-day-header { font-weight: 700; color: #6b7280; padding-bottom: 5px; }
-    .cal-day { padding: 6px 0; color: #374151; border-radius: 4px; }
-    .cal-session { background: #fcd34d; color: #92400e; font-weight: 700; } 
-    .cal-today { border: 2px solid #2563eb; font-weight:900; } 
+    .doc-link { 
+        color: var(--brand-primary); text-decoration: none; 
+        background: #eff6ff; padding: 3px 8px; border-radius: 4px; 
+        transition: all 0.2s;
+    }
+    .doc-link:hover { background: var(--brand-primary); color: white; }
     
-    .res-link { display: block; padding: 8px 0; color: var(--accent); text-decoration: none; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; }
-    .res-link:last-child { border-bottom: none; }
-    .res-link:hover { color: var(--header-bg); text-decoration: underline; }
-    .res-desc { font-size: 0.75rem; color: #6b7280; margin-top: 2px; }
+    .bill-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .meta-time { 
+        color: #be123c; font-weight: 600; background: #fff1f2; 
+        padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
+    }
 
-    /* MODAL */
-    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index:100; }
-    .modal { background:white; padding:30px; border-radius:10px; width:90%; max-width:400px; text-align:center; position:relative; }
-    .close-modal { position:absolute; top:10px; right:15px; cursor:pointer; font-size:1.5rem; color:#999; }
-    .modal h3 { margin-bottom:15px; color:var(--primary); font-family: 'Merriweather', serif; }
-    .modal input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; margin-bottom:10px; }
-    .modal button { width:100%; padding:10px; background:var(--accent); color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; }
-    .modal button:disabled { background: #94a3b8; }
-    .modal-msg { margin-top:10px; font-size:0.85rem; }
+    /* --- SIDEBAR & CALENDAR --- */
+    .sidebar { display: flex; flex-direction: column; gap: 24px; }
+    
+    .widget { 
+        background: var(--card-bg); 
+        border: var(--card-border); 
+        border-radius: 12px; 
+        padding: 24px; 
+        box-shadow: var(--card-shadow); 
+    }
+    .widget h3 { 
+        font-family: 'Inter', sans-serif; 
+        font-size: 0.9rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+        color: var(--text-muted); 
+        margin-bottom: 20px; 
+        border-bottom: 1px solid #e2e8f0; 
+        padding-bottom: 12px; 
+    }
 
-    @media (max-width: 768px) {
-        .main-container { grid-template-columns: 1fr; }
-        .sidebar { order: -1; }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .cal-btn { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--brand-primary); font-size: 1.2rem; padding: 0 8px; }
+    .cal-btn:hover { color: var(--brand-dark); }
+    .cal-month { font-weight: 700; color: var(--text-main); font-family:'Merriweather', serif; }
+    
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; font-size: 0.85rem; }
+    .cal-day-header { font-weight: 600; color: var(--text-muted); font-size: 0.75rem; padding-bottom: 5px; }
+    
+    .cal-day { 
+        padding: 6px 0; color: var(--text-main); border-radius: 6px; 
+        font-variant-numeric: tabular-nums;
+    }
+    /* Session Day Style */
+    .cal-session { 
+        background: #eff6ff; color: var(--brand-primary); font-weight: 700; 
+        border: 1px solid #dbeafe;
+    } 
+    .cal-today { 
+        background: var(--brand-primary); color: white; font-weight:700; 
+    } 
+    
+    /* --- MODAL --- */
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display:none; justify-content:center; align-items:center; z-index:200; }
+    .modal { background:white; padding:40px 30px; border-radius:16px; width:90%; max-width:420px; text-align:center; position:relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    .close-modal { position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem; color:#94a3b8; transition: color 0.2s; }
+    .close-modal:hover { color: var(--text-main); }
+    
+    .modal h3 { margin-bottom:10px; color:var(--text-main); font-family: 'Merriweather', serif; font-size: 1.5rem; }
+    .modal p { color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; }
+    
+    .modal input { width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:12px; font-size: 1rem; }
+    .modal input:focus { border-color: var(--brand-primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    
+    .modal button { 
+        width:100%; padding:12px; 
+        background: var(--brand-primary); 
+        color:white; border:none; border-radius:8px; 
+        font-weight:600; cursor:pointer; font-size: 1rem;
+        transition: transform 0.1s;
+    }
+    .modal button:hover { background: var(--brand-dark); transform: translateY(-1px); }
+    .modal button:disabled { background: #94a3b8; cursor: wait; transform: none; }
+    .modal-msg { margin-top:15px; font-size:0.9rem; min-height: 20px; }
+
+    /* --- MOBILE RESPONSIVE --- */
+    @media (max-width: 900px) {
+        .main-container { 
+            grid-template-columns: 1fr; /* Single Column */
+            gap: 30px;
+        }
+        /* NOTE: Because the Sidebar is defined AFTER the content-area in the HTML,
+           it will naturally stack at the bottom on mobile. 
+           We removed the 'order: -1' rule to ensure this happens.
+        */
+        .sidebar { width: 100%; }
+        .week-header-text { font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -119,18 +268,19 @@
             <div id="status-line">System Active. Monitoring for updates...</div>
         </div>
 
-        <div id="latest-container" class="feed-section" style="display:none; border-color:#fcd34d;">
-            <div class="section-header" style="background:#fffbeb; color:#92400e; border-bottom-color:#fcd34d;">⚡ Latest Activity (New)</div>
+        <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
+            <div class="section-header" style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
+                ⚡ Latest Activity (New)
+            </div>
             <div id="latest-list"></div>
         </div>
 
         <div id="schedule-list">
-            <div style="padding:40px; text-align:center; color:#94a3b8;">Loading legislative data...</div>
+            <div style="padding:60px; text-align:center; color: #94a3b8;">Loading legislative data...</div>
         </div>
     </div>
 
     <div class="sidebar">
-        
         <div class="widget">
             <h3>Legislative Calendar</h3>
             <div class="cal-header">
@@ -146,37 +296,22 @@
                 <div class="cal-day-header">T</div>
                 <div class="cal-day-header">F</div>
                 <div class="cal-day-header">S</div>
+            </div>
+            <div style="font-size:0.75rem; color: var(--text-muted); margin-top:16px; text-align:center; display:flex; justify-content:center; gap: 15px;">
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <span style="width:8px; height:8px; background:#eff6ff; border:1px solid #dbeafe; border-radius:2px;"></span> In Session
                 </div>
-            <div style="font-size:0.75rem; color:#6b7280; margin-top:10px; text-align:center;">
-                <span style="display:inline-block; width:8px; height:8px; background:#fcd34d; margin-right:4px; border-radius:2px;"></span> In Session
             </div>
         </div>
-
-        <div class="widget">
-            <h3>Online Resources</h3>
-            <a href="https://clerk.house.gov/" target="_blank" class="res-link">
-                Office of the Clerk
-                <div class="res-desc">Official vote counts and floor proceedings.</div>
-            </a>
-            <a href="https://rules.house.gov/" target="_blank" class="res-link">
-                Committee on Rules
-                <div class="res-desc">Texts of rules and amendments.</div>
-            </a>
-            <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank" class="res-link">
-                Majority Leader's Schedule
-                <div class="res-desc">Weekly outlook and colloquy.</div>
-            </a>
         </div>
-
-    </div>
   </div>
 
   <div class="modal-overlay" id="modal">
     <div class="modal">
       <span class="close-modal" onclick="closeModal()">&times;</span>
       <h3>Get Instant Alerts</h3>
-      <p style="font-size:0.9rem; color:#666; margin-bottom:15px;">Enter your email to get notified when the schedule changes.</p>
-      <input type="email" id="modal-email" placeholder="Your Email Here" />
+      <p>Enter your email to get notified immediately when the Majority Leader or Clerk updates the schedule.</p>
+      <input type="email" id="modal-email" placeholder="Enter your email" />
       <button id="modal-submit">Subscribe Free</button>
       <div id="modal-status" class="modal-msg"></div>
     </div>
@@ -188,9 +323,9 @@
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const CATEGORIES = [
-        { key: 'Suspension', label: 'Items that may be considered under suspension of the rules' },
-        { key: 'Rule', label: 'Items that may be considered pursuant to a rule' },
-        { key: 'Possible Consideration', label: 'Items that may be considered' }
+        { key: 'Suspension', label: 'Suspension of the Rules' },
+        { key: 'Rule', label: 'Pursuant to a Rule' },
+        { key: 'Possible Consideration', label: 'Possible Consideration' }
     ];
 
     let lastKnownTimestamp = "";
@@ -284,30 +419,23 @@
 
     // --- AUTOMATIC WEEK HEADER ---
     function updateWeeklyHeader(dateStringFromDB) {
-        // dateStringFromDB example: "Updated 12/15/2025 at 02:27 PM"
-        
-        // 1. Try to extract date
         const dateRegex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
         const match = dateStringFromDB.match(dateRegex);
         
-        let referenceDate = new Date(); // Default to today if parsing fails
+        let referenceDate = new Date(); 
         
         if (match) {
-            // JS months are 0-11
             const month = parseInt(match[1]) - 1;
             const day = parseInt(match[2]);
             const year = parseInt(match[3]);
             referenceDate = new Date(year, month, day);
         }
 
-        // 2. Find Monday of that week
-        const day = referenceDate.getDay(); // 0 (Sun) - 6 (Sat)
-        // If Sunday (0), subtract 6 days to get prev Monday. Else subtract day-1.
+        const day = referenceDate.getDay(); 
         const diff = referenceDate.getDate() - day + (day === 0 ? -6 : 1);
         const monday = new Date(referenceDate);
         monday.setDate(diff);
 
-        // 3. Update DOM
         const options = { month: 'short', day: 'numeric', year: 'numeric' };
         document.getElementById('weekly-header').innerText = "Text of Bills for the Week of " + monday.toLocaleDateString('en-US', options);
     }
@@ -323,9 +451,8 @@
             const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
 
             if (data && data.length > 0) {
-                const newestTimestamp = data[0].timestamp; // "Updated 12/15/2025..."
+                const newestTimestamp = data[0].timestamp;
                 
-                // UPDATE HEADER BASED ON DATA DATE
                 if (newestTimestamp) {
                     updateWeeklyHeader(newestTimestamp);
                 }
@@ -390,12 +517,10 @@
         let boldPart = fullTitle;
         let normalPart = "";
 
-        // Check for em-dash (—) or hyphen (-)
         let splitIndex = fullTitle.indexOf("—");
         if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
 
         if (splitIndex !== -1) {
-            // Include dash in normal part
             boldPart = fullTitle.substring(0, splitIndex).trim(); 
             normalPart = fullTitle.substring(splitIndex); 
         }
