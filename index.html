@@ -138,7 +138,10 @@
 
     /* Typewriter */
     .typing-wrapper { display: inline-block; }
+    
     .typing-text {
+        display: inline-block; /* <--- THIS FIXES THE BUG */
+        vertical-align: bottom; /* Keeps it aligned with "House Floor" */
         font-family: 'Merriweather', serif; 
         font-weight: 700; 
         color: var(--brand-primary);
@@ -146,7 +149,9 @@
         white-space: nowrap;
         overflow: hidden;
         width: 0;
-        animation: typing 2.5s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
+        /* Changed 'steps(14)' to 'ease-out' because Merriweather is not a monospace font.
+           Steps would cut through the wider letters like 'W'. Smooth is better here. */
+        animation: typing 2.5s ease-out forwards, blink-caret 0.8s step-end infinite;
     }
     @keyframes typing { to { width: 100%; } }
     @keyframes blink-caret { 50% { border-color: transparent; } }
