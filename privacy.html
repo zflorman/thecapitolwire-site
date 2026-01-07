@@ -1,34 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Privacy Policy - The Capitol Wire</title>
+  <meta charset="UTF-8" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CEV5ME0C6L');
+  </script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy | The Capitol Wire</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: sans-serif; padding: 40px 20px; max-width: 800px; margin: 0 auto; line-height: 1.6; color: #333; }
-    h1 { color: #1e3a8a; }
-    h2 { font-size: 1.2rem; margin-top: 30px; color: #1f2937; }
-    a { color: #1e3a8a; }
+    /* --- MODERN THEME VARIABLES --- */
+    :root {
+      --bg-main: #ffffff;
+      --bg-subtle: #f8fafc;
+      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%);
+      
+      --card-bg: #ffffff;
+      --card-border: 1px solid #e2e8f0;
+      --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      
+      --brand-primary: #2563eb;
+      --brand-dark: #1e3a8a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    
+    body { 
+        font-family: 'Inter', sans-serif; 
+        color: var(--text-main); 
+        background: var(--bg-main); 
+        background-image: var(--bg-gradient);
+        background-attachment: fixed;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- GLASS NAV --- */
+    nav { 
+        background: rgba(255, 255, 255, 0.8); 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 16px 0; 
+        position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner { 
+        max-width: 1000px; margin: 0 auto; padding: 0 24px; 
+        display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo { 
+        font-family: 'Merriweather', serif; font-weight: 800; font-size: 1.2rem; 
+        color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
+        letter-spacing: -0.5px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-link { 
+        color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; 
+        transition: color 0.2s; cursor: pointer; 
+    }
+    .nav-link:hover { color: var(--brand-primary); }
+    
+    /* Button */
+    .sub-btn { 
+        background: var(--brand-primary); 
+        color: white; 
+        padding: 8px 16px; 
+        border-radius: 6px; 
+        font-weight: 600; 
+        text-decoration: none; 
+        font-size: 0.85rem; 
+        transition: background 0.1s;
+    }
+    .sub-btn:hover { background: var(--brand-dark); }
+
+    /* --- CONTENT LAYOUT --- */
+    .policy-container { 
+        max-width: 800px; margin: 60px auto; padding: 0 24px; 
+    }
+
+    h1 { 
+        font-family: 'Merriweather', serif; 
+        font-size: 2.5rem; 
+        color: var(--text-main); 
+        margin-bottom: 10px; 
+        letter-spacing: -1px;
+    }
+    
+    .last-updated {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 50px;
+        font-weight: 500;
+    }
+
+    h2 { 
+        font-family: 'Merriweather', serif;
+        font-size: 1.25rem; 
+        color: var(--text-main); 
+        margin-top: 40px; 
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    p, li { 
+        color: #334155; 
+        margin-bottom: 16px; 
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+    
+    ul { margin-left: 20px; margin-bottom: 20px; }
+    li { margin-bottom: 8px; }
+
+    a { 
+        color: var(--brand-primary); 
+        text-decoration: none; 
+        font-weight: 600;
+        border-bottom: 1px dotted var(--brand-primary);
+    }
+    a:hover { border-bottom-style: solid; color: var(--brand-dark); }
+
+    /* --- FOOTER --- */
+    footer { 
+        padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; 
+        border-top: 1px solid #e2e8f0; margin-top: 80px;
+    }
+    footer a { color: #64748b; text-decoration: none; border: none; font-weight: 400; }
+    footer a:hover { color: var(--brand-primary); text-decoration: underline; }
+    .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 2rem; }
+        .policy-container { margin-top: 40px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Privacy Policy</h1>
-  <p><strong>Last Updated: December 21, 2025</strong></p>
-  <p>The Capitol Wire ("we", "our") respects your privacy. This policy explains how we handle your data.</p>
 
-  <h2>1. Information We Collect</h2>
-  <p>We only collect your email address when you voluntarily subscribe to our alerts. We do not collect names, phone numbers, or IP addresses.</p>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">🏛️ The Capitol Wire</a>
+      <div class="nav-links">
+        <a href="dashboard/" class="nav-link">Dashboard</a>
+        <a href="/#hero" class="sub-btn">Get Alerts</a>
+      </div>
+    </div>
+  </nav>
 
-  <h2>2. How We Use Your Data</h2>
-  <p>Your email is used solely to send you notifications regarding the U.S. House Floor Schedule. We do not sell or rent your email address to third parties.</p>
+  <div class="policy-container">
+    <h1>Privacy Policy</h1>
+    <div class="last-updated">Last Updated: January 6, 2026</div>
 
-  <h2>3. Data Security</h2>
-  <p>We use secure, industry-standard database services (Supabase) to store your information. We do not store personal data on local devices.</p>
+    <p>The Capitol Wire ("we", "our") is a legislative intelligence service designed to monitor the U.S. House Floor Schedule. We respect your privacy and are committed to protecting the limited data we collect. This policy outlines our data handling practices.</p>
 
-  <h2>4. Updates to This Policy</h2>
-  <p>We may update this policy in the future. If we make significant changes to how we handle your data, we will notify you via email.</p>
+    <h2>1. Information We Collect</h2>
+    <p>We believe in data minimalism. We only collect the information strictly necessary to provide our alert service:</p>
+    <ul>
+        <li><strong>Email Addresses:</strong> When you subscribe, we collect your email address to deliver real-time legislative alerts.</li>
+        <li><strong>Usage Data:</strong> We use Google Analytics to understand how visitors interact with our dashboard. This may include anonymous data such as browser type, device type, and pages visited.</li>
+    </ul>
 
-  <h2>5. Contact</h2>
-  <p>For questions, contact us at <a href="mailto:zach@thecapitolwire.com">zach@thecapitolwire.com</a>.</p>
+    <h2>2. How We Use Your Data</h2>
+    <p>Your data is used for the following specific purposes:</p>
+    <ul>
+        <li><strong>Service Delivery:</strong> To send you immediate notifications when the House Clerk or Majority Leader updates the legislative schedule.</li>
+        <li><strong>System Optimization:</strong> Usage data helps us optimize the performance of our real-time "Gap Analysis" engine and dashboard responsiveness.</li>
+    </ul>
+    <p><strong>We do not sell, rent, or trade your personal information to third parties, political organizations, or advocacy groups.</strong></p>
+
+    <h2>3. Infrastructure & Security</h2>
+    <p>We utilize enterprise-grade infrastructure to ensure your data is secure:</p>
+    <ul>
+        <li><strong>Database:</strong> Subscriber data is stored securely in <strong>Supabase</strong> (PostgreSQL), which utilizes industry-standard encryption and security protocols.</li>
+        <li><strong>Email Delivery:</strong> We use <strong>Amazon Web Services (AWS SES)</strong> for high-speed, secure email delivery. Your email address is processed through AWS solely for the purpose of sending alerts.</li>
+    </ul>
+
+    <h2>4. Cookies</h2>
+    <p>Our website uses cookies primarily for Google Analytics to help us improve the user experience. You can choose to disable cookies through your browser settings, though this may affect some non-essential features of the dashboard.</p>
+
+    <h2>5. Updates to This Policy</h2>
+    <p>We may update this policy as our technology evolves. If we make significant changes to how we handle your personal data, we will notify active subscribers via email prior to the change taking effect.</p>
+
+    <h2>6. Contact Us</h2>
+    <p>If you have questions about this policy or wish to unsubscribe/delete your data, please contact us at <a href="mailto:zach@thecapitolwire.com">zach@thecapitolwire.com</a>.</p>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>
