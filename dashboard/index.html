@@ -322,10 +322,11 @@
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const CATEGORIES = [
-        { key: 'Suspension', label: 'Suspension of the Rules' },
-        { key: 'Rule', label: 'Pursuant to a Rule' },
-        { key: 'Possible Consideration', label: 'Possible Consideration' }
+    cconst CATEGORIES = [
+        { key: 'SUSPENSION', label: 'Suspension of the Rules' },
+        { key: 'RULE', label: 'Pursuant to a Rule' },
+        { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
+        { key: 'ADVANCE_NOTICE', label: 'Advance Notice' } // Added this for Leader items
     ];
 
     let lastKnownTimestamp = "";
