@@ -238,10 +238,6 @@
             grid-template-columns: 1fr; /* Single Column */
             gap: 30px;
         }
-        /* NOTE: Because the Sidebar is defined AFTER the content-area in the HTML,
-           it will naturally stack at the bottom on mobile. 
-           We removed the 'order: -1' rule to ensure this happens.
-        */
         .sidebar { width: 100%; }
         .week-header-text { font-size: 1.6rem; }
     }
@@ -303,7 +299,7 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
   </div>
 
   <div class="modal-overlay" id="modal">
@@ -322,10 +318,12 @@
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // FIXED: Uppercase keys to match Database exactly
     const CATEGORIES = [
-        { key: 'Suspension', label: 'Suspension of the Rules' },
-        { key: 'Rule', label: 'Pursuant to a Rule' },
-        { key: 'Possible Consideration', label: 'Possible Consideration' }
+        { key: 'SUSPENSION', label: 'Suspension of the Rules' },
+        { key: 'RULE', label: 'Pursuant to a Rule' },
+        { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
+        { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
     ];
 
     let lastKnownTimestamp = "";
@@ -440,7 +438,7 @@
         document.getElementById('weekly-header').innerText = "Text of Bills for the Week of " + monday.toLocaleDateString('en-US', options);
     }
 
-    // --- FEED LOGIC ---
+    // --- FEED LOGIC (FIXED) ---
     async function initFeed() {
         const latestContainer = document.getElementById('latest-container');
         const latestList = document.getElementById('latest-list');
@@ -448,10 +446,22 @@
         const statusLine = document.getElementById('status-line');
 
         try {
-            const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
+            // SAFE QUERY: Limit 100 to prevent overload, sort ID Ascending (Newest ID = 1)
+            const { data, error } = await _supabase
+                .from('live_feed')
+                .select('*')
+                .order('id', { ascending: true })
+                .limit(100);
+
+            if (error) {
+                console.error("Supabase Error:", error);
+                scheduleList.innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error: Unable to load data.</div>';
+                return;
+            }
 
             if (data && data.length > 0) {
-                const newestTimestamp = data[0].timestamp;
+                // Safely get timestamp from top item
+                const newestTimestamp = data[0]?.timestamp || "";
                 
                 if (newestTimestamp) {
                     updateWeeklyHeader(newestTimestamp);
@@ -462,12 +472,13 @@
                     scheduleList.innerHTML = '';
                     latestList.innerHTML = '';
                     
-                    if (newestTimestamp && newestTimestamp.trim() !== "") {
+                    if (newestTimestamp.trim() !== "") {
                         statusLine.innerHTML = "Last update from the Clerk: <b>" + newestTimestamp + "</b>";
                     }
 
+                    // --- 1. FILL LATEST ACTIVITY (Top Box) ---
                     let hasLatest = false;
-                    if (newestTimestamp && newestTimestamp.trim() !== "") {
+                    if (newestTimestamp.trim() !== "") {
                         data.forEach(item => {
                             if (item.timestamp === newestTimestamp) {
                                 latestList.appendChild(createBillItem(item));
@@ -477,24 +488,32 @@
                     }
                     latestContainer.style.display = hasLatest ? 'block' : 'none';
 
+                    // --- 2. FILL MAIN CATEGORIES (Bottom Lists) ---
                     CATEGORIES.forEach(cat => {
-                        const catItems = data.filter(i => i.category === cat.key);
+                        // CASE INSENSITIVE MATCH (Fixes the missing items bug)
+                        const catItems = data.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
+                        
                         if (catItems.length > 0) {
                             const section = document.createElement('div');
                             section.className = 'feed-section';
+                            
                             const header = document.createElement('div');
                             header.className = 'section-header';
                             header.innerText = cat.label;
                             section.appendChild(header);
+                            
                             catItems.forEach(item => section.appendChild(createBillItem(item)));
                             scheduleList.appendChild(section);
                         }
                     });
                 }
             } else {
-                scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">No active schedule.</div>';
+                scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">No active schedule found.</div>';
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error("Feed Crash:", e); 
+            scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">Loading Error. Please refresh.</div>';
+        }
     }
 
     function createBillItem(item) {
@@ -513,7 +532,7 @@
         }
 
         // --- TITLE BOLD LOGIC ---
-        let fullTitle = item.title;
+        let fullTitle = item.title || "";
         let boldPart = fullTitle;
         let normalPart = "";
 
@@ -535,6 +554,7 @@
         return div;
     }
     
+    // START
     initFeed();
     setInterval(initFeed, 10000);
 
