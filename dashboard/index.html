@@ -516,6 +516,7 @@
         if (filteredData.length === 0) {
             scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color: #94a3b8;">No items scheduled for this period.</div>';
             latestContainer.style.display = 'none';
+            statusLine.innerHTML = "System Active. Monitoring for updates...";
             return;
         }
 
@@ -523,14 +524,15 @@
         // (Assuming higher ID = newer)
         const displayData = [...filteredData].sort((a, b) => b.id - a.id);
 
-        // Update Status Line (Use the newest item's timestamp)
+        // Update Status Line (Use the newest item's timestamp FROM THIS VIEW ONLY)
         const newestItem = displayData[0];
         if (newestItem && newestItem.timestamp) {
             statusLine.innerHTML = "Last update from the Clerk: <b>" + newestItem.timestamp + "</b>";
+        } else {
+            statusLine.innerHTML = "System Active. Monitoring for updates...";
         }
 
-        // --- 1. FILL LATEST ACTIVITY (Top Box) ---
-        // Show items with the exact same timestamp as the newest one
+        // --- 1. FILL LATEST ACTIVITY (Top Box - Filtered to this view) ---
         let hasLatest = false;
         if (newestItem && newestItem.timestamp) {
             displayData.forEach(item => {
