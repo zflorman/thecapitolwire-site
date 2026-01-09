@@ -90,6 +90,33 @@
         display: grid; grid-template-columns: 1fr 320px; gap: 40px; 
     }
 
+    /* --- TOGGLE BUTTONS --- */
+    .toggle-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .toggle-btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: var(--text-muted);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+    .toggle-btn:hover {
+        background: #f1f5f9;
+    }
+    .toggle-btn.active {
+        background: var(--brand-primary);
+        color: white;
+        border-color: var(--brand-primary);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+
     /* --- WEEKLY HEADER --- */
     .week-header-box { 
         margin-bottom: 25px; 
@@ -112,7 +139,6 @@
         width: fit-content;
     }
     
-    /* Ripple Dot Animation */
     .live-dot { 
         width: 8px; height: 8px; 
         background: #22c55e; 
@@ -255,8 +281,13 @@
   <div class="main-container">
     
     <div class="content-area">
+        <div class="toggle-container">
+            <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This Week</button>
+            <button class="toggle-btn" id="btn-next-week" onclick="switchSection('NEXT_WEEK')">Next Week</button>
+        </div>
+
         <div class="week-header-box">
-            <h2 id="weekly-header" class="week-header-text">Loading Week...</h2>
+            <h2 id="weekly-header" class="week-header-text">Loading...</h2>
         </div>
 
         <div class="status-bar">
@@ -318,7 +349,6 @@
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // FIXED: Uppercase keys to match Database exactly
     const CATEGORIES = [
         { key: 'SUSPENSION', label: 'Suspension of the Rules' },
         { key: 'RULE', label: 'Pursuant to a Rule' },
@@ -326,7 +356,10 @@
         { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
     ];
 
-    let lastKnownTimestamp = "";
+    // Global State
+    let activeSection = 'THIS_WEEK'; 
+    let allBillData = [];
+    let lastFetchedHash = "";
 
     // --- CALENDAR LOGIC (2025-2026 Session Dates) ---
     const SESSION_DATES = [
@@ -415,38 +448,22 @@
     }
     renderCalendar();
 
-    // --- AUTOMATIC WEEK HEADER ---
-    function updateWeeklyHeader(dateStringFromDB) {
-        const dateRegex = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
-        const match = dateStringFromDB.match(dateRegex);
+    // --- TOGGLE LOGIC ---
+    function switchSection(section) {
+        activeSection = section;
         
-        let referenceDate = new Date(); 
+        // Update Buttons
+        document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
+        document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
         
-        if (match) {
-            const month = parseInt(match[1]) - 1;
-            const day = parseInt(match[2]);
-            const year = parseInt(match[3]);
-            referenceDate = new Date(year, month, day);
-        }
-
-        const day = referenceDate.getDay(); 
-        const diff = referenceDate.getDate() - day + (day === 0 ? -6 : 1);
-        const monday = new Date(referenceDate);
-        monday.setDate(diff);
-
-        const options = { month: 'short', day: 'numeric', year: 'numeric' };
-        document.getElementById('weekly-header').innerText = "Text of Bills for the Week of " + monday.toLocaleDateString('en-US', options);
+        // Redraw
+        renderFeed();
     }
 
-    // --- FEED LOGIC (FIXED) ---
+    // --- FEED LOGIC ---
     async function initFeed() {
-        const latestContainer = document.getElementById('latest-container');
-        const latestList = document.getElementById('latest-list');
-        const scheduleList = document.getElementById('schedule-list');
-        const statusLine = document.getElementById('status-line');
-
         try {
-            // SAFE QUERY: Limit 100 to prevent overload, sort ID Ascending (Newest ID = 1)
+            // Fetch everything
             const { data, error } = await _supabase
                 .from('live_feed')
                 .select('*')
@@ -455,65 +472,94 @@
 
             if (error) {
                 console.error("Supabase Error:", error);
-                scheduleList.innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error: Unable to load data.</div>';
+                document.getElementById('schedule-list').innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error.</div>';
                 return;
             }
 
-            if (data && data.length > 0) {
-                // Safely get timestamp from top item
-                const newestTimestamp = data[0]?.timestamp || "";
-                
-                if (newestTimestamp) {
-                    updateWeeklyHeader(newestTimestamp);
+            if (data) {
+                // Check if data changed to avoid UI flicker
+                const currentHash = JSON.stringify(data.map(d => d.id));
+                if (currentHash !== lastFetchedHash) {
+                    allBillData = data;
+                    lastFetchedHash = currentHash;
+                    renderFeed();
                 }
-
-                if (newestTimestamp !== lastKnownTimestamp) {
-                    lastKnownTimestamp = newestTimestamp;
-                    scheduleList.innerHTML = '';
-                    latestList.innerHTML = '';
-                    
-                    if (newestTimestamp.trim() !== "") {
-                        statusLine.innerHTML = "Last update from the Clerk: <b>" + newestTimestamp + "</b>";
-                    }
-
-                    // --- 1. FILL LATEST ACTIVITY (Top Box) ---
-                    let hasLatest = false;
-                    if (newestTimestamp.trim() !== "") {
-                        data.forEach(item => {
-                            if (item.timestamp === newestTimestamp) {
-                                latestList.appendChild(createBillItem(item));
-                                hasLatest = true;
-                            }
-                        });
-                    }
-                    latestContainer.style.display = hasLatest ? 'block' : 'none';
-
-                    // --- 2. FILL MAIN CATEGORIES (Bottom Lists) ---
-                    CATEGORIES.forEach(cat => {
-                        // CASE INSENSITIVE MATCH (Fixes the missing items bug)
-                        const catItems = data.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
-                        
-                        if (catItems.length > 0) {
-                            const section = document.createElement('div');
-                            section.className = 'feed-section';
-                            
-                            const header = document.createElement('div');
-                            header.className = 'section-header';
-                            header.innerText = cat.label;
-                            section.appendChild(header);
-                            
-                            catItems.forEach(item => section.appendChild(createBillItem(item)));
-                            scheduleList.appendChild(section);
-                        }
-                    });
-                }
-            } else {
-                scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">No active schedule found.</div>';
             }
-        } catch (e) { 
-            console.error("Feed Crash:", e); 
-            scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">Loading Error. Please refresh.</div>';
+        } catch (e) { console.error("Feed Crash:", e); }
+    }
+
+    function renderFeed() {
+        const latestContainer = document.getElementById('latest-container');
+        const latestList = document.getElementById('latest-list');
+        const scheduleList = document.getElementById('schedule-list');
+        const headerText = document.getElementById('weekly-header');
+        const statusLine = document.getElementById('status-line');
+
+        // Clear View
+        scheduleList.innerHTML = '';
+        latestList.innerHTML = '';
+
+        // Filter by Active Section
+        // Fallback: If item.section is missing, treat as THIS_WEEK
+        const filteredData = allBillData.filter(item => {
+            const itemSec = item.section || 'THIS_WEEK';
+            return itemSec === activeSection;
+        });
+
+        // Update Header Text
+        if (activeSection === 'NEXT_WEEK') {
+            headerText.innerText = "Agenda: Next Week";
+        } else {
+            headerText.innerText = "Agenda: This Week";
         }
+
+        if (filteredData.length === 0) {
+            scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color: #94a3b8;">No items scheduled for this period.</div>';
+            latestContainer.style.display = 'none';
+            return;
+        }
+
+        // Sort Newest First for display
+        // (Assuming higher ID = newer)
+        const displayData = [...filteredData].sort((a, b) => b.id - a.id);
+
+        // Update Status Line (Use the newest item's timestamp)
+        const newestItem = displayData[0];
+        if (newestItem && newestItem.timestamp) {
+            statusLine.innerHTML = "Last update from the Clerk: <b>" + newestItem.timestamp + "</b>";
+        }
+
+        // --- 1. FILL LATEST ACTIVITY (Top Box) ---
+        // Show items with the exact same timestamp as the newest one
+        let hasLatest = false;
+        if (newestItem && newestItem.timestamp) {
+            displayData.forEach(item => {
+                if (item.timestamp === newestItem.timestamp) {
+                    latestList.appendChild(createBillItem(item));
+                    hasLatest = true;
+                }
+            });
+        }
+        latestContainer.style.display = hasLatest ? 'block' : 'none';
+
+        // --- 2. FILL MAIN CATEGORIES (Bottom Lists) ---
+        CATEGORIES.forEach(cat => {
+            // Case insensitive match
+            const catItems = displayData.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
+            
+            if (catItems.length > 0) {
+                const section = document.createElement('div');
+                section.className = 'feed-section';
+                
+                const header = document.createElement('div');
+                header.className = 'section-header';
+                header.innerText = cat.label;
+                section.appendChild(header);
+                
+                catItems.forEach(item => section.appendChild(createBillItem(item)));
+                scheduleList.appendChild(section);
+            }
+        });
     }
 
     function createBillItem(item) {
@@ -531,7 +577,7 @@
             timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
         }
 
-        // --- TITLE BOLD LOGIC ---
+        // Title Bold Logic
         let fullTitle = item.title || "";
         let boldPart = fullTitle;
         let normalPart = "";
