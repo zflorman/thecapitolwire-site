@@ -449,26 +449,39 @@
         const statusLine = document.getElementById('status-line');
 
         try {
-            const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
+            // Fetch all data (No limit, ensuring we get everything)
+            const { data, error } = await _supabase
+                .from('live_feed')
+                .select('*')
+                .order('id', { ascending: false }); // Sort ID descending (Newest first)
+
+            if (error) {
+                console.error("Supabase Error:", error);
+                scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">Error loading data.</div>';
+                return;
+            }
 
             if (data && data.length > 0) {
-                const newestTimestamp = data[0].timestamp;
+                // SAFETY CHECK: Ensure data[0] exists before reading timestamp
+                const newestTimestamp = data[0].timestamp || "";
                 
                 if (newestTimestamp) {
                     updateWeeklyHeader(newestTimestamp);
                 }
 
+                // Only redraw if the data has changed
                 if (newestTimestamp !== lastKnownTimestamp) {
                     lastKnownTimestamp = newestTimestamp;
                     scheduleList.innerHTML = '';
                     latestList.innerHTML = '';
                     
-                    if (newestTimestamp && newestTimestamp.trim() !== "") {
+                    if (newestTimestamp.trim() !== "") {
                         statusLine.innerHTML = "Last update from the Clerk: <b>" + newestTimestamp + "</b>";
                     }
 
+                    // --- 1. FILL LATEST ACTIVITY (Top Box) ---
                     let hasLatest = false;
-                    if (newestTimestamp && newestTimestamp.trim() !== "") {
+                    if (newestTimestamp.trim() !== "") {
                         data.forEach(item => {
                             if (item.timestamp === newestTimestamp) {
                                 latestList.appendChild(createBillItem(item));
@@ -478,24 +491,32 @@
                     }
                     latestContainer.style.display = hasLatest ? 'block' : 'none';
 
+                    // --- 2. FILL MAIN CATEGORIES (Bottom Lists) ---
                     CATEGORIES.forEach(cat => {
-                        const catItems = data.filter(i => i.category === cat.key);
+                        // Case-insensitive match to be safe
+                        const catItems = data.filter(i => i.category && i.category.toUpperCase() === cat.key.toUpperCase());
+                        
                         if (catItems.length > 0) {
                             const section = document.createElement('div');
                             section.className = 'feed-section';
+                            
                             const header = document.createElement('div');
                             header.className = 'section-header';
                             header.innerText = cat.label;
                             section.appendChild(header);
+                            
                             catItems.forEach(item => section.appendChild(createBillItem(item)));
                             scheduleList.appendChild(section);
                         }
                     });
                 }
             } else {
-                scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">No active schedule.</div>';
+                scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">No active schedule found.</div>';
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error(e); 
+            scheduleList.innerHTML = '<div style="padding:40px; text-align:center;">System Error. check console.</div>';
+        }
     }
 
     function createBillItem(item) {
