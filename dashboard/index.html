@@ -11,26 +11,30 @@
   </script>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | The Capitol Wire</title>
+  <title>The Capitol Wire | Legislative Intelligence</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
 
   <style>
-    /* --- MODERN THEME VARIABLES --- */
+    /* --- MODERN LIGHT THEME --- */
     :root {
       --bg-main: #ffffff;
-      --bg-subtle: #f8fafc;
-      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%);
+      --bg-subtle: #f8fafc; 
+      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%); 
       
       --card-bg: #ffffff;
       --card-border: 1px solid #e2e8f0;
       --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+
+      --text-main: #0f172a; 
+      --text-muted: #64748b; 
       
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      
-      --brand-primary: #2563eb;
-      --brand-dark: #1e3a8a;
+      --brand-primary: #2563eb; 
+      --brand-dark: #1e3a8a;    
       
       --success: #10b981;
       --warning-bg: #fffbeb;
@@ -39,6 +43,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    html { scroll-behavior: smooth; }
     
     body { 
         font-family: 'Inter', sans-serif; 
@@ -46,13 +51,14 @@
         background: var(--bg-main); 
         background-image: var(--bg-gradient);
         background-attachment: fixed;
+        min-height: 100vh;
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
     }
 
-    /* --- GLASS NAV --- */
+    /* --- NAV --- */
     nav { 
-        background: rgba(255, 255, 255, 0.8); 
+        background: rgba(255, 255, 255, 0.9); 
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -69,7 +75,6 @@
         letter-spacing: -0.5px;
     }
     
-    /* Subscribe Button */
     .sub-btn { 
         background: var(--brand-primary); 
         color: white; 
@@ -84,20 +89,21 @@
     }
     .sub-btn:hover { background: var(--brand-dark); }
 
-    /* --- LAYOUT --- */
+    /* --- LAYOUT GRID --- */
     .main-container { 
         max-width: 1200px; margin: 40px auto; padding: 0 24px; 
         display: grid; grid-template-columns: 1fr 320px; gap: 40px; 
+        position: relative; z-index: 2;
     }
 
     /* --- TOGGLE BUTTONS --- */
     .toggle-container {
         display: flex;
         gap: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
     .toggle-btn {
-        padding: 10px 20px;
+        padding: 12px 24px;
         border-radius: 8px;
         border: 1px solid #e2e8f0;
         background: white;
@@ -105,36 +111,36 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        box-shadow: var(--card-shadow);
     }
     .toggle-btn:hover {
         background: #f1f5f9;
+        color: var(--brand-primary);
     }
     .toggle-btn.active {
         background: var(--brand-primary); 
         color: white;
         border-color: var(--brand-primary);
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
     }
 
-    /* --- WEEKLY HEADER --- */
-    .week-header-box { 
-        margin-bottom: 25px; 
-    }
+    /* --- HEADER & STATUS --- */
+    .week-header-box { margin-bottom: 20px; }
     .week-header-text { 
         font-family: 'Merriweather', serif; 
-        font-size: 2rem; 
+        font-size: 2.2rem; 
         color: var(--text-main); 
         font-weight: 700; 
         letter-spacing: -1px;
+        line-height: 1.2;
     }
 
-    /* --- FEED STYLES --- */
     .status-bar { 
         display: flex; align-items: center; gap: 12px;
         font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
-        background: white; padding: 10px 16px; border-radius: 8px; 
-        border: 1px solid #e2e8f0; margin-bottom: 25px; 
+        background: white; padding: 10px 16px; border-radius: 100px; 
+        border: 1px solid #e2e8f0; margin-bottom: 30px; 
         box-shadow: var(--card-shadow);
         width: fit-content;
     }
@@ -152,13 +158,17 @@
         100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 
+    /* --- FEED SECTIONS --- */
     .feed-section { 
         background: var(--card-bg); 
         border: var(--card-border); 
         border-radius: 12px; 
         box-shadow: var(--card-shadow); 
         margin-bottom: 30px; overflow: hidden; 
+        transition: all 0.2s;
     }
+    .feed-section:hover { box-shadow: var(--card-hover-shadow); }
+
     .section-header { 
         background: #f8fafc; 
         padding: 14px 24px; 
@@ -178,18 +188,21 @@
     .bill-item:hover { background: #f8fafc; }
     
     .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
-    .bill-title { color: var(--text-main); font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; }
-    .bill-title strong { font-weight: 700; color: var(--text-main); font-family: 'Merriweather', serif; }
     
-    .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    /* UPDATED BILL TITLE STYLES */
+    .bill-title { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .bill-id { font-weight: 700; font-family: 'Merriweather', serif; color: var(--brand-dark); font-size: 1.05rem; }
+    .bill-desc { font-size: 1rem; color: var(--text-main); font-weight: 400; line-height: 1.5; }
+    
+    .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; margin-top: 2px;}
     .doc-link { 
         color: var(--brand-primary); text-decoration: none; 
-        background: #eff6ff; padding: 3px 8px; border-radius: 4px; 
+        background: #eff6ff; padding: 4px 10px; border-radius: 6px; 
         transition: all 0.2s;
     }
     .doc-link:hover { background: var(--brand-primary); color: white; }
     
-    .bill-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .bill-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-top: 6px; }
     .meta-time { 
         color: #be123c; font-weight: 600; background: #fff1f2; 
         padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
@@ -226,7 +239,6 @@
         padding: 6px 0; color: var(--text-main); border-radius: 6px; 
         font-variant-numeric: tabular-nums;
     }
-    /* Session Day Style */
     .cal-session { 
         background: #eff6ff; color: var(--brand-primary); font-weight: 700; 
         border: 1px solid #dbeafe;
@@ -234,7 +246,7 @@
     .cal-today { 
         background: var(--brand-primary); color: white; font-weight:700; 
     } 
-    
+
     /* --- MODAL --- */
     .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display:none; justify-content:center; align-items:center; z-index:200; }
     .modal { background:white; padding:40px 30px; border-radius:16px; width:90%; max-width:420px; text-align:center; position:relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
@@ -249,7 +261,7 @@
     
     .modal button { 
         width:100%; padding:12px; 
-        background: var(--brand-primary); 
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
         color:white; border:none; border-radius:8px; 
         font-weight:600; cursor:pointer; font-size: 1rem;
         transition: transform 0.1s;
@@ -258,14 +270,17 @@
     .modal button:disabled { background: #94a3b8; cursor: wait; transform: none; }
     .modal-msg { margin-top:15px; font-size:0.9rem; min-height: 20px; }
 
-    /* --- MOBILE RESPONSIVE --- */
+    footer { padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 60px; grid-column: 1 / -1; }
+    footer a { color: #64748b; text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--brand-primary); text-decoration: underline; }
+    .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
+
     @media (max-width: 900px) {
-        .main-container { 
-            grid-template-columns: 1fr; /* Single Column */
-            gap: 30px;
-        }
-        .sidebar { width: 100%; }
-        .week-header-text { font-size: 1.6rem; }
+        .main-container { grid-template-columns: 1fr; gap: 30px; }
+        .sidebar { width: 100%; order: 2; }
+        .content-area { order: 1; }
+        .week-header-text { font-size: 1.8rem; }
+        .bill-row { flex-direction: column; gap: 10px; }
     }
   </style>
 </head>
@@ -274,7 +289,7 @@
   <nav>
     <div class="nav-inner">
       <a href="/" class="logo">🏛️ The Capitol Wire</a>
-      <button class="sub-btn" onclick="openModal()">Subscribe</button>
+      <button class="sub-btn" onclick="openModal()">Get Alerts</button>
     </div>
   </nav>
 
@@ -287,12 +302,12 @@
         </div>
 
         <div class="week-header-box">
-            <h2 id="weekly-header" class="week-header-text">Loading...</h2>
+            <h2 id="weekly-header" class="week-header-text">Loading Agenda...</h2>
         </div>
 
         <div class="status-bar">
             <div class="live-dot"></div>
-            <div id="status-line">System Active. Monitoring for updates...</div>
+            <div id="status-line">System Online. Monitoring active feeds...</div>
         </div>
 
         <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
@@ -303,7 +318,7 @@
         </div>
 
         <div id="schedule-list">
-            <div style="padding:60px; text-align:center; color: #94a3b8;">Loading legislative data...</div>
+            <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">Initializing secure connection...</div>
         </div>
     </div>
 
@@ -331,6 +346,17 @@
             </div>
         </div>
     </div>
+
+    <footer>
+        <div class="container">
+          <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
+          <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+          </div>
+        </div>
+    </footer>
   </div>
 
   <div class="modal-overlay" id="modal">
@@ -525,7 +551,7 @@
         const displayData = [...filteredData].sort((a, b) => b.id - a.id);
 
         // Update Status Line
-        // FIXED: Check new page_timestamp column first (Banner Clock), then fallback to timestamp (Bill Clock)
+        // Logic: Use global page_timestamp first, then fallback to item timestamp
         const newestItem = displayData[0];
         const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
 
@@ -581,25 +607,35 @@
         // Bill Card always uses the standard item.timestamp
         let timeHtml = '';
         if (item.timestamp && item.timestamp.trim() !== "") {
-            timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
+            // UPDATED: Removed "Updated:" text, just pill
+            timeHtml = `<div class="bill-meta"><span class="meta-time">${item.timestamp}</span></div>`;
         }
 
-        // Title Bold Logic
+        // Title Logic: Split vertical stacking
         let fullTitle = item.title || "";
         let boldPart = fullTitle;
         let normalPart = "";
 
+        // Try em dash first, then hyphen
         let splitIndex = fullTitle.indexOf("—");
         if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
 
         if (splitIndex !== -1) {
             boldPart = fullTitle.substring(0, splitIndex).trim(); 
-            normalPart = fullTitle.substring(splitIndex); 
+            // Skip the delimiter (+1) so it doesn't show in the description
+            normalPart = fullTitle.substring(splitIndex + 1).trim(); 
+        } else {
+            // If no dash found (e.g. "Veto Message..."), keep standard
+            boldPart = fullTitle;
+            normalPart = "";
         }
 
         div.innerHTML = `
             <div class="bill-row">
-                <div class="bill-title"><strong>${boldPart}</strong> ${normalPart}</div>
+                <div class="bill-title">
+                    <div class="bill-id">${boldPart}</div>
+                    ${normalPart ? `<div class="bill-desc">${normalPart}</div>` : ''}
+                </div>
                 ${linkHtml}
             </div>
             ${timeHtml}
@@ -619,8 +655,7 @@
 
     function openModal() { modal.style.display = 'flex'; }
     function closeModal() { modal.style.display = 'none'; }
-    window.addEventListener('load', () => { setTimeout(openModal, 2000); });
-
+    
     modalBtn.addEventListener('click', async () => {
         const email = modalInput.value.trim();
         if (!email || !email.includes('@')) {
