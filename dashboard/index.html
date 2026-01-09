@@ -111,7 +111,7 @@
         background: #f1f5f9;
     }
     .toggle-btn.active {
-        background: var(--brand-primary);
+        background: var(--brand-primary); 
         color: white;
         border-color: var(--brand-primary);
         box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
@@ -524,16 +524,20 @@
         // (Assuming higher ID = newer)
         const displayData = [...filteredData].sort((a, b) => b.id - a.id);
 
-        // Update Status Line (Use the newest item's timestamp FROM THIS VIEW ONLY)
+        // Update Status Line
+        // FIXED: Check new page_timestamp column first (Banner Clock), then fallback to timestamp (Bill Clock)
         const newestItem = displayData[0];
-        if (newestItem && newestItem.timestamp) {
-            statusLine.innerHTML = "Last update from the Clerk: <b>" + newestItem.timestamp + "</b>";
+        const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
+
+        if (bannerTime) {
+            statusLine.innerHTML = "Last update from the Clerk: <b>" + bannerTime + "</b>";
         } else {
             statusLine.innerHTML = "System Active. Monitoring for updates...";
         }
 
         // --- 1. FILL LATEST ACTIVITY (Top Box - Filtered to this view) ---
         let hasLatest = false;
+        // Use standard bill timestamp for identifying "Latest" activity logic
         if (newestItem && newestItem.timestamp) {
             displayData.forEach(item => {
                 if (item.timestamp === newestItem.timestamp) {
@@ -574,6 +578,7 @@
             linkHtml = `<div class="bill-links"><a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a></div>`;
         }
         
+        // Bill Card always uses the standard item.timestamp
         let timeHtml = '';
         if (item.timestamp && item.timestamp.trim() !== "") {
             timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
