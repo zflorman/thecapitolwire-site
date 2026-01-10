@@ -1,1326 +1,681 @@
-import logging
-import argparse
-import os
-import re
-import textwrap
-import json
-import hashlib
-import sys
-import time
-import tempfile
-import difflib
-import gc
-import warnings
-from datetime import datetime, timedelta, timezone
-from urllib.parse import urlparse, parse_qs
-
-# --- NEW IMPORTS FOR AWS & SUPABASE ---
-import boto3
-from botocore.exceptions import ClientError
-from supabase import create_client, Client
-# --------------------------------------
-
-# --- NEW IMPORTS FOR PDF & AI (UPDATED SDK) ---
-import pdfplumber
-from google import genai
-from google.genai import types
-from google.genai.errors import ServerError, ClientError
-# ----------------------------------------------
-
-import redis
-import requests
-import feedparser
-from bs4 import BeautifulSoup
-from typing import List, Dict, Any, Tuple, Optional
-
-# --- SILENCE THE ANNOYING TRAILING SLASH WARNING ---
-warnings.filterwarnings("ignore", message="Storage endpoint URL should have a trailing slash")
-logging.getLogger("storage3").setLevel(logging.ERROR)
-# -------------------------------------------------
-
-# --- LOGGING CONFIGURATION ---
-logging.basicConfig(level=logging.INFO, stream=sys.stdout, format='%(asctime)s %(levelname)s %(message)s')
-logging.getLogger("httpx").setLevel(logging.WARNING)
-# -----------------------------
-
-RSS_URL = "https://docs.house.gov/BillsThisWeek-RSS.xml"
-CANONICAL_PAGE_URL = "https://docs.house.gov/floor/Default.aspx"
-
-REDIS_URL = os.environ["REDIS_URL"]
-
-# RSS gate state
-STATE_KEY_ETAG = "bills_this_week:feed_etag"
-STATE_KEY_LAST_MODIFIED = "bills_this_week:feed_last_modified"
-STATE_KEY_FEED_HASH = "bills_this_week:feed_hash"
-STATE_KEY_CURRENT_WEEK_ID = "bills_this_week:current_week_id" 
-
-# Canonical page gate state
-BASE_KEY_PAGE_LAST_UPDATED = "bills_this_week:page_last_updated"
-BASE_KEY_LAST_ALERT_CUTOFF = "bills_this_week:last_alert_cutoff"
-
-# Majority Leader gate state
-STATE_KEY_LEADER_ONLY_HASH = "bills_this_week:leader_only_hash"
-STATE_KEY_LEADER_ONLY_JSON = "bills_this_week:leader_only_json"
-STATE_KEY_LEADER_RAW_HASH = "bills_this_week:leader_raw_hash" 
-
-# --- NEW CONFIGURATION (AWS SES & SUPABASE) ---
-raw_supabase_url = "https://jcrsdyyqrbtxyzhveszx.supabase.co/" 
-SUPABASE_URL = raw_supabase_url if raw_supabase_url.endswith("/") else raw_supabase_url + "/"
-SUPABASE_KEY = os.environ["SUPABASE_SERVICE_KEY"]
-
-AWS_REGION = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "HouseFloorUpdates@thecapitolwire.com")
-SEND_ONLY_TO = os.environ.get("SEND_ONLY_TO", "").strip()
-# ----------------------------------------------
-
-parser = argparse.ArgumentParser(add_help=True)
-parser.add_argument("--test-preview", action="store_true", help="Send a labeled TEST PREVIEW email.")
-args, _unknown = parser.parse_known_args()
-TEST_MODE = bool(args.test_preview) or (os.environ.get("TEST_MODE") == "1")
-FORCE_NEW = bool(getattr(args, "test_force_new", False)) or (os.environ.get("TEST_FORCE_NEW") == "1")
-
-TEST_PREVIEW_TO = "housefloorupdates@gmail.com" 
-TEST_PREVIEW_SUBJECT_PREFIX = "TEST PREVIEW — "
-TEST_PREVIEW_BANNER = "TEST MODE PREVIEW — sent only to you; Redis not updated."
-
-BRAND_HEADER_TEXT = "🏛️ TheCapitolWire.com"
-BRAND_SUBHEADER_TEXT = "Weekly House Agenda Updates"
-SIGNATURE_TEXT = "Managed by Zachary Florman\nZach@TheCapitolWire.com"
-
-SUBSCRIBE_FORM_URL = "https://thecapitolwire.com"
-UNSUBSCRIBE_BASE_URL = "https://thecapitolwire.com/unsubscribe.html"
-
-BUCKET_SUSPENSION = "SUSPENSION"
-BUCKET_RULE = "RULE"
-BUCKET_MAY_BE_CONSIDERED = "MAY_BE_CONSIDERED"
-
-
-def _parse_list(value: str) -> List[str]:
-    return [v.strip() for v in value.split(",") if v.strip()]
-
-
-def get_subscriber_list() -> List[str]:
-    try:
-        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-        response = supabase.table("subscribers").select("email").execute()
-        all_emails = [row["email"] for row in (response.data or [])]
-
-        if SEND_ONLY_TO:
-            allowed = {e.strip().lower() for e in SEND_ONLY_TO.split(",")}
-            filtered = [e for e in all_emails if e.lower().strip() in allowed]
-            return filtered
-
-        return all_emails
-
-    except Exception as e:
-        logging.error(f"Error fetching subscribers from Supabase: {e}")
-        return []
-
-def get_and_update_bill_text(bill_id: str, new_text: str) -> Optional[str]:
-    if not bill_id: return None
-    
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    bucket = "bill_cache"
-    filename = f"{bill_id}.txt"
-    old_text = None
-
-    try:
-        response = supabase.storage.from_(bucket).download(filename)
-        old_text = response.decode('utf-8')
-    except Exception:
-        old_text = None
-
-    try:
-        supabase.storage.from_(bucket).upload(
-            path=filename, 
-            file=new_text.encode('utf-8'), 
-            file_options={"x-upsert": "true", "content-type": "text/plain"}
-        )
-    except Exception as e:
-        logging.error(f"Failed to cache text for {bill_id}: {e}")
-
-    return old_text
-
-def analyze_changes_with_ai(old_text: str, new_text: str) -> Optional[str]:
-    if not os.environ.get("GEMINI_API_KEY"):
-        return None
-
-    diff = list(difflib.unified_diff(old_text.splitlines(), new_text.splitlines(), n=0))
-    changes = [line for line in diff if line.startswith(('+', '-')) and not line.startswith(('---', '+++', '@@'))]
-    
-    if not changes: return None
-
-    try:
-        client = genai.Client(api_key=os.environ["GEMINI_API_KEY"], http_options=types.HttpOptions(timeout=30000))
-        
-        prompt = f"""
-        You are a legislative analyst. I am showing you the raw text differences between two versions of a bill.
-        Lines starting with '-' were removed. Lines starting with '+' were added.
-        
-        RAW CHANGES:
-        {chr(10).join(changes)}
-        
-        TASK:
-        Determine if these changes are SUBSTANTIVE (changing money, dates, mandates, legal definitions) or COSMETIC (typos, formatting, grammar).
-        
-        OUTPUT:
-        - If cosmetic: Respond exactly "COSMETIC_IGNORE".
-        - If substantive: Write ONE sentence summarizing the specific change.
-        """
-        
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt,
-            config=types.GenerateContentConfig(temperature=0.0)
-        )
-        
-        answer = response.text.strip()
-        if "COSMETIC_IGNORE" in answer: return None
-        return f"📝 AI Note: {answer}"
-        
-    except Exception as e:
-        logging.error(f"AI Analysis failed or timed out: {e}")
-        return "⚠️ Note: Changes detected, but AI analysis timed out. Please check the PDF."
-
-def send_email_ses(subject: str, text_body: str, html_body: str, recipient: str) -> None:
-    client = boto3.client('ses', region_name=AWS_REGION)
-    try:
-        client.send_email(
-            Destination={'ToAddresses': [recipient]},
-            Message={
-                'Body': {
-                    'Html': {'Charset': "UTF-8", 'Data': html_body},
-                    'Text': {'Charset': "UTF-8", 'Data': text_body},
-                },
-                'Subject': {'Charset': "UTF-8", 'Data': subject},
-            },
-            Source=SENDER_EMAIL,
-        )
-    except ClientError as e:
-        logging.error(f"Error sending to {recipient}: {e.response['Error']['Message']}")
-
-def check_emergency_brake(r: redis.Redis) -> bool:
-    if os.environ.get("EMERGENCY_BRAKE_ENABLED") != "1": return False
-    if TEST_MODE: return False
-    
-    KEY_SHORT = "system:safety_counter_6m"
-    KEY_LONG = "system:safety_counter_1h"
-    MAX_SHORT = 5
-    MAX_LONG = 8
-    
-    count_short = r.get(KEY_SHORT)
-    if count_short and int(count_short) >= MAX_SHORT:
-        logging.error(f"🚨 EMERGENCY BRAKE: Hit {MAX_SHORT} broadcasts in 6 minutes. Stopping.")
-        return True
-
-    count_long = r.get(KEY_LONG)
-    if count_long and int(count_long) >= MAX_LONG:
-        logging.error(f"🚨 EMERGENCY BRAKE: Hit {MAX_LONG} broadcasts in 1 hour. Stopping.")
-        return True
-        
-    return False
-
-def increment_emergency_brake(r: redis.Redis):
-    if TEST_MODE: return
-    if os.environ.get("EMERGENCY_BRAKE_ENABLED") != "1": return
-    
-    KEY_SHORT = "system:safety_counter_6m"
-    KEY_LONG = "system:safety_counter_1h"
-    
-    new_short = r.incr(KEY_SHORT)
-    if new_short == 1: r.expire(KEY_SHORT, 360) 
-        
-    new_long = r.incr(KEY_LONG)
-    if new_long == 1: r.expire(KEY_LONG, 3600)
-
-def fetch_majority_leader_data() -> List[Dict[str, Any]]:
-    url = "https://www.majorityleader.gov/schedule/weekly-schedule.htm"
-    try:
-        headers = {"User-Agent": "Mozilla/5.0 (TheCapitolWire Bot)"}
-        resp = requests.get(url, headers=headers, timeout=15)
-        resp.raise_for_status()
-        soup = BeautifulSoup(resp.content, "html.parser")
-        content_span = soup.select_one("#ctl00_ctl21_ctl00_Text")
-        if not content_span: return []
-
-        raw_text = content_span.get_text("\n", strip=True)
-        lines = [_norm_ws(l) for l in raw_text.split("\n") if _norm_ws(l)]
-
-        start_pattern = re.compile(r'^\s*(?:Veto\s+Message(?:s)?\s+(?:to\s+Accompany\s+)?|Veto\s+)?((?:H\.?|S\.?)\s?(?:R\.?|Res\.?|J\.?\s?Res\.?|Con\.?\s?Res\.?)?\s?(?:\d+|_+))', re.IGNORECASE)
-        legislation_header_pattern = re.compile(r'^Legislation\s+(?:Considered\s+Pursuant\s+to\s+a\s+Rule|that\s+may\s+be\s+considered)\s*:', re.IGNORECASE)
-        stop_pattern = re.compile(r'^(Sent by|Managed by|Unsubscribe|Back to top|Email Signup|Consideration of items related to FY\d{2} Appropriations)', re.IGNORECASE)
-
-        items = []
-        current_item = None
-        prev_line_text = ""
-        pending_veto_prefix = False
-        in_legislation_section = False
-
-        def find_link_for_id(bill_id: str) -> str:
-            for a in content_span.find_all("a"):
-                try:
-                    if bill_id in extract_bill_ids(a.get_text(" ", strip=True)):
-                        href = a.get("href")
-                        if href: return _make_abs_url_any_domain(href)
-                except Exception: pass
-            return url
-
-        for text in lines:
-            if stop_pattern.match(text):
-                if current_item: items.append(current_item)
-                break
-
-            if legislation_header_pattern.match(text):
-                in_legislation_section = True
-                prev_line_text = text
-                continue
-
-            if not in_legislation_section:
-                prev_line_text = text
-                continue
-
-            lower = text.lower()
-            if "veto message" in lower and not start_pattern.match(text):
-                pending_veto_prefix = True
-                prev_line_text = text
-                continue
-
-            match = start_pattern.match(text)
-            prev_ended_open_paren = prev_line_text.rstrip().endswith("(")
-            is_new_item = bool(match) and not text.startswith("(") and not prev_ended_open_paren
-
-            if is_new_item:
-                if current_item: items.append(current_item)
-                raw_id = match.group(1)
-                ids = extract_bill_ids(raw_id)
-                if not ids:
-                    prev_line_text = text
-                    continue
-                primary_id = ids[0]
-                desc = text[len(match.group(0)):].strip(" -–—")
-                if pending_veto_prefix and "veto" not in match.group(0).lower():
-                    desc = f"Veto Message — {desc}".strip()
-                    pending_veto_prefix = False
-                if "veto" in match.group(0).lower() and not desc.lower().startswith("veto"):
-                    desc = f"Veto Message — {desc}".strip()
-
-                current_item = {
-                    "primary_id": primary_id,
-                    "description_parts": [desc] if desc else [],
-                    "link": find_link_for_id(primary_id)
-                }
-            else:
-                if current_item:
-                    clean = text.strip(" -–—")
-                    if clean: current_item["description_parts"].append(clean)
-            prev_line_text = text
-
-        if current_item: items.append(current_item)
-
-        final_output = []
-        seen_ids = set()
-        for it in items:
-            pid = it["primary_id"]
-            if pid in seen_ids: continue
-            seen_ids.add(pid)
-            full_desc = " ".join(it["description_parts"])
-            full_desc = re.sub(r"\s+", " ", full_desc).strip()
-            final_output.append({
-                "bucket": "ADVANCE_NOTICE",
-                "bill_ids": [pid],
-                "title": full_desc,  
-                "link": it["link"],
-                "stamp_texts": ["Advance Notice (Majority Leader Website Only)"],
-                "extra_links": [{"label": "LINK", "url": it["link"]}],
-                "source": "MAJORITY_LEADER"
-            })
-        return final_output
-    except Exception as e:
-        logging.error(f"Error scraping Majority Leader: {e}")
-        return []
-
-def update_website_feed(all_items: List[Dict[str, Any]]):
-    try:
-        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-        for it in all_items:
-            all_stamps = []
-            if it.get("stamp_texts"): all_stamps.extend(it["stamp_texts"])
-            if it.get("sub_items"):
-                for sub in it["sub_items"]:
-                    if sub.get("stamp_texts"): all_stamps.extend(sub["stamp_texts"])
-
-            best_sort_val = 0
-            if all_stamps:
-                for s in all_stamps:
-                    try:
-                        ts_tuple = parse_mmddyyyy_stamp(s)
-                        if ts_tuple:
-                            val = int(f"{ts_tuple[0]:04}{ts_tuple[1]:02}{ts_tuple[2]:02}{ts_tuple[3]:02}{ts_tuple[4]:02}")
-                            if val > best_sort_val: best_sort_val = val
-                    except: pass
-            
-            it['sort_key'] = best_sort_val
-            it['category'] = it.get('category') or it.get('bucket')
-            
-            # --- DATE LOGIC ---
-            bill_card_stamp = ""
-            item_stamps = it.get("stamp_texts", [])
-            updated_stamp = next((s for s in item_stamps if "Updated" in s), None)
-            added_stamp = next((s for s in item_stamps if "Added" in s), None)
-            
-            if updated_stamp: bill_card_stamp = updated_stamp
-            elif added_stamp: bill_card_stamp = added_stamp
-            else:
-                raw_fp = it.get("global_first_published") or ""
-                if raw_fp: bill_card_stamp = f"First Published {raw_fp}"
-            
-            it['final_timestamp'] = bill_card_stamp 
-            it['final_page_timestamp'] = it.get("global_last_updated") or ""
-            
-            # --- TITLE FORMATTING (MATCH EMAIL STYLE) ---
-            bill_disp = normalize_bill_display(it["bill_ids"][0]) if it.get("bill_ids") else ""
-            raw_title = (it.get("title") or "").strip()
-            
-            final_title = raw_title
-            if bill_disp and raw_title:
-                # Avoid "H.R. 123 — H.R. 123..."
-                if not raw_title.upper().startswith(bill_disp.upper()):
-                    final_title = f"{bill_disp} — {raw_title}"
-            elif bill_disp:
-                final_title = bill_disp
-                
-            it['final_display_title'] = final_title
-            # ------------------------------------------
-
-            primary_link = it.get('link', '').strip()
-            if not primary_link:
-                pdfs = it.get('pdf_urls', [])
-                if pdfs: primary_link = pdfs[0]
-                else:
-                    xmls = it.get('xml_urls', [])
-                    if xmls: primary_link = xmls[0]
-            it['final_link'] = primary_link
-
-        all_items.sort(key=lambda x: x.get('sort_key', 0), reverse=True)
-
-        feed_payload = []
-        for i, item in enumerate(all_items[:100], start=1):
-            feed_payload.append({
-                "id": i,
-                "title": item['final_display_title'], # Use new formatted title
-                "category": item['category'],
-                "link": item['final_link'], 
-                "timestamp": item['final_timestamp'], 
-                "page_timestamp": item['final_page_timestamp'], 
-                "section": item.get('section', 'THIS_WEEK')
-            })
-
-        if feed_payload:
-            supabase.table("live_feed").upsert(feed_payload).execute()
-            count = len(feed_payload)
-            supabase.table("live_feed").delete().gt("id", count).execute()
-            print(f"Updated website live feed with {count} items.")
-            
-    except Exception as e:
-        logging.error(f"Error updating website feed: {e}")
-
-# --- RSS FUNCTIONS ---
-def fetch_rss_headers_only(r: redis.Redis) -> bool:
-    prior_etag = r.get(STATE_KEY_ETAG)
-    prior_last_modified = r.get(STATE_KEY_LAST_MODIFIED)
-    headers = {"User-Agent": "Mozilla/5.0 (bills-this-week-bot)"}
-    if prior_etag: headers["If-None-Match"] = prior_etag
-    if prior_last_modified: headers["If-Modified-Since"] = prior_last_modified
-
-    try:
-        resp = requests.head(RSS_URL, headers=headers, timeout=10)
-        if resp.status_code == 304: return False
-        if resp.status_code == 200:
-            if resp.headers.get("ETag"): r.set(STATE_KEY_ETAG, resp.headers.get("ETag"))
-            if resp.headers.get("Last-Modified"): r.set(STATE_KEY_LAST_MODIFIED, resp.headers.get("Last-Modified"))
-            return True
-    except: pass
-    return True 
-
-def get_active_week_urls() -> List[str]:
-    headers = {"User-Agent": "Mozilla/5.0 (bills-this-week-bot)"}
-    urls = set()
-    tail_buffer = b""
-    MAX_BUFFER_SIZE = 50000 
-    
-    try:
-        with requests.get(RSS_URL, headers=headers, stream=True, timeout=20) as r:
-            r.raise_for_status()
-            for chunk in r.iter_content(chunk_size=8192):
-                if chunk:
-                    tail_buffer += chunk
-                    if len(tail_buffer) > MAX_BUFFER_SIZE:
-                        tail_buffer = tail_buffer[-MAX_BUFFER_SIZE:]
-            tail_text = tail_buffer.decode('utf-8', errors='ignore')
-            matches = re.findall(r'href=["\'](http[s]?://docs\.house\.gov/floor/Default\.aspx\?date=[\d-]+)["\']', tail_text)
-            for m in matches:
-                m = m.replace("http://", "https://")
-                urls.add(m)
-    except Exception as e:
-        logging.error(f"RSS Tail Sip Error: {e}")
-    urls.add(CANONICAL_PAGE_URL)
-    return sorted(list(urls))
-
-def get_week_id_from_url(url: str) -> str:
-    try:
-        parsed = urlparse(url)
-        params = parse_qs(parsed.query)
-        if 'date' in params: return params['date'][0].replace("-", "")
-    except: pass
-    return "current"
-
-# --- STANDARD UTILS ---
-def sha256_bytes(b: bytes) -> str: return hashlib.sha256(b).hexdigest()
-
-def leader_only_hash(leader_only_items: List[Dict[str, Any]]) -> str:
-    stable_rows = []
-    for it in leader_only_items or []:
-        bill_id = (it.get("bill_ids") or [""])[0] or ""
-        title = (it.get("title") or "").strip()
-        link = (it.get("link") or "").strip()
-        stable_rows.append(f"{bill_id}|{title}|{link}")
-    stable_rows.sort()
-    payload = "\n".join(stable_rows).encode("utf-8")
-    return hashlib.sha256(payload).hexdigest()
-
-def leader_item_signature(it: Dict[str, Any]) -> str:
-    bill_id = (it.get("bill_ids") or [""])[0] or ""
-    title = (it.get("title") or "").strip()
-    link = (it.get("link") or "").strip()
-    return f"{bill_id}|{title}|{link}"
-
-def fetch_page_content(url: str) -> str:
-    headers = {"User-Agent": "Mozilla/5.0 (bills-this-week-bot)"}
-    resp = requests.get(url, headers=headers, timeout=30)
-    resp.raise_for_status()
-    return resp.text
-
-def _norm_ws(s: str) -> str:
-    s = (s or "").strip()
-    s = s.replace("\r\n", "\n").replace("\r", "\n")
-    s = re.sub(r"[ \t]+", " ", s)
-    s = re.sub(r"\n{3,}", "\n\n", s)
-    return s.strip()
-
-def _make_abs_url(href: str) -> str:
-    if not href: return ""
-    href = href.strip()
-    if "addthis.com" in href.lower(): return ""
-    if href.lower().startswith("javascript:"): return ""
-    if href.startswith("http://") or href.startswith("https://"):
-        if "docs.house.gov" not in href.lower(): return ""
-        if href.startswith("http://"): href = "https://" + href[len("http://"):]
-        return href
-    if href.startswith("/"): return "https://docs.house.gov" + href
-    return "https://docs.house.gov/floor/" + href
-
-def _make_abs_url_any_domain(href: str) -> str:
-    if not href: return ""
-    href = href.strip()
-    if "addthis.com" in href.lower(): return ""
-    if href.lower().startswith("javascript:"): return ""
-    if href.startswith("http://"): return "https://" + href[len("http://"):]
-    if href.startswith("https://"): return href
-    if href.startswith("/"): return "https://docs.house.gov" + href
-    return "https://docs.house.gov/floor/" + href
-
-def extract_bill_ids(text: str) -> List[str]:
-    t = text or ""
-    patterns = [
-        r"\bH\.?\s?R\.?\s?(?:\d+|_+)\b", r"\bS\.?\s?(?:\d+|_+)\b",
-        r"\bH\.?\s?Res\.?\s?(?:\d+|_+)\b", r"\bS\.?\s?Res\.?\s?(?:\d+|_+)\b",
-        r"\bH\.?\s?J\.?\s?Res\.?\s?(?:\d+|_+)\b", r"\bS\.?\s?J\.?\s?Res\.?\s?(?:\d+|_+)\b",
-        r"\bH\.?\s?Con\.?\s?Res\.?\s?(?:\d+|_+)\b", r"\bS\.?\s?Con\.?\s?Res\.?\s?(?:\d+|_+)\b",
-    ]
-    found: List[str] = []
-    for p in patterns: found += re.findall(p, t, flags=re.IGNORECASE)
-    out: List[str] = []
-    seen = set()
-    for b in found:
-        b2 = re.sub(r"\s+", "", b.upper())
-        if b2 not in seen:
-            seen.add(b2)
-            out.append(b2)
-    return out
-
-def normalize_bill_display(bill_id: str) -> str:
-    b = bill_id.strip().upper()
-    b = re.sub(r"\s+", "", b)
-    b = b.replace("H.R.", "H.R. ").replace("S.", "S. ").replace("HRES.", "H. RES. ").replace("SRES.", "S. RES. ")
-    b = b.replace("HJRES.", "H.J. RES. ").replace("SJRES.", "S.J. RES. ")
-    b = b.replace("HCONRES.", "H. CON. RES. ").replace("SCONRES.", "S. CON. RES. ")
-    b = re.sub(r"\s{2,}", " ", b).strip()
-    return b
-
-def detect_item_stamp(text: str) -> Optional[Tuple[str, str]]:
-    t = _norm_ws(text)
-    m = re.search(r"\b(Updated|Added)\b\s*(?:\:)?\s*([A-Za-z0-9/:\.\- ]+(?:AM|PM)?)\b", t, flags=re.IGNORECASE)
-    if not m: return None
-    kind = m.group(1).upper()
-    when = m.group(2).strip()
-    return kind, f"{m.group(1).capitalize()} {when}"
-
-MONTHS = {m.lower(): i for i, m in enumerate(["January","February","March","April","May","June","July","August","September","October","November","December"], start=1)}
-
-def parse_house_datetime_text(s: str) -> Optional[Tuple[int,int,int,int,int]]:
-    if not s: return None
-    s = s.strip()
-    m = re.search(r"([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s+at\s+(\d{1,2}):(\d{2})\s*(AM|PM)", s, flags=re.IGNORECASE)
-    if not m: return None
-    month_name = m.group(1).lower()
-    mo = MONTHS.get(month_name)
-    if not mo: return None
-    day = int(m.group(2))
-    year = int(m.group(3))
-    hh = int(m.group(4))
-    mm = int(m.group(5))
-    ap = m.group(6).upper()
-    if ap == "PM" and hh != 12: hh += 12
-    if ap == "AM" and hh == 12: hh = 0
-    return (year, mo, day, hh, mm)
-
-def parse_mmddyyyy_stamp(s: str) -> Optional[Tuple[int,int,int,int,int]]:
-    if not s: return None
-    m = re.search(r"\b(\d{1,2})/(\d{1,2})/(\d{4})\b.*?\b(\d{1,2}):(\d{2})\s*(AM|PM)\b", s, flags=re.IGNORECASE)
-    if not m: return None
-    mo = int(m.group(1))
-    day = int(m.group(2))
-    year = int(m.group(3))
-    hh = int(m.group(4))
-    mm = int(m.group(5))
-    ap = m.group(6).upper()
-    if ap == "PM" and hh != 12: hh += 12
-    if ap == "AM" and hh == 12: hh = 0
-    return (year, mo, day, hh, mm)
-
-def tuple_gt(a: Tuple[int,int,int,int,int], b: Tuple[int,int,int,int,int]) -> bool:
-    return a > b
-
-def parse_default_page(page_html: str) -> Dict[str, Any]:
-    soup = BeautifulSoup(page_html, "html.parser")
-    full_text = _norm_ws(soup.get_text("\n"))
-    first_pub = None
-    last_upd = None
-    m1 = re.search(r"\bFirst Published\s*:\s*(.+)", full_text, flags=re.IGNORECASE)
-    if m1: first_pub = m1.group(1).split("\n")[0].strip()
-    m2 = re.search(r"\bLast Updated\s*:\s*(.+)", full_text, flags=re.IGNORECASE)
-    if m2: last_upd = m2.group(1).split("\n")[0].strip()
-    
-    page_week_id = None
-    title_match = re.search(r"Week\s+of\s+([A-Za-z]+\.?\s+\d{1,2},?\s+\d{4})", full_text, flags=re.IGNORECASE)
-    if title_match:
-        try:
-            date_str = title_match.group(1).replace(".", "")
-            dt = datetime.strptime(date_str, "%b %d, %Y")
-            page_week_id = dt.strftime("%Y%m%d")
-        except:
-            try:
-                dt = datetime.strptime(date_str, "%B %d, %Y")
-                page_week_id = dt.strftime("%Y%m%d")
-            except: pass
-
-    all_links: List[str] = []
-    for a in soup.find_all("a"):
-        u = _make_abs_url(a.get("href", ""))
-        if u: all_links.append(u)
-    all_links = list(dict.fromkeys(all_links))
-
-    helpful = [CANONICAL_PAGE_URL, RSS_URL]
-    for u in all_links:
-        if "Download.aspx" in u and u.lower().endswith(".xml"):
-            helpful.append(u)
-            break
-    helpful = list(dict.fromkeys(helpful))
-
-    bucket_heading_map = {
-        BUCKET_SUSPENSION: "items that may be considered under suspension of the rules",
-        BUCKET_RULE: "items that may be considered pursuant to a rule",
-        BUCKET_MAY_BE_CONSIDERED: "items that may be considered",
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CEV5ME0C6L');
+  </script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Capitol Wire | Legislative Intelligence</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- MODERN LIGHT THEME --- */
+    :root {
+      --bg-main: #ffffff;
+      --bg-subtle: #f8fafc; 
+      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%); 
+      
+      --card-bg: #ffffff;
+      --card-border: 1px solid #e2e8f0;
+      --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+
+      --text-main: #0f172a; 
+      --text-muted: #64748b; 
+      
+      --brand-primary: #2563eb; 
+      --brand-dark: #1e3a8a;    
+      
+      --success: #10b981;
+      --warning-bg: #fffbeb;
+      --warning-text: #92400e;
+      --warning-border: #fcd34d;
     }
 
-    def _strip_link_tokens(title: str) -> str:
-        t = (title or "").strip()
-        t = re.sub(r"\[\s*(PDF|XML)\s*\]", " ", t, flags=re.IGNORECASE)
-        t = re.sub(r"\b(PDF|XML)\b", " ", t, flags=re.IGNORECASE)
-        t = re.sub(r"\b\d{1,2}/\d{1,2}/\d{4}\s+at\s+\d{1,2}:\d{2}\s*(?:AM|PM)\b", " ", t, flags=re.IGNORECASE)
-        t = re.sub(r"\b\d{1,2}/\d{1,2}/\d{4}\b", " ", t, flags=re.IGNORECASE)
-        t = re.sub(r"https?://\S+", " ", t)
-        t = re.sub(r"\s+", " ", t).strip()
-        return t
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    html { scroll-behavior: smooth; }
+    
+    body { 
+        font-family: 'Inter', sans-serif; 
+        color: var(--text-main); 
+        background: var(--bg-main); 
+        background-image: var(--bg-gradient);
+        background-attachment: fixed;
+        min-height: 100vh;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
 
-    def _collect_files_links(td) -> Tuple[List[str], List[str]]:
-        pdfs: List[str] = []
-        xmls: List[str] = []
-        if not td: return pdfs, xmls
-        for a in td.find_all("a"):
-            label = (a.get_text(strip=True) or "").strip().upper()
-            if label not in {"PDF", "XML"}: continue
-            href = _make_abs_url_any_domain(a.get("href", ""))
-            if not href: continue
-            if label == "PDF": pdfs.append(href)
-            else: xmls.append(href)
-        return list(dict.fromkeys(pdfs)), list(dict.fromkeys(xmls))
+    /* --- NAV --- */
+    nav { 
+        background: rgba(255, 255, 255, 0.9); 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 16px 0; 
+        position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner { 
+        max-width: 1200px; margin: 0 auto; padding: 0 24px; 
+        display: flex; justify-content: space-between; align-items: center; 
+    }
+    .logo { 
+        font-family: 'Merriweather', serif; font-weight: 800; font-size: 1.2rem; 
+        color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
+        letter-spacing: -0.5px;
+    }
+    
+    .sub-btn { 
+        background: var(--brand-primary); 
+        color: white; 
+        padding: 8px 16px; 
+        border-radius: 6px; 
+        font-weight: 600; 
+        text-decoration: none; 
+        font-size: 0.85rem; 
+        border: none;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+    .sub-btn:hover { background: var(--brand-dark); }
 
-    def _parse_stamp_from_row(tr) -> List[str]:
-        if not tr: return []
-        txt = _norm_ws(tr.get_text(" ", strip=True))
-        stamps: List[str] = []
-        for m in re.finditer(r"\b(Added|Updated)\b\s+(\d{1,2}/\d{1,2}/\d{4}\s+at\s+\d{1,2}:\d{2}\s*(?:AM|PM))", txt, flags=re.IGNORECASE):
-            stamps.append(f"{m.group(1).capitalize()} {m.group(2)}")
-        return list(dict.fromkeys(stamps))
+    /* --- LAYOUT GRID --- */
+    .main-container { 
+        max-width: 1200px; margin: 40px auto; padding: 0 24px; 
+        display: grid; grid-template-columns: 1fr 320px; gap: 40px; 
+        position: relative; z-index: 2;
+    }
 
-    def _is_subitem_row(tr) -> bool:
-        if not tr: return False
-        if tr.find_parent("table", class_=re.compile(r"\bsubitemTable\b", re.IGNORECASE)): return True
-        td_num = tr.find("td", class_=re.compile(r"\blegisNum\b", re.IGNORECASE))
-        if td_num:
-            txt = _norm_ws(td_num.get_text(" ", strip=True))
-            if txt.startswith("::"): return True
-        td_text = tr.find("td", class_=re.compile(r"\bfloorText\b", re.IGNORECASE))
-        if td_text:
-            txt = _norm_ws(td_text.get_text(" ", strip=True))
-            if txt.startswith("::"): return True
-        return False
+    /* --- TOGGLE BUTTONS --- */
+    .toggle-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+    .toggle-btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: var(--text-muted);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        box-shadow: var(--card-shadow);
+    }
+    .toggle-btn:hover {
+        background: #f1f5f9;
+        color: var(--brand-primary);
+    }
+    .toggle-btn.active {
+        background: var(--brand-primary); 
+        color: white;
+        border-color: var(--brand-primary);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+    }
 
-    def _items_from_bucket_heading(heading_tag, bucket: str) -> List[Dict[str, Any]]:
-        items: List[Dict[str, Any]] = []
-        if not heading_tag: return items
-        table = heading_tag.find_next("table", class_=re.compile(r"\bfloorItems\b", re.IGNORECASE))
-        if not table: return items
-        rows = table.find_all("tr", recursive=False)
-        current_item: Optional[Dict[str, Any]] = None
+    /* --- HEADER & STATUS --- */
+    .week-header-box { margin-bottom: 20px; }
+    .week-header-text { 
+        font-family: 'Merriweather', serif; 
+        font-size: 2.2rem; 
+        color: var(--text-main); 
+        font-weight: 700; 
+        letter-spacing: -1px;
+        line-height: 1.2;
+    }
+
+    .status-bar { 
+        display: flex; align-items: center; gap: 12px;
+        font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
+        background: white; padding: 10px 16px; border-radius: 100px; 
+        border: 1px solid #e2e8f0; margin-bottom: 30px; 
+        box-shadow: var(--card-shadow);
+        width: fit-content;
+    }
+    
+    .live-dot { 
+        width: 8px; height: 8px; 
+        background: #22c55e; 
+        border-radius: 50%; 
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        animation: ripple 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    @keyframes ripple {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+
+    /* --- FEED SECTIONS --- */
+    .feed-section { 
+        background: var(--card-bg); 
+        border: var(--card-border); 
+        border-radius: 12px; 
+        box-shadow: var(--card-shadow); 
+        margin-bottom: 30px; overflow: hidden; 
+        transition: all 0.2s;
+    }
+    .feed-section:hover { box-shadow: var(--card-hover-shadow); }
+
+    .section-header { 
+        background: #f8fafc; 
+        padding: 14px 24px; 
+        font-family: 'Inter', sans-serif; 
+        font-weight: 700; font-size: 0.8rem; 
+        color: var(--text-muted); 
+        border-bottom: 1px solid #e2e8f0; 
+        text-transform: uppercase; letter-spacing: 0.5px; 
+    }
+    .bill-item { 
+        padding: 20px 24px; 
+        border-bottom: 1px solid #f1f5f9; 
+        display: flex; flex-direction: column; gap: 6px; 
+        transition: background 0.1s; 
+    }
+    .bill-item:last-child { border-bottom: none; }
+    .bill-item:hover { background: #f8fafc; }
+    
+    .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+    .bill-title { color: var(--text-main); font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; }
+    .bill-title strong { font-weight: 700; color: var(--text-main); font-family: 'Merriweather', serif; }
+    
+    .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    .doc-link { 
+        color: var(--brand-primary); text-decoration: none; 
+        background: #eff6ff; padding: 3px 8px; border-radius: 4px; 
+        transition: all 0.2s;
+    }
+    .doc-link:hover { background: var(--brand-primary); color: white; }
+    
+    .bill-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .meta-time { 
+        color: #be123c; font-weight: 600; background: #fff1f2; 
+        padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
+    }
+
+    /* --- SIDEBAR & CALENDAR --- */
+    .sidebar { display: flex; flex-direction: column; gap: 24px; }
+    
+    .widget { 
+        background: var(--card-bg); 
+        border: var(--card-border); 
+        border-radius: 12px; 
+        padding: 24px; 
+        box-shadow: var(--card-shadow); 
+    }
+    .widget h3 { 
+        font-family: 'Inter', sans-serif; 
+        font-size: 0.9rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+        color: var(--text-muted); 
+        margin-bottom: 20px; 
+        border-bottom: 1px solid #e2e8f0; 
+        padding-bottom: 12px; 
+    }
+
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .cal-btn { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--brand-primary); font-size: 1.2rem; padding: 0 8px; }
+    .cal-btn:hover { color: var(--brand-dark); }
+    .cal-month { font-weight: 700; color: var(--text-main); font-family:'Merriweather', serif; }
+    
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; font-size: 0.85rem; }
+    .cal-day-header { font-weight: 600; color: var(--text-muted); font-size: 0.75rem; padding-bottom: 5px; }
+    
+    .cal-day { 
+        padding: 6px 0; color: var(--text-main); border-radius: 6px; 
+        font-variant-numeric: tabular-nums;
+    }
+    .cal-session { 
+        background: #eff6ff; color: var(--brand-primary); font-weight: 700; 
+        border: 1px solid #dbeafe;
+    } 
+    .cal-today { 
+        background: var(--brand-primary); color: white; font-weight:700; 
+    } 
+
+    /* --- MODAL --- */
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display:none; justify-content:center; align-items:center; z-index:200; }
+    .modal { background:white; padding:40px 30px; border-radius:16px; width:90%; max-width:420px; text-align:center; position:relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    .close-modal { position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem; color:#94a3b8; transition: color 0.2s; }
+    .close-modal:hover { color: var(--text-main); }
+    
+    .modal h3 { margin-bottom:10px; color:var(--text-main); font-family: 'Merriweather', serif; font-size: 1.5rem; }
+    .modal p { color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; }
+    
+    .modal input { width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:12px; font-size: 1rem; }
+    .modal input:focus { border-color: var(--brand-primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    
+    .modal button { 
+        width:100%; padding:12px; 
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
+        color:white; border:none; border-radius:8px; 
+        font-weight:600; cursor:pointer; font-size: 1rem;
+        transition: transform 0.1s;
+    }
+    .modal button:hover { background: var(--brand-dark); transform: translateY(-1px); }
+    .modal button:disabled { background: #94a3b8; cursor: wait; transform: none; }
+    .modal-msg { margin-top:15px; font-size:0.9rem; min-height: 20px; }
+
+    footer { padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 60px; grid-column: 1 / -1; }
+    footer a { color: #64748b; text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--brand-primary); text-decoration: underline; }
+    .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
+
+    @media (max-width: 900px) {
+        .main-container { grid-template-columns: 1fr; gap: 30px; }
+        .sidebar { width: 100%; order: 2; }
+        .content-area { order: 1; }
+        .week-header-text { font-size: 1.8rem; }
+        .bill-row { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">🏛️ The Capitol Wire</a>
+      <button class="sub-btn" onclick="openModal()">Get Alerts</button>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    
+    <div class="content-area">
+        <div class="toggle-container">
+            <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This Week</button>
+            <button class="toggle-btn" id="btn-next-week" onclick="switchSection('NEXT_WEEK')">Next Week</button>
+        </div>
+
+        <div class="week-header-box">
+            <h2 id="weekly-header" class="week-header-text">Loading Agenda...</h2>
+        </div>
+
+        <div class="status-bar">
+            <div class="live-dot"></div>
+            <div id="status-line">System Online. Monitoring active feeds...</div>
+        </div>
+
+        <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
+            <div class="section-header" style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
+                ⚡ Latest Activity (New)
+            </div>
+            <div id="latest-list"></div>
+        </div>
+
+        <div id="schedule-list">
+            <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">Initializing secure connection...</div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="widget">
+            <h3>Legislative Calendar</h3>
+            <div class="cal-header">
+                <button class="cal-btn" onclick="changeMonth(-1)">&lt;</button>
+                <div id="calendar-month" class="cal-month">Loading...</div>
+                <button class="cal-btn" onclick="changeMonth(1)">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="calendar-grid">
+                <div class="cal-day-header">S</div>
+                <div class="cal-day-header">M</div>
+                <div class="cal-day-header">T</div>
+                <div class="cal-day-header">W</div>
+                <div class="cal-day-header">T</div>
+                <div class="cal-day-header">F</div>
+                <div class="cal-day-header">S</div>
+            </div>
+            <div style="font-size:0.75rem; color: var(--text-muted); margin-top:16px; text-align:center; display:flex; justify-content:center; gap: 15px;">
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <span style="width:8px; height:8px; background:#eff6ff; border:1px solid #dbeafe; border-radius:2px;"></span> In Session
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+          <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
+          <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+          </div>
+        </div>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <h3>Get Instant Alerts</h3>
+      <p>Enter your email to get notified immediately when the Majority Leader or Clerk updates the schedule.</p>
+      <input type="email" id="modal-email" placeholder="Enter your email" />
+      <button id="modal-submit">Subscribe Free</button>
+      <div id="modal-status" class="modal-msg"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const CATEGORIES = [
+        { key: 'SUSPENSION', label: 'Suspension of the Rules' },
+        { key: 'RULE', label: 'Pursuant to a Rule' },
+        { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
+        { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
+    ];
+
+    // Global State
+    let activeSection = 'THIS_WEEK'; 
+    let allBillData = [];
+    let lastFetchedHash = "";
+
+    // --- CALENDAR LOGIC (2025-2026 Session Dates) ---
+    const SESSION_DATES = [
+        "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04",
+        "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11",
+        "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18",
         
-        for i, tr in enumerate(rows):
-            nested_table = tr.find("table", class_=re.compile(r"\bsubitemTable\b", re.IGNORECASE))
-            if nested_table and current_item is not None:
-                nested_rows = nested_table.find_all("tr")
-                for nr_idx, nr in enumerate(nested_rows):
-                    td_text = nr.find("td", class_=re.compile(r"\bfloorText\b", re.IGNORECASE))
-                    if not td_text: continue
-                    subitem_text = _norm_ws(td_text.get_text(" ", strip=True))
-                    if not subitem_text: continue
-                    subitem_text = _strip_link_tokens(subitem_text)
-                    td_files = nr.find("td", class_=re.compile(r"\bfiles\b", re.IGNORECASE))
-                    pdf_urls, xml_urls = _collect_files_links(td_files)
-                    subitem_stamps = []
-                    if nr_idx + 1 < len(nested_rows):
-                        next_nested_tr = nested_rows[nr_idx + 1]
-                        subitem_stamps = _parse_stamp_from_row(next_nested_tr)
-                    subitem = {"text": subitem_text, "pdf_urls": pdf_urls, "xml_urls": xml_urls, "stamp_texts": subitem_stamps}
-                    if "sub_items" not in current_item: current_item["sub_items"] = []
-                    current_item["sub_items"].append(subitem)
-                continue
+        "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09",
+        "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15",
+        "2026-01-20", "2026-01-21", "2026-01-22",
+        "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30",
+        "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05",
+        "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12",
+        "2026-02-24", "2026-02-25", "2026-02-26",
+        "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05",
+        "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12",
+        "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19",
+        "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26",
+        "2026-04-13", "2026-04-14", "2026-04-15", "2026-04-16",
+        "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23",
+        "2026-04-28", "2026-04-29", "2026-04-30",
+        "2026-05-04", "2026-05-05", "2026-05-06", "2026-05-07",
+        "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15",
+        "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21",
+        "2026-06-02", "2026-06-03", "2026-06-04",
+        "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11",
+        "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18",
+        "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25",
+        "2026-06-29", "2026-06-30",
+        "2026-07-07", "2026-07-08", "2026-07-09",
+        "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16",
+        "2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23",
+        "2026-07-27", "2026-07-28", "2026-07-29", "2026-07-30",
+        "2026-09-08", "2026-09-09", "2026-09-10",
+        "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17",
+        "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24",
+        "2026-09-28", "2026-09-29", "2026-09-30",
+        "2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19",
+        "2026-11-30",
+        "2026-12-01", "2026-12-02", "2026-12-03",
+        "2026-12-07", "2026-12-08", "2026-12-09", "2026-12-10",
+        "2026-12-14", "2026-12-15", "2026-12-16", "2026-12-17"
+    ];
+    const SESSION_SET = new Set(SESSION_DATES);
+    let calendarCursor = new Date(); 
 
-            if _is_subitem_row(tr) and current_item is not None:
-                td_text = tr.find("td", class_=re.compile(r"\bfloorText\b", re.IGNORECASE))
-                if td_text:
-                    subitem_text = _norm_ws(td_text.get_text(" ", strip=True))
-                    subitem_text = _strip_link_tokens(subitem_text)
-                    td_files = tr.find("td", class_=re.compile(r"\bfiles\b", re.IGNORECASE))
-                    pdf_urls, xml_urls = _collect_files_links(td_files)
-                    next_tr = tr.find_next_sibling("tr")
-                    subitem_stamps = _parse_stamp_from_row(next_tr)
-                    subitem = {"text": subitem_text, "pdf_urls": pdf_urls, "xml_urls": xml_urls, "stamp_texts": subitem_stamps}
-                    if "sub_items" not in current_item: current_item["sub_items"] = []
-                    current_item["sub_items"].append(subitem)
-                continue
+    function changeMonth(delta) {
+        calendarCursor.setMonth(calendarCursor.getMonth() + delta);
+        renderCalendar();
+    }
+
+    function renderCalendar() {
+        const year = calendarCursor.getFullYear();
+        const month = calendarCursor.getMonth();
+        const todayObj = new Date();
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('calendar-month').innerText = monthNames[month] + " " + year;
+        
+        const grid = document.getElementById('calendar-grid');
+        while (grid.children.length > 7) { grid.removeChild(grid.lastChild); }
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDay; i++) {
+            const div = document.createElement('div');
+            grid.appendChild(div);
+        }
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            const div = document.createElement('div');
+            div.className = 'cal-day';
+            div.innerText = i;
             
-            classes = " ".join(tr.get("class") or [])
-            if "floorItem" not in classes: continue
-            td_num = tr.find("td", class_=re.compile(r"\blegisNum\b", re.IGNORECASE))
-            bill_token = _norm_ws(td_num.get_text(" ", strip=True)) if td_num else ""
-            bill_ids = extract_bill_ids(bill_token)
-            if not bill_ids: continue
-            td_text = tr.find("td", class_=re.compile(r"\bfloorText\b", re.IGNORECASE))
-            title_raw = _norm_ws(td_text.get_text(" ", strip=True)) if td_text else ""
-            title = _strip_link_tokens(title_raw)
-            td_files = tr.find("td", class_=re.compile(r"\bfiles\b", re.IGNORECASE))
-            pdf_urls, xml_urls = _collect_files_links(td_files)
-            item = {"bucket": bucket, "bill_ids": bill_ids[:1], "title": title, "stamp_texts": [], "qualifying_stamp_texts": [], "raw_block": _norm_ws(tr.get_text(" ", strip=True)), "pdf_urls": pdf_urls, "xml_urls": xml_urls, "sub_items": []}
-            next_tr = tr.find_next_sibling("tr")
-            stamp_texts = _parse_stamp_from_row(next_tr)
-            if stamp_texts: item["stamp_texts"] = stamp_texts
-            items.append(item)
-            current_item = item
-        return items
+            const monthStr = (month + 1).toString().padStart(2, '0');
+            const dayStr = i.toString().padStart(2, '0');
+            const dateString = `${year}-${monthStr}-${dayStr}`;
 
-    buckets: Dict[str, List[Dict[str, Any]]] = {BUCKET_SUSPENSION: [], BUCKET_RULE: [], BUCKET_MAY_BE_CONSIDERED: []}
-    for h in soup.find_all(["h2", "h3", "h4"]):
-        ht = (h.get_text(" ", strip=True) or "").strip().lower()
-        for bucket, heading_text in bucket_heading_map.items():
-            if ht.startswith(heading_text):
-                if bucket == BUCKET_MAY_BE_CONSIDERED and (ht.startswith(bucket_heading_map[BUCKET_SUSPENSION]) or ht.startswith(bucket_heading_map[BUCKET_RULE])): continue
-                buckets[bucket] = _items_from_bucket_heading(h, bucket)
-                break
-    return {"first_published": first_pub, "last_updated": last_upd, "buckets": buckets, "helpful_links": helpful, "page_week_id": page_week_id, "_meta_week_id": page_week_id}
+            if (SESSION_SET.has(dateString)) div.classList.add('cal-session');
+            if (year === todayObj.getFullYear() && month === todayObj.getMonth() && i === todayObj.getDate()) {
+                div.classList.add('cal-today');
+            }
+            grid.appendChild(div);
+        }
+    }
+    renderCalendar();
 
-def build_subject(changed_items: List[Dict[str, Any]], fallback_no_item_stamps: bool, label_suffix: str, is_rollover: bool) -> str:
-    if is_rollover:
-        date_part = label_suffix.replace("This Week", "").replace("Week of", "").strip()
-        if not date_part: date_part = "This Week"
-        changes_count = 0
-        kinds = set()
-        for it in changed_items:
-            changes_count += 1
-            qual = it.get("qualifying_stamp_texts") or []
-            if any("Added" in s for s in qual): kinds.add("Added")
-            elif any("Updated" in s for s in qual): kinds.add("Updated")
-        suffix = ""
-        if changes_count > 0:
-            kind_str = "Added" if "Added" in kinds else "Changed"
-            suffix = f" ({changes_count} {kind_str})"
-        return f"This Week Update: New Schedule for Week of {date_part}{suffix}"
-
-    if "Next Week" in label_suffix: return f"Next Week Update: {label_suffix.replace('Next Week ', '')}"
-    if fallback_no_item_stamps: return f"This Week Update: Page updated; changes not specified"
-
-    counts: Dict[Tuple[str, str], int] = {}
-    for it in changed_items:
-        qual = it.get("qualifying_stamp_texts") or []
-        kinds = {s.split()[0].upper() for s in qual if isinstance(s, str) and s.strip() and not s.startswith("SUB||")}
-        if "UPDATED" in kinds: kind = "UPDATED"
-        elif "ADDED" in kinds: kind = "ADDED"
-        else: kind = "CHANGED"
-        counts[(it["bucket"], kind)] = counts.get((it["bucket"], kind), 0) + 1
-
-    def bucket_short(b: str) -> str:
-        if b == BUCKET_SUSPENSION: return "Suspension"
-        if b == BUCKET_RULE: return "Rule"
-        if b == BUCKET_MAY_BE_CONSIDERED: return "Items that may be considered"
-        return b
-
-    order = [(BUCKET_SUSPENSION, "UPDATED"), (BUCKET_SUSPENSION, "ADDED"), (BUCKET_RULE, "UPDATED"), (BUCKET_RULE, "ADDED"), (BUCKET_MAY_BE_CONSIDERED, "UPDATED"), (BUCKET_MAY_BE_CONSIDERED, "ADDED")]
-    parts: List[str] = []
-    for (b, k) in order:
-        n = counts.get((b, k), 0)
-        if n: parts.append(f"{n} {k.lower()} ({bucket_short(b)})")
-    for (b, k), n in counts.items():
-        if (b, k) not in order: parts.append(f"{n} {k.lower()} ({bucket_short(b)})")
-
-    if not parts: return f"This Week Update: Schedule updated"
-    return f"This Week Update: " + ", ".join(parts)
-
-def build_bodies(parsed: Dict[str, Any], changed_items: List[Dict[str, Any]], fallback_no_item_stamps: bool, *, include_test_banner: bool = False, unsubscribe_url_for_user: str = "", show_ai_notes: bool = True, is_rollover: bool = False) -> Tuple[str, str]:
-    fp = (parsed.get("first_published") or "").strip()
-    lu = (parsed.get("last_updated") or "").strip()
-    bucket_labels = {BUCKET_SUSPENSION: "Items that may be considered under suspension of the rules", BUCKET_RULE: "Items that may be considered pursuant to a rule", BUCKET_MAY_BE_CONSIDERED: "Items that may be considered"}
-
-    def item_display_text(it: Dict[str, Any]) -> str:
-        bill_disp = normalize_bill_display(it["bill_ids"][0]) if it.get("bill_ids") else "Item"
-        title = (it.get("title") or "").strip()
-        if title and title.upper() != bill_disp.upper(): return f"{bill_disp} — {title}"
-        return bill_disp
-
-    def item_links_html(it: Dict[str, Any]) -> str:
-        links: List[str] = []
-        pdfs = it.get("pdf_urls") or []
-        xmls = it.get("xml_urls") or []
-        extra = it.get("extra_links") or []
-        pdfs = [p.strip() for p in pdfs if (p or "").strip()]
-        xmls = [x.strip() for x in xmls if (x or "").strip()]
-        link_style = "text-decoration:none; color:#1e3a8a; background:#eef2ff; padding:2px 8px; border-radius:4px; font-weight:600; font-size:11px; margin-left:6px; vertical-align:middle; white-space:nowrap;"
-        for obj in extra:
-            if isinstance(obj, dict):
-                u = (obj.get("url") or "").strip()
-                label = (obj.get("label") or "").strip()
-                if u and label: links.append(f'<a href="{u}" style="{link_style}">{label}</a>')
-        for idx, u in enumerate(pdfs, start=1):
-            label = "PDF" if idx == 1 else f"PDF {idx}"
-            links.append(f'<a href="{u}" style="{link_style}">{label}</a>')
-        for idx, u in enumerate(xmls, start=1):
-            label = "XML" if idx == 1 else f"XML {idx}"
-            links.append(f'<a href="{u}" style="{link_style}">{label}</a>')
-        return "".join(links)
-
-    def item_links_text(it: Dict[str, Any]) -> str:
-        parts: List[str] = []
-        pdfs = it.get("pdf_urls") or []
-        xmls = it.get("xml_urls") or []
-        extra = it.get("extra_links") or []
-        for obj in extra:
-            if isinstance(obj, dict):
-                u = (obj.get("url") or "").strip()
-                label = (obj.get("label") or "").strip()
-                if u and label: parts.append(f"{label}: {u}")
-        if not pdfs and not xmls and not parts and it.get("link"): parts.append(f"Link: {it['link']}")
-        for idx, u in enumerate(pdfs, start=1):
-            label = "PDF" if idx == 1 else f"PDF {idx}"
-            parts.append(f"{label}: {u}")
-        for idx, u in enumerate(xmls, start=1):
-            label = "XML" if idx == 1 else f"XML {idx}"
-            parts.append(f"{label}: {u}")
-        return ("  " + "  ".join(parts)) if parts else ""
-
-    def render_stamps_html(item: Dict[str, Any], use_qualifying: bool) -> str:
-        if is_rollover and not use_qualifying: return ""
-        stamps = (item.get("qualifying_stamp_texts") if use_qualifying else item.get("stamp_texts")) or []
-        stamp_lines = [s.strip() for s in stamps if (s or "").strip()]
-        if not show_ai_notes: stamp_lines = [s for s in stamp_lines if "AI Note" not in s and "Analyst Note" not in s]
-        if not stamp_lines: return ""
-        html_out = ""
-        for s in stamp_lines:
-            if s.startswith("SUB||"):
-                try:
-                    _, text, timestamp = s.split("||", 2)
-                    html_out += f'<div style="margin-top:4px; margin-left:12px; font-size:13px; color:#4b5563;">↳ {esc(text)} <span style="color:#D32F2F; font-style:italic;">{esc(timestamp)}</span></div>'
-                except: html_out += f'<div style="margin-top:4px; color:#D32F2F; font-style:italic; font-size:12px;">{esc(s)}</div>'
-            elif "AI Note" in s:
-                html_out += f'<div style="margin-top:6px; color:#b45309; background:#fff7ed; padding:4px 8px; border-radius:4px; font-size:13px; border-left:3px solid #f59e0b;">{esc(s)}</div>'
-            else:
-                html_out += f'<div style="margin-top:4px; color:#D32F2F; font-style:italic; font-size:12px;">{esc(s)}</div>'
-        return html_out
-
-    lines: List[str] = []
-    if include_test_banner:
-        lines.append(TEST_PREVIEW_BANNER)
-        lines.append("")
-    lines.append(BRAND_HEADER_TEXT)
-    lines.append(BRAND_SUBHEADER_TEXT)
-    lines.append(f"Subscribe here: {SUBSCRIBE_FORM_URL}")
-    lines.append("")
-    if changed_items and not is_rollover:
-        lines.append("WHAT CHANGED")
-        lines.append("-" * 12)
-        lines.append("")
-    if is_rollover:
-        lines.append("NEW SCHEDULE POSTED")
-        lines.append("The following agenda is now active:")
-        lines.append("")
-    if lu:
-        lines.append(f"House page last updated: {lu}")
-        lines.append("")
-    lines.append(f"Official source: {CANONICAL_PAGE_URL}")
-    lines.append("")
-
-    def render_bucket_text(bucket: str, items: List[Dict[str, Any]], *, show_stamps: bool, use_qualifying_stamps: bool) -> None:
-        if not items: return
-        lines.append(bucket_labels[bucket])
-        for it in items:
-            main = item_display_text(it)
-            lines.extend(textwrap.wrap(main, width=78, initial_indent="- ", subsequent_indent="  "))
-            link_text = item_links_text(it)
-            if link_text: lines.extend(textwrap.wrap(link_text, width=78, initial_indent="  ", subsequent_indent="  "))
-            if show_stamps:
-                stamps = (it.get("qualifying_stamp_texts") if use_qualifying_stamps else it.get("stamp_texts")) or []
-                for st in [s for s in stamps if (s or "").strip()]: lines.extend(textwrap.wrap(st.strip(), width=78, initial_indent="  - ", subsequent_indent="    "))
-            for subitem in it.get("sub_items", []):
-                sub_text = subitem.get("text", "").strip()
-                if sub_text:
-                    lines.extend(textwrap.wrap(sub_text, width=78, initial_indent="    ", subsequent_indent="      "))
-                    sub_links = item_links_text(subitem)
-                    if sub_links: lines.extend(textwrap.wrap(sub_links, width=78, initial_indent="      ", subsequent_indent="      "))
-                    if show_stamps:
-                        sub_stamps = subitem.get("stamp_texts", [])
-                        for st in [s for s in sub_stamps if (s or "").strip()]: lines.extend(textwrap.wrap(st.strip(), width=78, initial_indent="      - ", subsequent_indent="        "))
-            lines.append("")
-        lines.append("")
-
-    if changed_items and not fallback_no_item_stamps and not is_rollover:
-        by_bucket_changed = {BUCKET_SUSPENSION: [], BUCKET_RULE: [], BUCKET_MAY_BE_CONSIDERED: []}
-        for it in changed_items: by_bucket_changed[it["bucket"]].append(it)
-        for b in [BUCKET_SUSPENSION, BUCKET_RULE, BUCKET_MAY_BE_CONSIDERED]:
-            if by_bucket_changed.get(b): render_bucket_text(b, by_bucket_changed[b], show_stamps=True, use_qualifying_stamps=True)
-
-    if fallback_no_item_stamps and not is_rollover:
-        lines.append("IMPORTANT NOTE")
-        lines.append("")
-        lines.append("The House updated the Bills This Week page, but did not clearly mark which individual item was added or updated.")
-        lines.append("")
-        lines.append("The full current schedule is included below.")
-        lines.append("")
-        lines.append("")
-
-    lines.append("CURRENT SCHEDULE SNAPSHOT")
-    lines.append("")
-    for b in [BUCKET_SUSPENSION, BUCKET_RULE, BUCKET_MAY_BE_CONSIDERED]: render_bucket_text(b, parsed["buckets"].get(b, []) or [], show_stamps=True, use_qualifying_stamps=False)
-
-    lines.append(f"Unsubscribe here: {unsubscribe_url_for_user}")
-    lines.append("")
-    lines.append("—" * 28)
-    lines.extend(SIGNATURE_TEXT.split("\n"))
-    lines.append("")
-    text_body = "\n".join([ln.rstrip() for ln in lines]).strip() + "\n"
-
-    def esc(s: str) -> str: return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
-    def item_display_html(it: Dict[str, Any]) -> str:
-        bill_disp = normalize_bill_display(it["bill_ids"][0]) if it.get("bill_ids") else "Item"
-        title = (it.get("title") or "").strip()
-        safe_bill = esc(bill_disp)
-        safe_title = esc(title)
-        main_link = it.get("link", "")
-        if main_link and main_link.startswith("http"): safe_bill = f'<a href="{main_link}" style="text-decoration:underline; color:#1e3a8a;">{safe_bill}</a>'
-        if title and title.upper() != bill_disp.upper(): return f"<strong>{safe_bill}</strong> — {safe_title}"
-        return f"<strong>{safe_bill}</strong>"
-
-    html_parts: List[str] = []
-    html_parts.append("<html><body style=\"font-family: 'Inter', Arial, sans-serif; background-color: #f3f4f6; padding: 20px; color: #1f2937; margin: 0;\">")
-    html_parts.append('<div style=\"max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);\">')
-    html_parts.append('<div style=\"background: #1e3a8a; padding: 25px 20px; text-align: center; border-bottom: 4px solid #1e40af;\">')
-    html_parts.append(f'<div style=\"font-family: Merriweather, serif; color: white; font-size: 22px; font-weight: 700; margin-bottom: 5px;\">{esc(BRAND_HEADER_TEXT)}</div>')
-    html_parts.append(f'<div style=\"color: #dbeafe; font-size: 14px; font-weight: 500; margin-bottom: 8px;\">{esc(BRAND_SUBHEADER_TEXT)}</div>')
-    html_parts.append(f'<div style=\"font-size: 12px;\"><a href=\"{SUBSCRIBE_FORM_URL}\" style=\"color: #93c5fd; text-decoration: underline;\">Subscribe here</a></div>')
-    html_parts.append('</div>')
-
-    if include_test_banner: html_parts.append(f'<div style=\"padding:10px; background:#fff3cd; color:#856404; text-align:center; font-size:12px; border-bottom:1px solid #e5e7eb;\">{esc(TEST_PREVIEW_BANNER)}</div>')
-    html_parts.append('<div style=\"padding: 25px;\">')
-
-    if changed_items and not fallback_no_item_stamps:
-        if is_rollover:
-             html_parts.append('<div style=\"background: #dcfce7; border: 1px solid #22c55e; border-radius: 6px; padding: 15px; margin-bottom: 15px;\"><h2 style=\"margin: 0 0 8px 0; color: #166534; font-size: 13px; font-weight: 700;\">📅 NEW SCHEDULE POSTED</h2><div style=\"font-size: 14px; color: #166534;\">The schedule for this week has been updated/activated.</div></div>')
-             html_parts.append('<div style=\"background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px; padding: 15px; margin-bottom: 30px;\">')
-             html_parts.append('<h2 style=\"margin: 0 0 12px 0; color: #92400e; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;\">⚠️ Changes detected since preview</h2>')
-        else:
-             html_parts.append('<div style=\"background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px; padding: 15px; margin-bottom: 30px;\">')
-             html_parts.append('<h2 style=\"margin: 0 0 12px 0; color: #92400e; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;\">⚡ Latest Activity</h2>')
+    // --- TOGGLE LOGIC ---
+    function switchSection(section) {
+        activeSection = section;
         
-        limit = 5
-        shown_items = changed_items[:limit]
-        hidden_items = changed_items[limit:]
+        // Update Buttons
+        document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
+        document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
         
-        for it in shown_items: html_parts.append(f'<div style=\"margin-bottom: 10px; font-size: 15px; line-height: 1.5;\">{item_display_html(it)}{render_stamps_html(it, True)}</div>')
-        if hidden_items:
-            remaining = len(hidden_items)
-            html_parts.append(f'<div style=\"margin-top: 15px; padding-top: 10px; border-top: 1px solid #fcd34d; color: #92400e; font-size: 13px; font-weight: 600;\">...and {remaining} other updates:</div>')
-            for it in hidden_items:
-                bill_disp = normalize_bill_display(it["bill_ids"][0]) if it.get("bill_ids") else "Item"
-                title = (it.get("title") or "").strip()
-                simple_line = f"{bill_disp}"
-                if len(title) > 50: simple_line += f" — {title[:50]}..."
-                else: simple_line += f" — {title}"
-                html_parts.append(f'<div style=\"margin-top: 4px; font-size: 13px; color: #b45309;\">• {esc(simple_line)}</div>')
-        html_parts.append('</div>')
-    
-    if is_rollover and not changed_items:
-        html_parts.append('<div style=\"background: #dcfce7; border: 1px solid #22c55e; border-radius: 6px; padding: 15px; margin-bottom: 30px;\"><h2 style=\"margin: 0 0 8px 0; color: #166534; font-size: 13px; font-weight: 700;\">📅 NEW SCHEDULE POSTED</h2><div style=\"font-size: 14px; color: #166534;\">The schedule for this week has been updated/activated. The full list is below.</div></div>')
+        // Redraw
+        renderFeed();
+    }
 
-    if fallback_no_item_stamps and not is_rollover:
-        html_parts.append('<div style=\"background: #fffbeb; border: 1px solid #fcd34d; border-radius: 6px; padding: 15px; margin-bottom: 30px;\">')
-        html_parts.append('<h2 style=\"margin: 0 0 8px 0; color: #92400e; font-size: 13px; font-weight: 700;\">SCHEDULE UPDATED</h2>')
-        html_parts.append('<div style=\"font-size: 14px; color: #92400e;\">The House Clerk updated the schedule but did not specify which items changed. The full agenda is below.</div>')
-        html_parts.append('</div>')
+    // --- FEED LOGIC ---
+    async function initFeed() {
+        try {
+            // Fetch everything
+            const { data, error } = await _supabase
+                .from('live_feed')
+                .select('*')
+                .order('id', { ascending: true })
+                .limit(100);
 
-    html_parts.append('<h3 style=\"font-family: Merriweather, serif; font-size: 18px; color: #0f172a; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-top: 0; margin-bottom: 20px;\">Current Floor Agenda</h3>')
+            if (error) {
+                console.error("Supabase Error:", error);
+                document.getElementById('schedule-list').innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error.</div>';
+                return;
+            }
 
-    def render_bucket_html(bucket: str, items: List[Dict[str, Any]], *, show_stamps: bool) -> None:
-        if not items: return
-        html_parts.append(f'<div style=\"background: #f9fafb; padding: 10px 12px; font-size: 12px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; border: 1px solid #e5e7eb; border-radius: 6px 6px 0 0; margin-top: 25px; letter-spacing: 0.5px;\">{esc(bucket_labels[bucket])}</div>')
-        html_parts.append('<div style=\"border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 6px 6px; overflow: hidden;\">')
-        for idx, it in enumerate(items):
-            last_style = "border-bottom: none;" if idx == len(items) - 1 else "border-bottom: 1px solid #f1f5f9;"
-            html_parts.append(f'<div style=\"padding: 15px; background: white; {last_style} font-size: 15px; line-height: 1.5;\">')
-            html_parts.append(f'<div>{item_display_html(it)}{item_links_html(it)}</div>')
-            if show_stamps: html_parts.append(render_stamps_html(it, False))
-            for sub in it.get("sub_items", []):
-                sub_text = esc(sub.get("text", "").strip())
-                if sub_text:
-                    sub_links = item_links_html(sub)
-                    sub_stamps = render_stamps_html(sub, False) if show_stamps else ""
-                    html_parts.append(f'<div style=\"margin-top: 8px; margin-left: 5px; padding-left: 12px; border-left: 3px solid #e5e7eb; color: #4b5563; font-size: 14px;\">↳ {sub_text}{sub_links}{sub_stamps}</div>')
-            html_parts.append('</div>')
-        html_parts.append('</div>')
+            if (data) {
+                // Check if data changed to avoid UI flicker
+                const currentHash = JSON.stringify(data.map(d => d.id));
+                if (currentHash !== lastFetchedHash) {
+                    allBillData = data;
+                    lastFetchedHash = currentHash;
+                    renderFeed();
+                }
+            }
+        } catch (e) { console.error("Feed Crash:", e); }
+    }
 
-    for b in [BUCKET_RULE, BUCKET_SUSPENSION, BUCKET_MAY_BE_CONSIDERED]: render_bucket_html(b, parsed["buckets"].get(b, []) or [], show_stamps=True)
+    function renderFeed() {
+        const latestContainer = document.getElementById('latest-container');
+        const latestList = document.getElementById('latest-list');
+        const scheduleList = document.getElementById('schedule-list');
+        const headerText = document.getElementById('weekly-header');
+        const statusLine = document.getElementById('status-line');
 
-    html_parts.append('</div>')
-    html_parts.append('<div style=\"padding: 25px; text-align: center; background: #f9fafb; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;\">')
-    html_parts.append(f'<div style=\"margin-bottom: 10px;\">Sent by The Capitol Wire</div>')
-    sig_lines = [esc(x) for x in SIGNATURE_TEXT.split("\n") if x.strip()]
-    if sig_lines:
-        html_parts.append('<div style=\"margin-bottom: 15px; color: #4b5563;\">')
-        for line in sig_lines: html_parts.append(f'<div>{line}</div>')
-        html_parts.append('</div>')
-    html_parts.append(f'<div><a href=\"{unsubscribe_url_for_user}\" style=\"color: #2563eb; text-decoration: none;\">Unsubscribe</a></div>')
-    html_parts.append('</div></div></body></html>')
-    html_body = "".join(html_parts)
-    
-    return text_body, html_body
+        // Clear View
+        scheduleList.innerHTML = '';
+        latestList.innerHTML = '';
 
-def process_url_logic(r: redis.Redis, target_config: Dict[str, Any]) -> Optional[Dict]:
-    url = target_config["url"]
-    label_suffix = target_config["label_suffix"]
-    db_suffix = target_config["db_suffix"] 
-    is_current_week = target_config["check_leader"]
-    section_tag = "THIS_WEEK" if is_current_week else "NEXT_WEEK"
+        // Filter by Active Section
+        // Fallback: If item.section is missing, treat as THIS_WEEK
+        const filteredData = allBillData.filter(item => {
+            const itemSec = item.section || 'THIS_WEEK';
+            return itemSec === activeSection;
+        });
 
-    KEY_PAGE_LAST_UPDATED = f"{BASE_KEY_PAGE_LAST_UPDATED}{db_suffix}"
-    KEY_LAST_ALERT_CUTOFF = f"{BASE_KEY_LAST_ALERT_CUTOFF}{db_suffix}"
+        // Update Header Text
+        if (activeSection === 'NEXT_WEEK') {
+            headerText.innerText = "Agenda: Next Week";
+        } else {
+            headerText.innerText = "Agenda: This Week";
+        }
 
-    last_alert_cutoff_text = r.get(KEY_LAST_ALERT_CUTOFF) or ""
-    if not last_alert_cutoff_text or os.environ.get("FORCE_RESET") == "1":
-        if os.environ.get("FORCE_RESET") == "1": print(f"⚠️ FORCE RESET TRIGGERED for {label_suffix}.")
-        last_alert_cutoff_tuple = (2025, 1, 1, 0, 0)
-    else:
-        last_alert_cutoff_tuple = parse_house_datetime_text(last_alert_cutoff_text)
+        if (filteredData.length === 0) {
+            scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color: #94a3b8;">No items scheduled for this period.</div>';
+            latestContainer.style.display = 'none';
+            statusLine.innerHTML = "System Active. Monitoring for updates...";
+            return;
+        }
 
-    try:
-        page_html = fetch_page_content(url)
-    except Exception as e:
-        logging.error(f"Failed to scrape {label_suffix} ({url}): {e}")
-        return None
+        // Sort Newest First for display
+        // (Assuming higher ID = newer)
+        const displayData = [...filteredData].sort((a, b) => b.id - a.id);
 
-    parsed = parse_default_page(page_html)
-    current_page_timestamp = parsed.get("last_updated")
-    page_week_id = parsed.get("page_week_id")
-    parsed["_meta_week_id"] = page_week_id
-    
-    if not current_page_timestamp:
-        logging.error(f"CRITICAL: No 'Last Updated' for {label_suffix}. Skipping.")
-        return None
+        // Update Status Line
+        // Logic: Use global page_timestamp first, then fallback to item timestamp
+        const newestItem = displayData[0];
+        const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
 
-    is_rollover = False
-    if is_current_week and page_week_id:
-        stored_week_id = r.get(STATE_KEY_CURRENT_WEEK_ID)
-        if stored_week_id and stored_week_id != page_week_id:
-            print(f"🔄 ROLLOVER DETECTED! Week changed from {stored_week_id} to {page_week_id}")
-            is_rollover = True
-            if not TEST_MODE: r.set(STATE_KEY_CURRENT_WEEK_ID, page_week_id)
+        if (bannerTime) {
+            statusLine.innerHTML = "Last update from the Clerk: <b>" + bannerTime + "</b>";
+        } else {
+            statusLine.innerHTML = "System Active. Monitoring for updates...";
+        }
 
-    leader_update_found = False; added_sigs = set(); current_leader_hash = ""; current_sigs = set(); advance_bucket = []
-    if is_current_week:
-        leader_items = fetch_majority_leader_data()
-        official_ids = set()
-        for bucket in parsed["buckets"].values():
-            for item in bucket:
-                if item.get("bill_ids"):
-                    for bid in item["bill_ids"]: official_ids.add(bid)
-        for li in leader_items:
-            leader_ids = li.get("bill_ids", [])
-            if not leader_ids: continue
-            if not set(leader_ids).intersection(official_ids):
-                li["bucket"] = BUCKET_MAY_BE_CONSIDERED 
-                advance_bucket.append(li)
-        current_leader_hash = leader_only_hash(advance_bucket)
-        stored_leader_hash = r.get(STATE_KEY_LEADER_ONLY_HASH) or ""
-        leader_update_found = (current_leader_hash != stored_leader_hash)        
-        if leader_update_found:
-            print("MAJORITY LEADER ALERT: Leader-only list changed.")
-            prev_json = r.get(STATE_KEY_LEADER_ONLY_JSON) or "[]"
-            try: prev_sigs = set(json.loads(prev_json))
-            except: prev_sigs = set()
-            current_sigs = set(leader_item_signature(it) for it in advance_bucket)
-            added_sigs = current_sigs - prev_sigs
-        if advance_bucket:
-            current_list = parsed["buckets"].get(BUCKET_MAY_BE_CONSIDERED, [])
-            parsed["buckets"][BUCKET_MAY_BE_CONSIDERED] = advance_bucket + current_list
+        // --- 1. FILL LATEST ACTIVITY (Top Box - Filtered to this view) ---
+        let hasLatest = false;
+        // Use standard bill timestamp for identifying "Latest" activity logic
+        if (newestItem && newestItem.timestamp) {
+            displayData.forEach(item => {
+                if (item.timestamp === newestItem.timestamp) {
+                    latestList.appendChild(createBillItem(item));
+                    hasLatest = true;
+                }
+            });
+        }
+        latestContainer.style.display = hasLatest ? 'block' : 'none';
 
-    page_last_updated_tuple = parse_house_datetime_text(current_page_timestamp) if current_page_timestamp else None
-    
-    if not is_rollover:
-        if not page_last_updated_tuple and not TEST_MODE:
-            prev_text = r.get(KEY_PAGE_LAST_UPDATED) or ""
-            if current_page_timestamp == prev_text and not leader_update_found: return parsed
-        
-        page_is_newer = False
-        if page_last_updated_tuple and last_alert_cutoff_tuple:
-            page_is_newer = tuple_gt(page_last_updated_tuple, last_alert_cutoff_tuple)
-        elif current_page_timestamp and last_alert_cutoff_text:
-            page_is_newer = current_page_timestamp != last_alert_cutoff_text
-        else:
-            page_is_newer = TEST_MODE
-
-        if (not page_is_newer) and (not leader_update_found) and (not TEST_MODE):
-            return parsed
-
-    changed_items = []; fallback_no_item_stamps = False
-    
-    def consider_items(items: List[Dict[str, Any]]):
-        for it in items:
-            qualifying = []
-            if it.get("stamp_texts") and last_alert_cutoff_tuple:
-                for st in it["stamp_texts"]:
-                    st = st.strip()
-                    if not st: continue
-                    tup = parse_mmddyyyy_stamp(st)
-                    if tup and tuple_gt(tup, last_alert_cutoff_tuple): qualifying.append(st)
-            for subitem in it.get("sub_items", []):
-                for st in subitem.get("stamp_texts", []):
-                    st = st.strip()
-                    if not st: continue
-                    tup = parse_mmddyyyy_stamp(st)
-                    if tup and tuple_gt(tup, last_alert_cutoff_tuple): qualifying.append(f"SUB||{subitem.get('text','').strip()}||{st}")
-            final_qualifying = []
-            sub_timestamps = [q.split("||")[-1] for q in qualifying if q.startswith("SUB||")]
-            for q in qualifying:
-                if q.startswith("SUB||"): final_qualifying.append(q)
-                else:
-                    is_redundant = False
-                    for sub_ts in sub_timestamps:
-                        if q in sub_ts or sub_ts in q: is_redundant = True; break
-                    if not is_redundant: final_qualifying.append(q)
-            if final_qualifying:
-                it2 = dict(it); it2["qualifying_stamp_texts"] = final_qualifying
-                changed_items.append(it2)
-
-    consider_items(parsed["buckets"].get(BUCKET_SUSPENSION, []))
-    consider_items(parsed["buckets"].get(BUCKET_RULE, []))
-    consider_items(parsed["buckets"].get(BUCKET_MAY_BE_CONSIDERED, []))
-
-    if is_current_week and leader_update_found and advance_bucket:
-        for it in advance_bucket:
-            if leader_item_signature(it) in added_sigs:
-                it2 = dict(it); it2["qualifying_stamp_texts"] = ["🆕 Advance Notice (Majority Leader Website Only)"]
-                changed_items.append(it2)
-        fallback_no_item_stamps = False
-
-    if not changed_items: fallback_no_item_stamps = True
-
-    if not is_rollover and not changed_items and not fallback_no_item_stamps:
-        return parsed
-
-    if changed_items and not fallback_no_item_stamps and not is_rollover:
-        print(f"Processing AI for {label_suffix}...")
-        for item in changed_items:
-            main_stamps = [s for s in item.get("qualifying_stamp_texts", []) if not s.startswith("SUB||")]
-            is_updated = any("Updated" in s for s in main_stamps)
-            is_added = any("Added" in s for s in main_stamps)
-            pdf_url = item["pdf_urls"][0] if item.get("pdf_urls") else None
+        // --- 2. FILL MAIN CATEGORIES (Bottom Lists) ---
+        CATEGORIES.forEach(cat => {
+            // Case insensitive match
+            const catItems = displayData.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
             
-            if (is_updated or is_added) and pdf_url:
-                bill_id = item.get("bill_ids", ["unknown"])[0]
-                try:
-                    text_content = ""
-                    with requests.get(pdf_url, stream=True, timeout=(15, 30)) as pdf_resp:
-                        pdf_resp.raise_for_status()
-                        with tempfile.NamedTemporaryFile(delete=True) as f:
-                            for chunk in pdf_resp.iter_content(chunk_size=8192): f.write(chunk)
-                            f.flush()
-                            with pdfplumber.open(f.name) as pdf:
-                                pages = [p.extract_text() or "" for p in pdf.pages[:100]]
-                                text_content = "\n".join(pages)
-                    old_text = get_and_update_bill_text(bill_id, text_content)
-                    if is_updated and old_text:
-                        analysis = analyze_changes_with_ai(old_text, text_content)
-                        if analysis: item["qualifying_stamp_texts"].append(analysis); print(f"AI Verdict: {analysis}")
-                    elif is_added: print(f"New item {bill_id} saved.")
-                except Exception as e: logging.error(f"Processing failed for {bill_id}: {e}")
-                finally:
-                    if 'text_content' in locals(): del text_content; gc.collect()
+            if (catItems.length > 0) {
+                const section = document.createElement('div');
+                section.className = 'feed-section';
+                
+                const header = document.createElement('div');
+                header.className = 'section-header';
+                header.innerText = cat.label;
+                section.appendChild(header);
+                
+                catItems.forEach(item => section.appendChild(createBillItem(item)));
+                scheduleList.appendChild(section);
+            }
+        });
+    }
 
-    global_first_pub = parsed.get("first_published")
-    global_last_upd = parsed.get("last_updated")
-    
-    for b_list in parsed["buckets"].values():
-        for item in b_list: 
-            item["section"] = section_tag
-            item["global_first_published"] = global_first_pub
-            item["global_last_updated"] = global_last_upd
-
-    subject = build_subject(changed_items, fallback_no_item_stamps, label_suffix, is_rollover)
-    
-    if TEST_MODE:
-        preview_subject = TEST_PREVIEW_SUBJECT_PREFIX + subject
-        unsub = f"{UNSUBSCRIBE_BASE_URL}?email={TEST_PREVIEW_TO}"
-        text_body, html_body = build_bodies(parsed, changed_items, fallback_no_item_stamps, include_test_banner=TEST_MODE, unsubscribe_url_for_user=unsub, is_rollover=is_rollover)
-        send_email_ses(preview_subject, text_body, html_body, TEST_PREVIEW_TO)
-        print(f"(TEST MODE) Sent {label_suffix} preview.")
-        return parsed
-
-    if check_emergency_brake(r): return parsed
-    subscriber_list = get_subscriber_list()
-    if not subscriber_list: return parsed
-
-    r.set(KEY_LAST_ALERT_CUTOFF, current_page_timestamp)
-    r.set(KEY_PAGE_LAST_UPDATED, current_page_timestamp)
-    if is_current_week and leader_update_found:
-        r.set(STATE_KEY_LEADER_ONLY_HASH, current_leader_hash)
-        r.set(STATE_KEY_LEADER_ONLY_JSON, json.dumps(sorted(list(current_sigs))))
-    
-    print(f"Sending {label_suffix} email to {len(subscriber_list)} subscribers.")
-    increment_emergency_brake(r)
-    
-    beta_testers_raw = os.environ.get("AI_BETA_TESTERS", "").lower()
-    beta_testers_list = [e.strip() for e in beta_testers_raw.split(",") if e.strip()]
-    for email in subscriber_list:
-        unsub_link = f"{UNSUBSCRIBE_BASE_URL}?email={email}"
-        show_ai = True
-        if beta_testers_list: show_ai = (email.lower().strip() in beta_testers_list)
-        text_body, html_body = build_bodies(parsed, changed_items, fallback_no_item_stamps, include_test_banner=False, unsubscribe_url_for_user=unsub_link, show_ai_notes=show_ai, is_rollover=is_rollover)
-        send_email_ses(subject, text_body, html_body, email)
-        time.sleep(0.072)
-            
-    return parsed
-
-def main():
-    r = redis.from_url(REDIS_URL, decode_responses=True)
-    rss_changed = fetch_rss_headers_only(r)
-    should_run = False
-    
-    if os.environ.get("FORCE_RESET") == "1": should_run = True
-    elif TEST_MODE: should_run = True
-    elif rss_changed: should_run = True
-    
-    leader_changed = False
-    try:
-        leader_data = fetch_majority_leader_data()
-        current_leader_sig = leader_only_hash(leader_data) 
-        last_leader_sig = r.get(STATE_KEY_LEADER_RAW_HASH) or ""
-        if current_leader_sig != last_leader_sig:
-            leader_changed = True
-            if not TEST_MODE: r.set(STATE_KEY_LEADER_RAW_HASH, current_leader_sig)
-    except Exception as e:
-        logging.error(f"Leader Trigger Check Failed: {e}")
+    function createBillItem(item) {
+        const div = document.createElement('div');
+        div.className = 'bill-item';
         
-    if leader_changed: should_run = True
-
-    if not should_run:
-        print("RSS Feed & Leader unchanged. Sleeping.")
-        return 
-
-    active_urls = get_active_week_urls()
-    all_bucket_data = []
-    
-    def url_sorter(u):
-        if "date=" not in u: return "00000000"
-        try: return get_week_id_from_url(u)
-        except: return "99999999"
-        
-    sorted_urls = sorted(active_urls, key=url_sorter)
-    current_week_url = sorted_urls[0]
-    current_week_page_id = None 
-    
-    for url in sorted_urls:
-        week_id = get_week_id_from_url(url)
-        is_current = (url == current_week_url)
-        label = "This Week"
-        if week_id != "current" and not is_current:
-            try:
-                d = datetime.strptime(week_id, "%Y%m%d")
-                label = f"Next Week (Jan {d.day})" 
-            except: label = f"Future Week ({week_id})"
-        
-        if not is_current and current_week_page_id and week_id == current_week_page_id:
-            print(f"Skipping duplicate URL for {week_id} (already processed as This Week).")
-            continue
-
-        print(f"Checking schedule: {label}...")
-        
-        target_config = {
-            "url": url,
-            "label_suffix": label,
-            "db_suffix": "" if is_current else f"_{week_id}",
-            "check_leader": is_current
+        let linkHtml = '';
+        if (item.link) {
+            const isPdf = item.link.toLowerCase().endsWith('pdf');
+            linkHtml = `<div class="bill-links"><a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a></div>`;
         }
         
-        parsed_result = process_url_logic(r, target_config)
+        // Bill Card always uses the standard item.timestamp
+        let timeHtml = '';
+        if (item.timestamp && item.timestamp.trim() !== "") {
+            timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
+        }
+
+        // Title Bold Logic
+        let fullTitle = item.title || "";
+        let boldPart = fullTitle;
+        let normalPart = "";
+
+        let splitIndex = fullTitle.indexOf("—");
+        if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
+
+        if (splitIndex !== -1) {
+            boldPart = fullTitle.substring(0, splitIndex).trim(); 
+            normalPart = fullTitle.substring(splitIndex); 
+        }
+
+        div.innerHTML = `
+            <div class="bill-row">
+                <div class="bill-title"><strong>${boldPart}</strong> ${normalPart}</div>
+                ${linkHtml}
+            </div>
+            ${timeHtml}
+        `;
+        return div;
+    }
+    
+    // START
+    initFeed();
+    setInterval(initFeed, 10000);
+
+    // MODAL
+    const modal = document.getElementById('modal');
+    const modalInput = document.getElementById('modal-email');
+    const modalBtn = document.getElementById('modal-submit');
+    const modalStatus = document.getElementById('modal-status');
+
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModal() { modal.style.display = 'none'; }
+    
+    // Auto-open modal after 3s (optional, remove if annoying)
+    // window.addEventListener('load', () => { setTimeout(openModal, 3000); });
+
+    modalBtn.addEventListener('click', async () => {
+        const email = modalInput.value.trim();
+        if (!email || !email.includes('@')) {
+            modalStatus.innerText = "Please enter a valid email.";
+            modalStatus.style.color = "#dc2626";
+            return;
+        }
+        modalBtn.disabled = true;
+        modalBtn.innerText = "Processing...";
+        modalStatus.innerText = "";
+
+        const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
         
-        if parsed_result:
-            if is_current: current_week_page_id = parsed_result.get("_meta_week_id")
-            buckets = parsed_result.get("buckets", {})
-            flat_items = []
-            for b_name, b_items in buckets.items():
-                for item in b_items:
-                    item['page_url'] = url
-                    flat_items.append(item)
-            all_bucket_data.extend(flat_items)
-
-    if all_bucket_data:
-        update_website_feed(all_bucket_data)
-
-if __name__ == "__main__":
-    main()
+        if (error) {
+            if (error.code === '23505') {
+                modalStatus.innerText = "You are already subscribed!";
+                modalStatus.style.color = "#2563eb";
+            } else {
+                modalStatus.innerText = "Error. Try again.";
+                modalStatus.style.color = "#dc2626";
+            }
+            modalBtn.disabled = false;
+            modalBtn.innerText = "Subscribe Free";
+        } else {
+            modalStatus.innerText = "Subscribed!";
+            modalStatus.style.color = "#16a34a";
+            modalInput.value = "";
+            setTimeout(closeModal, 2000);
+        }
+    });
+  </script>
+</body>
+</html>
