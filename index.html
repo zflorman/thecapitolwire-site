@@ -56,7 +56,7 @@
         -webkit-font-smoothing: antialiased;
     }
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
 
     /* --- NAV --- */
     nav { 
@@ -68,7 +68,7 @@
         position: sticky; top: 0; z-index: 100;
     }
     .nav-inner { 
-        max-width: 1200px; margin: 0 auto; padding: 0 24px; 
+        max-width: 1000px; margin: 0 auto; padding: 0 24px; 
         display: flex; justify-content: space-between; align-items: center; 
     }
     .logo { 
@@ -76,6 +76,12 @@
         color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
         letter-spacing: -0.5px;
     }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-link { 
+        color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; 
+        transition: color 0.2s; cursor: pointer; 
+    }
+    .nav-link:hover { color: var(--brand-primary); }
     
     .sub-btn { 
         background: var(--brand-primary); 
@@ -86,13 +92,11 @@
         text-decoration: none; 
         font-size: 0.85rem; 
         transition: transform 0.1s;
-        border: none;
-        cursor: pointer;
     }
     .sub-btn:hover { background: var(--brand-dark); }
 
     /* --- HERO SECTION --- */
-    .hero { text-align: center; padding: 80px 0 60px; position: relative; }
+    .hero { text-align: center; padding: 100px 0 0px; position: relative; }
     
     .hero h1 { 
         font-family: 'Merriweather', serif; 
@@ -113,6 +117,7 @@
 
     /* Typewriter */
     .typing-wrapper { display: inline-block; }
+    
     .typing-text {
         display: inline-block;
         font-family: 'Merriweather', serif; 
@@ -140,6 +145,7 @@
     }
     .check { color: var(--success); margin-right: 12px; font-weight: bold; }
     .hero-checklist strong { color: var(--text-main); font-weight: 600; }
+    
     .hero-checklist a {
         color: var(--brand-primary);
         text-decoration: none;
@@ -152,7 +158,9 @@
     /* --- FORM --- */
     .form-wrapper { 
         max-width: 480px; margin: 0 auto; display: flex; gap: 10px; 
-        padding: 4px; position: relative; z-index: 10;
+        padding: 4px;
+        position: relative;
+        z-index: 10;
     }
     input { 
         flex: 1; padding: 16px 20px; 
@@ -181,20 +189,18 @@
     }
     button.form-btn:disabled { opacity: 0.7; cursor: wait; }
     
-    .msg { margin-top: 5px; font-size: 0.9rem; min-height: 24px; font-weight: 500; text-align: center;} 
+    .msg { margin-top: 5px; font-size: 0.9rem; min-height: 24px; font-weight: 500; text-align: center; } 
 
-    /* --- DASHBOARD LAYOUT (Merged) --- */
-    .dashboard-grid { 
-        max-width: 1200px; margin: 0 auto; padding: 0; 
-        display: grid; grid-template-columns: 1fr 320px; gap: 40px; 
-        position: relative; z-index: 2;
-    }
+    /* --- FEED STYLES (FROM DASHBOARD) --- */
+    .feed-wrapper { padding: 40px 0 80px; }
 
-    /* --- TOGGLE BUTTONS --- */
+    /* Toggle Buttons */
     .toggle-container {
         display: flex;
+        justify-content: center;
         gap: 10px;
         margin-bottom: 30px;
+        margin-top: 20px;
     }
     .toggle-btn {
         padding: 12px 24px;
@@ -219,26 +225,28 @@
         box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
     }
 
-    /* --- HEADER & STATUS --- */
-    .week-header-box { margin-bottom: 20px; }
+    /* Week Header */
+    .week-header-box { margin-bottom: 20px; text-align: center; }
     .week-header-text { 
         font-family: 'Merriweather', serif; 
-        font-size: 2.2rem; 
+        font-size: 2rem; 
         color: var(--text-main); 
         font-weight: 700; 
         letter-spacing: -1px;
         line-height: 1.2;
     }
 
-    .status-bar { 
+    /* Status Bar */
+    .status-bar {
         display: flex; align-items: center; gap: 12px;
         font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
-        background: white; padding: 10px 16px; border-radius: 100px; 
-        border: 1px solid #e2e8f0; margin-bottom: 30px; 
-        box-shadow: var(--card-shadow);
+        background: white; padding: 8px 16px; border-radius: 100px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 30px;
         width: fit-content;
+        margin-left: auto; margin-right: auto; 
     }
-    
     .live-dot { 
         width: 8px; height: 8px; 
         background: #22c55e; 
@@ -252,7 +260,7 @@
         100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 
-    /* --- FEED SECTIONS --- */
+    /* Feed Sections */
     .feed-section { 
         background: var(--card-bg); 
         border: var(--card-border); 
@@ -263,15 +271,16 @@
     }
     .feed-section:hover { box-shadow: var(--card-hover-shadow); }
 
-    .section-header { 
-        background: #f8fafc; 
-        padding: 14px 24px; 
-        font-family: 'Inter', sans-serif; 
-        font-weight: 700; font-size: 0.8rem; 
-        color: var(--text-muted); 
-        border-bottom: 1px solid #e2e8f0; 
-        text-transform: uppercase; letter-spacing: 0.5px; 
+    .section-header {
+        background: #f8fafc;
+        padding: 14px 20px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 700; font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase; letter-spacing: 0.5px;
+        border-bottom: 1px solid #e2e8f0;
     }
+    
     .bill-item { 
         padding: 20px 24px; 
         border-bottom: 1px solid #f1f5f9; 
@@ -301,82 +310,20 @@
         padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
     }
 
-    /* --- SIDEBAR & CALENDAR --- */
-    .sidebar { display: flex; flex-direction: column; gap: 24px; }
-    
-    .widget { 
-        background: var(--card-bg); 
-        border: var(--card-border); 
-        border-radius: 12px; 
-        padding: 24px; 
-        box-shadow: var(--card-shadow); 
+    footer { 
+        padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; 
+        border-top: 1px solid #e2e8f0; margin-top: 60px;
     }
-    .widget h3 { 
-        font-family: 'Inter', sans-serif; 
-        font-size: 0.9rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
-        color: var(--text-muted); 
-        margin-bottom: 20px; 
-        border-bottom: 1px solid #e2e8f0; 
-        padding-bottom: 12px; 
-    }
-
-    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .cal-btn { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--brand-primary); font-size: 1.2rem; padding: 0 8px; }
-    .cal-btn:hover { color: var(--brand-dark); }
-    .cal-month { font-weight: 700; color: var(--text-main); font-family:'Merriweather', serif; }
-    
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; font-size: 0.85rem; }
-    .cal-day-header { font-weight: 600; color: var(--text-muted); font-size: 0.75rem; padding-bottom: 5px; }
-    
-    .cal-day { 
-        padding: 6px 0; color: var(--text-main); border-radius: 6px; 
-        font-variant-numeric: tabular-nums;
-    }
-    .cal-session { 
-        background: #eff6ff; color: var(--brand-primary); font-weight: 700; 
-        border: 1px solid #dbeafe;
-    } 
-    .cal-today { 
-        background: var(--brand-primary); color: white; font-weight:700; 
-    } 
-
-    /* --- MODAL --- */
-    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display:none; justify-content:center; align-items:center; z-index:200; }
-    .modal { background:white; padding:40px 30px; border-radius:16px; width:90%; max-width:420px; text-align:center; position:relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-    .close-modal { position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem; color:#94a3b8; transition: color 0.2s; }
-    .close-modal:hover { color: var(--text-main); }
-    
-    .modal h3 { margin-bottom:10px; color:var(--text-main); font-family: 'Merriweather', serif; font-size: 1.5rem; }
-    .modal p { color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; }
-    
-    .modal input { width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:12px; font-size: 1rem; }
-    .modal input:focus { border-color: var(--brand-primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-    
-    .modal button { 
-        width:100%; padding:12px; 
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
-        color:white; border:none; border-radius:8px; 
-        font-weight:600; cursor:pointer; font-size: 1rem;
-        transition: transform 0.1s;
-    }
-    .modal button:hover { background: var(--brand-dark); transform: translateY(-1px); }
-    .modal button:disabled { background: #94a3b8; cursor: wait; transform: none; }
-    .modal-msg { margin-top:15px; font-size:0.9rem; min-height: 20px; }
-
-    footer { padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 60px; grid-column: 1 / -1; }
     footer a { color: #64748b; text-decoration: none; transition: color 0.2s; }
     footer a:hover { color: var(--brand-primary); text-decoration: underline; }
     .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
 
-    @media (max-width: 900px) {
-        .dashboard-grid { grid-template-columns: 1fr; gap: 30px; }
-        .sidebar { width: 100%; order: 2; }
-        .content-area { order: 1; }
+    @media (max-width: 768px) { 
         .hero h1 { font-size: 2.2rem; }
         .form-wrapper { flex-direction: column; padding: 0; }
         input { width: 100%; margin-bottom: 10px; }
         button.form-btn { width: 100%; }
-        .week-header-text { font-size: 1.8rem; }
+        .nav-inner { flex-direction: column; gap: 15px; }
         .bill-row { flex-direction: column; gap: 10px; }
         .hero-checklist { padding-left: 10px; font-size: 1rem; }
     }
@@ -387,7 +334,9 @@
   <nav>
     <div class="nav-inner">
       <a href="/" class="logo">🏛️ The Capitol Wire</a>
-      <button class="sub-btn" onclick="openModal()">Get Alerts</button>
+      <div class="nav-links">
+        <a href="#hero" class="sub-btn">Get Alerts</a>
+      </div>
     </div>
   </nav>
 
@@ -412,90 +361,56 @@
       </div>
       
       <div class="form-wrapper">
-        <input type="email" id="hero-email" placeholder="Enter your email" required />
-        <button id="hero-submitBtn" class="form-btn">Subscribe for Free</button>
+        <input type="email" id="email" placeholder="Enter your email" required />
+        <button id="submitBtn" class="form-btn">Subscribe for Free</button>
       </div>
-      <div id="hero-status" class="msg"></div>
+      <div id="status" class="msg"></div>
     </div>
   </section>
 
-  <div class="container">
-    <div class="dashboard-grid">
+  <div id="live-feed" class="feed-wrapper">
+    <div class="container">
         
-        <div class="content-area">
-            <div class="toggle-container">
-                <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This Week</button>
-                <button class="toggle-btn" id="btn-next-week" onclick="switchSection('NEXT_WEEK')">Next Week</button>
-            </div>
+      <div class="toggle-container">
+          <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This Week</button>
+          <button class="toggle-btn" id="btn-next-week" onclick="switchSection('NEXT_WEEK')">Next Week</button>
+      </div>
 
-            <div class="week-header-box">
-                <h2 id="weekly-header" class="week-header-text">Loading Agenda...</h2>
-            </div>
+      <div class="week-header-box">
+          <h2 id="weekly-header" class="week-header-text">Loading Agenda...</h2>
+      </div>
 
-            <div class="status-bar">
-                <div class="live-dot"></div>
-                <div id="status-line">System Online. Monitoring active feeds...</div>
-            </div>
+      <div class="status-bar">
+          <div class="live-dot"></div>
+          <div id="status-line">System Online. Monitoring active feeds...</div>
+      </div>
 
-            <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
-                <div class="section-header" style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
-                    ⚡ Latest Activity (New)
-                </div>
-                <div id="latest-list"></div>
-            </div>
+      <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
+          <div class="section-header" style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
+             ⚡ Latest Activity (New)
+          </div>
+          <div id="latest-list"></div>
+      </div>
 
-            <div id="schedule-list">
-                <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">Initializing secure connection...</div>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <div class="widget">
-                <h3>Legislative Calendar</h3>
-                <div class="cal-header">
-                    <button class="cal-btn" onclick="changeMonth(-1)">&lt;</button>
-                    <div id="calendar-month" class="cal-month">Loading...</div>
-                    <button class="cal-btn" onclick="changeMonth(1)">&gt;</button>
-                </div>
-                <div class="calendar-grid" id="calendar-grid">
-                    <div class="cal-day-header">S</div>
-                    <div class="cal-day-header">M</div>
-                    <div class="cal-day-header">T</div>
-                    <div class="cal-day-header">W</div>
-                    <div class="cal-day-header">T</div>
-                    <div class="cal-day-header">F</div>
-                    <div class="cal-day-header">S</div>
-                </div>
-                <div style="font-size:0.75rem; color: var(--text-muted); margin-top:16px; text-align:center; display:flex; justify-content:center; gap: 15px;">
-                    <div style="display:flex; align-items:center; gap:5px;">
-                        <span style="width:8px; height:8px; background:#eff6ff; border:1px solid #dbeafe; border-radius:2px;"></span> In Session
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div id="schedule-list">
+          <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">
+            Initializing secure connection...
+          </div>
+      </div>
 
     </div>
-
-    <footer>
-        <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
-        <div class="footer-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
-        </div>
-    </footer>
   </div>
 
-  <div class="modal-overlay" id="modal">
-    <div class="modal">
-      <span class="close-modal" onclick="closeModal()">&times;</span>
-      <h3>Get Instant Alerts</h3>
-      <p>Enter your email to get notified immediately when the Majority Leader or Clerk updates the schedule.</p>
-      <input type="email" id="modal-email" placeholder="Enter your email" />
-      <button id="modal-submit">Subscribe Free</button>
-      <div id="modal-status" class="modal-msg"></div>
+  <footer>
+    <div class="container">
+      <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+      </div>
     </div>
-  </div>
+  </footer>
 
   <script>
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
@@ -513,93 +428,6 @@
     let activeSection = 'THIS_WEEK'; 
     let allBillData = [];
     let lastFetchedHash = "";
-
-    // --- CALENDAR LOGIC (2025-2026 Session Dates) ---
-    const SESSION_DATES = [
-        "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04",
-        "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11",
-        "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18",
-        
-        "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09",
-        "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15",
-        "2026-01-20", "2026-01-21", "2026-01-22",
-        "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30",
-        "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05",
-        "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12",
-        "2026-02-24", "2026-02-25", "2026-02-26",
-        "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05",
-        "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12",
-        "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19",
-        "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26",
-        "2026-04-13", "2026-04-14", "2026-04-15", "2026-04-16",
-        "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23",
-        "2026-04-28", "2026-04-29", "2026-04-30",
-        "2026-05-04", "2026-05-05", "2026-05-06", "2026-05-07",
-        "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15",
-        "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21",
-        "2026-06-02", "2026-06-03", "2026-06-04",
-        "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11",
-        "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18",
-        "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25",
-        "2026-06-29", "2026-06-30",
-        "2026-07-07", "2026-07-08", "2026-07-09",
-        "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16",
-        "2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23",
-        "2026-07-27", "2026-07-28", "2026-07-29", "2026-07-30",
-        "2026-09-08", "2026-09-09", "2026-09-10",
-        "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17",
-        "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24",
-        "2026-09-28", "2026-09-29", "2026-09-30",
-        "2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19",
-        "2026-11-30",
-        "2026-12-01", "2026-12-02", "2026-12-03",
-        "2026-12-07", "2026-12-08", "2026-12-09", "2026-12-10",
-        "2026-12-14", "2026-12-15", "2026-12-16", "2026-12-17"
-    ];
-    const SESSION_SET = new Set(SESSION_DATES);
-    let calendarCursor = new Date(); 
-
-    function changeMonth(delta) {
-        calendarCursor.setMonth(calendarCursor.getMonth() + delta);
-        renderCalendar();
-    }
-
-    function renderCalendar() {
-        const year = calendarCursor.getFullYear();
-        const month = calendarCursor.getMonth();
-        const todayObj = new Date();
-
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        document.getElementById('calendar-month').innerText = monthNames[month] + " " + year;
-        
-        const grid = document.getElementById('calendar-grid');
-        while (grid.children.length > 7) { grid.removeChild(grid.lastChild); }
-
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        for (let i = 0; i < firstDay; i++) {
-            const div = document.createElement('div');
-            grid.appendChild(div);
-        }
-
-        for (let i = 1; i <= daysInMonth; i++) {
-            const div = document.createElement('div');
-            div.className = 'cal-day';
-            div.innerText = i;
-            
-            const monthStr = (month + 1).toString().padStart(2, '0');
-            const dayStr = i.toString().padStart(2, '0');
-            const dateString = `${year}-${monthStr}-${dayStr}`;
-
-            if (SESSION_SET.has(dateString)) div.classList.add('cal-session');
-            if (year === todayObj.getFullYear() && month === todayObj.getMonth() && i === todayObj.getDate()) {
-                div.classList.add('cal-today');
-            }
-            grid.appendChild(div);
-        }
-    }
-    renderCalendar();
 
     // --- TOGGLE LOGIC ---
     function switchSection(section) {
@@ -690,7 +518,6 @@
 
         // --- 1. FILL LATEST ACTIVITY (Top Box - Filtered to this view) ---
         let hasLatest = false;
-        // Use standard bill timestamp for identifying "Latest" activity logic
         if (newestItem && newestItem.timestamp) {
             displayData.forEach(item => {
                 if (item.timestamp === newestItem.timestamp) {
@@ -751,7 +578,6 @@
             // Skip the delimiter (+1) so it doesn't show in the description
             normalPart = fullTitle.substring(splitIndex + 1).trim(); 
         } else {
-            // If no dash found (e.g. "Veto Message..."), keep standard
             boldPart = fullTitle;
             normalPart = "";
         }
@@ -769,70 +595,53 @@
         return div;
     }
     
-    // START
+    // START FEED
     initFeed();
     setInterval(initFeed, 10000);
 
-    // --- MODAL & HERO FORM HANDLING ---
-    
-    // 1. Modal Logic
-    const modal = document.getElementById('modal');
-    const modalInput = document.getElementById('modal-email');
-    const modalBtn = document.getElementById('modal-submit');
-    const modalStatus = document.getElementById('modal-status');
+    // HERO FORM SUBSCRIPTION LOGIC
+    const btn = document.getElementById('submitBtn');
+    const input = document.getElementById('email');
+    const stat = document.getElementById('status');
 
-    function openModal() { modal.style.display = 'flex'; }
-    function closeModal() { modal.style.display = 'none'; }
-    
-    async function handleSubscription(email, btnEl, statusEl) {
-        if (!email || !email.includes('@')) {
-            statusEl.innerText = "Please enter a valid email.";
-            statusEl.style.color = "#dc2626";
-            return;
-        }
-        btnEl.disabled = true;
-        btnEl.innerText = "Processing...";
-        statusEl.innerText = "";
+    btn.addEventListener('click', async () => {
+      const email = input.value.trim();
+      
+      if (!email.includes('@')) { 
+          stat.textContent = "Please enter a valid email."; 
+          stat.style.color = "#dc2626"; 
+          return; 
+      }
 
-        const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
-        
-        if (error) {
-            if (error.code === '23505') {
-                statusEl.innerText = "You are already subscribed!";
-                statusEl.style.color = "#2563eb";
-            } else {
-                statusEl.innerText = "Error. Try again.";
-                statusEl.style.color = "#dc2626";
-            }
-            btnEl.disabled = false;
-            btnEl.innerText = "Subscribe Free";
-        } else {
-            statusEl.innerText = "Subscribed!";
-            statusEl.style.color = "#16a34a";
-            // Reset logic
-            setTimeout(() => {
-                if(modal.style.display === 'flex') closeModal();
-                btnEl.disabled = false;
-                btnEl.innerText = "Subscribe Free";
-                statusEl.innerText = "";
-            }, 2000);
-        }
-    }
+      btn.disabled = true; 
+      btn.textContent = "Authenticating...";
+      stat.textContent = "";
 
-    // Modal Listener
-    modalBtn.addEventListener('click', () => {
-        handleSubscription(modalInput.value.trim(), modalBtn, modalStatus);
+      const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
+
+      if (error) {
+          if (error.code === '23505') {
+              stat.textContent = "You are already in the system.";
+              stat.style.color = "#2563eb"; 
+          } else {
+              stat.textContent = "Connection error. Please retry.";
+              stat.style.color = "#dc2626"; 
+          }
+          btn.disabled = false; 
+          btn.textContent = "Subscribe for Free";
+      } else {
+          stat.textContent = "Confirmed. You are now tracking the floor.";
+          stat.style.color = "#16a34a"; // Green
+          input.value = "";
+          btn.textContent = "Success";
+          
+          setTimeout(() => {
+              btn.disabled = false;
+              btn.textContent = "Subscribe Colleague";
+              stat.textContent = "";
+          }, 3000);
+      }
     });
-
-    // 2. Hero Form Logic
-    const heroBtn = document.getElementById('hero-submitBtn');
-    const heroInput = document.getElementById('hero-email');
-    const heroStatus = document.getElementById('hero-status');
-
-    heroBtn.addEventListener('click', () => {
-        handleSubscription(heroInput.value.trim(), heroBtn, heroStatus);
-    });
-
   </script>
 </body>
 </html>
