@@ -14,6 +14,15 @@
 </head>
 <body class="text-gray-800">
 
+    <script>
+        window.onerror = function(msg, url, line) {
+            alert("⚠️ SYSTEM ERROR:\n" + msg + "\n\nLine: " + line);
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-msg').innerText = "System Error: " + msg;
+        };
+    </script>
+
     <div class="bg-blue-900 text-white py-6 border-b-4 border-blue-800">
         <div class="max-w-3xl mx-auto px-6 text-center">
             <h1 class="text-2xl font-bold tracking-wide">🏛️ THE CAPITOL WIRE</h1>
@@ -34,7 +43,6 @@
         </div>
 
         <div id="report" class="hidden space-y-8">
-            
             <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
                 <div class="flex items-center space-x-3 mb-4">
                     <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide">Analyst Brief</span>
@@ -45,39 +53,27 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
                 <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-gray-400">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">
-                        ⚙️ Mechanism
-                    </h3>
+                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">⚙️ Mechanism</h3>
                     <p id="mechanism" class="text-sm text-gray-600 leading-relaxed"></p>
                 </div>
-
                 <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-indigo-500">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">
-                        🎯 Impact Groups
-                    </h3>
+                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">🎯 Impact Groups</h3>
                     <ul id="impact" class="space-y-2 text-sm text-gray-600"></ul>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
                 <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-green-500">
-                    <h3 class="text-lg font-bold text-green-800 mb-4 bg-green-50 inline-block px-3 py-1 rounded">
-                        Arguments For
-                    </h3>
+                    <h3 class="text-lg font-bold text-green-800 mb-4 bg-green-50 inline-block px-3 py-1 rounded">Arguments For</h3>
                     <ul id="pros" class="space-y-3"></ul>
                     <div class="mt-6 pt-4 border-t border-gray-100">
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Supporters</span>
                         <div id="supporters" class="flex flex-wrap gap-2 mt-2"></div>
                     </div>
                 </div>
-
                 <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-red-500">
-                    <h3 class="text-lg font-bold text-red-800 mb-4 bg-red-50 inline-block px-3 py-1 rounded">
-                        Arguments Against
-                    </h3>
+                    <h3 class="text-lg font-bold text-red-800 mb-4 bg-red-50 inline-block px-3 py-1 rounded">Arguments Against</h3>
                     <ul id="cons" class="space-y-3"></ul>
                     <div class="mt-6 pt-4 border-t border-gray-100">
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Opponents</span>
@@ -89,27 +85,30 @@
             <div class="text-center pt-8 pb-12">
                 <a href="/" class="text-blue-600 hover:text-blue-800 font-semibold text-sm">← Back to Dashboard</a>
             </div>
-
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        // Use your Project URL and the "anon" (public) key from Supabase settings.
+        // --- CREDENTIALS ---
         const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
+        // Confirmed Anon Key
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjcnNkeXlxcmJ0eHl6aHZlc3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzIzOTYsImV4cCI6MjA4MTc0ODM5Nn0.FzTqjfTSDsz4MnLKNHlPcXdyR53UvnOmkV0bjZSbCGw'; 
-        // ---------------------
+
+        // 1. Check if Supabase Loaded
+        if (typeof supabase === 'undefined') {
+            throw new Error("Supabase Library failed to load. Check your ad-blocker.");
+        }
 
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function loadReport() {
             const params = new URLSearchParams(window.location.search);
-            // Accepts ?bill=HR123 or ?id=5
             const billParam = params.get('bill');
             const idParam = params.get('id');
 
             if (!billParam && !idParam) {
-                showError("No bill ID specified in URL.");
+                // If testing without a bill ID, throw error to verify system works
+                alert("DEBUG: No ID in URL. System is working, but needs ?bill=HR123");
                 return;
             }
 
@@ -118,22 +117,32 @@
             if (idParam) {
                 query = query.eq('id', idParam);
             } else {
-                // Formatting search to match "H.R. 123" roughly
                 const cleanId = billParam.replace(/([a-zA-Z]+)(\d+)/, '$1 $2').toUpperCase(); 
-                // Using ILIKE to search within the title
                 query = query.ilike('title', `%${cleanId}%`);
             }
 
+            // 2. Perform Query
             const { data, error } = await query.single();
 
-            if (error || !data) {
-                showError("Report not found or database error.");
-                console.error(error);
+            // 3. Handle Database Errors
+            if (error) {
+                console.error("Supabase Error:", error);
+                // PGRST116 means "No rows found"
+                if(error.code === 'PGRST116') {
+                    showError("Bill not found in database.");
+                } else {
+                    throw new Error("DB Error: " + error.message);
+                }
+                return;
+            }
+
+            if (!data) {
+                showError("Report not found.");
                 return;
             }
 
             if (!data.ai_analysis) {
-                showError("Analysis for this bill is still pending processing.");
+                showError("Analysis pending processing.");
                 return;
             }
 
@@ -143,31 +152,18 @@
         function renderData(row) {
             const ai = row.ai_analysis;
             
-            // Header
             document.getElementById('bill-title').innerText = row.title;
             document.getElementById('summary').innerText = ai.summary || "No summary available.";
             document.getElementById('timestamp').innerText = new Date().toLocaleDateString();
-
-            // Mechanism
             document.getElementById('mechanism').innerText = ai.mechanism || "Technical details not provided.";
 
-            // Lists Helper
             const fillList = (id, items, bulletColor) => {
                 const el = document.getElementById(id);
-                if (!items || items.length === 0) {
-                    el.innerHTML = '<li class="italic text-gray-400">None specified</li>';
-                    return;
-                }
-                el.innerHTML = items.map(i => `
-                    <li class="flex items-start">
-                        <span class="mr-2 mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${bulletColor}"></span>
-                        <span class="leading-relaxed">${i}</span>
-                    </li>
-                `).join('');
+                if (!items || items.length === 0) { el.innerHTML = '<li class="italic text-gray-400">None specified</li>'; return; }
+                el.innerHTML = items.map(i => `<li class="flex items-start"><span class="mr-2 mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${bulletColor}"></span><span class="leading-relaxed">${i}</span></li>`).join('');
             };
 
-            // Tags Helper
-            const fillTags = (id, items, colorClass) => {
+            const fillTags = (id, items) => {
                 const el = document.getElementById(id);
                 if (!items || items.length === 0) return;
                 el.innerHTML = items.map(i => `<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">${i}</span>`).join('');
@@ -176,7 +172,6 @@
             fillList('impact', ai.impact, 'bg-indigo-400');
             fillList('pros', ai.analysis.pros, 'bg-green-500');
             fillList('cons', ai.analysis.cons, 'bg-red-500');
-
             fillTags('supporters', ai.analysis.likely_supporters);
             fillTags('opponents', ai.analysis.likely_opponents);
 
