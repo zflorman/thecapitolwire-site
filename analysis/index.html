@@ -16,7 +16,7 @@
 
     <script>
         window.onerror = function(msg, url, line) {
-            alert("⚠️ SYSTEM ERROR:\n" + msg + "\n\nLine: " + line);
+            console.error("Error: " + msg);
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('error').classList.remove('hidden');
             document.getElementById('error-msg').innerText = "System Error: " + msg;
@@ -91,13 +91,7 @@
     <script>
         // --- CREDENTIALS ---
         const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
-        // Confirmed Anon Key
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjcnNkeXlxcmJ0eHl6aHZlc3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzIzOTYsImV4cCI6MjA4MTc0ODM5Nn0.FzTqjfTSDsz4MnLKNHlPcXdyR53UvnOmkV0bjZSbCGw'; 
-
-        // 1. Check if Supabase Loaded
-        if (typeof supabase === 'undefined') {
-            throw new Error("Supabase Library failed to load. Check your ad-blocker.");
-        }
 
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -107,12 +101,12 @@
             const idParam = params.get('id');
 
             if (!billParam && !idParam) {
-                // If testing without a bill ID, throw error to verify system works
-                alert("DEBUG: No ID in URL. System is working, but needs ?bill=HR123");
-                return;
+                return; // Silent return if just testing layout
             }
 
-            let query = client.table('live_feed').select('*');
+            // --- THE FIX IS HERE ---
+            // Changed from .table() to .from()
+            let query = client.from('live_feed').select('*');
             
             if (idParam) {
                 query = query.eq('id', idParam);
@@ -121,27 +115,19 @@
                 query = query.ilike('title', `%${cleanId}%`);
             }
 
-            // 2. Perform Query
             const { data, error } = await query.single();
 
-            // 3. Handle Database Errors
             if (error) {
                 console.error("Supabase Error:", error);
-                // PGRST116 means "No rows found"
                 if(error.code === 'PGRST116') {
                     showError("Bill not found in database.");
                 } else {
-                    throw new Error("DB Error: " + error.message);
+                    showError("Database Error: " + error.message);
                 }
                 return;
             }
 
-            if (!data) {
-                showError("Report not found.");
-                return;
-            }
-
-            if (!data.ai_analysis) {
+            if (!data || !data.ai_analysis) {
                 showError("Analysis pending processing.");
                 return;
             }
