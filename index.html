@@ -95,6 +95,26 @@
     }
     .sub-btn:hover { background: var(--brand-dark); }
 
+    /* --- DROPDOWN --- */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content { 
+        display: none; position: absolute; 
+        background: white;
+        min-width: 200px; 
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px; 
+        z-index: 100; top: 120%; left: 50%; transform: translateX(-50%); 
+        padding: 6px; 
+        opacity: 0; transition: opacity 0.2s;
+        border: 1px solid #e2e8f0;
+    }
+    .dropdown:hover .dropdown-content { display: block; opacity: 1; top: 100%; animation: slideUpFade 0.2s ease-out; }
+    .dropdown-content a { 
+        color: var(--text-main); padding: 8px 12px; text-decoration: none; display: block; 
+        font-size: 0.85rem; font-weight: 500; border-radius: 4px; 
+    }
+    .dropdown-content a:hover { background-color: #eff6ff; color: var(--brand-primary); }
+
     /* --- HERO SECTION --- */
     .hero { text-align: center; padding: 100px 0 0px; position: relative; }
     
@@ -128,10 +148,9 @@
         overflow: hidden;
         width: 0;
         animation: typing 1.5s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
-        vertical-align: bottom; 
-        line-height: 1.2;
-        padding-bottom: 3px;
-        margin-bottom: -3px; 
+        vertical-align: baseline; 
+        line-height: 1.3;
+        padding-bottom: 5px; 
     }
     @keyframes typing { to { width: 100%; } }
     @keyframes blink-caret { 50% { border-color: transparent; } }
@@ -191,10 +210,10 @@
     
     .msg { margin-top: 5px; font-size: 0.9rem; min-height: 24px; font-weight: 500; text-align: center; } 
 
-    /* --- FEED STYLES (FROM DASHBOARD) --- */
+    /* --- FEED WRAPPER & NEW DASHBOARD STYLES --- */
     .feed-wrapper { padding: 40px 0 80px; }
 
-    /* Toggle Buttons */
+    /* New: Toggle Buttons */
     .toggle-container {
         display: flex;
         justify-content: center;
@@ -225,7 +244,7 @@
         box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
     }
 
-    /* Week Header */
+    /* New: Week Header */
     .week-header-box { margin-bottom: 20px; text-align: center; }
     .week-header-text { 
         font-family: 'Merriweather', serif; 
@@ -246,7 +265,9 @@
         margin-bottom: 30px;
         width: fit-content;
         margin-left: auto; margin-right: auto; 
+        margin-top: 10px;
     }
+    
     .live-dot { 
         width: 8px; height: 8px; 
         background: #22c55e; 
@@ -279,10 +300,11 @@
         color: var(--text-muted);
         text-transform: uppercase; letter-spacing: 0.5px;
         border-bottom: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 8px;
     }
     
     .bill-item { 
-        padding: 20px 24px; 
+        padding: 18px 20px; 
         border-bottom: 1px solid #f1f5f9; 
         display: flex; flex-direction: column; gap: 6px; 
         transition: background 0.1s; 
@@ -292,19 +314,27 @@
     
     .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
     
-    .bill-title { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .bill-title { 
+        color: var(--text-main); font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; 
+        display: flex; flex-direction: column; gap: 2px;
+    }
     .bill-id { font-weight: 700; font-family: 'Merriweather', serif; color: var(--brand-dark); font-size: 1.05rem; }
     .bill-desc { font-size: 1rem; color: var(--text-main); font-weight: 400; line-height: 1.5; }
+
     
-    .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; margin-top: 2px;}
+    .bill-links { display: flex; gap: 8px; }
     .doc-link { 
         color: var(--brand-primary); text-decoration: none; 
-        background: #eff6ff; padding: 4px 10px; border-radius: 6px; 
+        background: #eff6ff; padding: 3px 8px; border-radius: 4px; 
+        font-size: 0.75rem; font-weight: 600; 
         transition: all 0.2s;
     }
     .doc-link:hover { background: var(--brand-primary); color: white; }
     
-    .bill-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+    .bill-meta { 
+        font-size: 0.8rem; color: var(--text-muted); 
+        display: flex; align-items: center; gap: 8px; margin-top: 4px; 
+    }
     .meta-time { 
         color: #be123c; font-weight: 600; background: #fff1f2; 
         padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
@@ -327,6 +357,8 @@
         .bill-row { flex-direction: column; gap: 10px; }
         .hero-checklist { padding-left: 10px; font-size: 1rem; }
     }
+    
+    @keyframes slideUpFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
   </style>
 </head>
 <body>
@@ -335,6 +367,15 @@
     <div class="nav-inner">
       <a href="/" class="logo">🏛️ The Capitol Wire</a>
       <div class="nav-links">
+        <div class="dropdown">
+          <a href="#live-feed" class="nav-link">Live Feed ▾</a>
+          <div class="dropdown-content">
+            <a href="#latest-container">⚡ Latest Activity</a>
+            <a href="#cat-suspension">Suspensions</a>
+            <a href="#cat-rule">Rules</a>
+          </div>
+        </div>
+        <a href="dashboard/" class="nav-link">Dashboard</a>
         <a href="#hero" class="sub-btn">Get Alerts</a>
       </div>
     </div>
@@ -578,6 +619,7 @@
             // Skip the delimiter (+1) so it doesn't show in the description
             normalPart = fullTitle.substring(splitIndex + 1).trim(); 
         } else {
+            // If no dash found (e.g. "Veto Message..."), keep standard
             boldPart = fullTitle;
             normalPart = "";
         }
