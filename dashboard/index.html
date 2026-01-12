@@ -548,7 +548,7 @@
 
         // Sort Newest First for display
         // (Assuming higher ID = newer)
-        const displayData = [...filteredData].sort((a, b) => a.id - b.id);
+        const displayData = [...filteredData].sort((a, b) => b.id - a.id);
 
         // Update Status Line
         // Logic: Use global page_timestamp first, then fallback to item timestamp
