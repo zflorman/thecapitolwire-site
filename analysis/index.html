@@ -14,15 +14,6 @@
 </head>
 <body class="text-gray-800">
 
-    <script>
-        window.onerror = function(msg, url, line) {
-            console.error("Error: " + msg);
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('error').classList.remove('hidden');
-            document.getElementById('error-msg').innerText = "System Error: " + msg;
-        };
-    </script>
-
     <div class="bg-blue-900 text-white py-6 border-b-4 border-blue-800">
         <div class="max-w-3xl mx-auto px-6 text-center">
             <h1 class="text-2xl font-bold tracking-wide">🏛️ THE CAPITOL WIRE</h1>
@@ -89,7 +80,6 @@
     </div>
 
     <script>
-        // --- CREDENTIALS ---
         const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjcnNkeXlxcmJ0eHl6aHZlc3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzIzOTYsImV4cCI6MjA4MTc0ODM5Nn0.FzTqjfTSDsz4MnLKNHlPcXdyR53UvnOmkV0bjZSbCGw'; 
 
@@ -100,34 +90,40 @@
             const billParam = params.get('bill');
             const idParam = params.get('id');
 
-            if (!billParam && !idParam) {
-                return; // Silent return if just testing layout
-            }
-
-            // --- THE FIX IS HERE ---
-            // Changed from .table() to .from()
             let query = client.from('live_feed').select('*');
             
             if (idParam) {
+                // Precise match by ID
                 query = query.eq('id', idParam);
+            } else if (billParam) {
+                // SMART SEARCH: Extract only the digits (e.g. "4366")
+                // This bypasses the "HR" vs "H.R." mismatch entirely.
+                const billNumber = billParam.replace(/\D/g, ''); 
+                
+                if (billNumber) {
+                    query = query.ilike('title', `%${billNumber}%`);
+                } else {
+                    showError("Invalid Bill Number format.");
+                    return;
+                }
             } else {
-                const cleanId = billParam.replace(/([a-zA-Z]+)(\d+)/, '$1 $2').toUpperCase(); 
-                query = query.ilike('title', `%${cleanId}%`);
+                return; // No parameters, do nothing
             }
 
-            const { data, error } = await query.single();
+            const { data, error } = await query.maybeSingle();
 
             if (error) {
                 console.error("Supabase Error:", error);
-                if(error.code === 'PGRST116') {
-                    showError("Bill not found in database.");
-                } else {
-                    showError("Database Error: " + error.message);
-                }
+                showError("Database Error. Check console.");
                 return;
             }
 
-            if (!data || !data.ai_analysis) {
+            if (!data) {
+                showError("Bill not found in database.");
+                return;
+            }
+
+            if (!data.ai_analysis) {
                 showError("Analysis pending processing.");
                 return;
             }
