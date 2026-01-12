@@ -43,6 +43,11 @@
                 <div class="prose prose-blue text-gray-600 leading-relaxed" id="summary"></div>
             </div>
 
+            <div id="provisions-box" class="hidden bg-white p-6 rounded-lg shadow-sm border-t-4 border-yellow-500">
+                <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">📋 Key Provisions & Funding</h3>
+                <ul id="provisions" class="space-y-2 text-sm text-gray-600"></ul>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-gray-400">
                     <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">⚙️ Mechanism</h3>
@@ -93,33 +98,22 @@
             let query = client.from('live_feed').select('*');
             
             if (idParam) {
-                // Precise match by ID
                 query = query.eq('id', idParam);
             } else if (billParam) {
-                // SMART SEARCH: Extract only the digits (e.g. "4366")
-                // This bypasses the "HR" vs "H.R." mismatch entirely.
                 const billNumber = billParam.replace(/\D/g, ''); 
-                
                 if (billNumber) {
                     query = query.ilike('title', `%${billNumber}%`);
                 } else {
-                    showError("Invalid Bill Number format.");
                     return;
                 }
             } else {
-                return; // No parameters, do nothing
+                return;
             }
 
             const { data, error } = await query.maybeSingle();
 
-            if (error) {
-                console.error("Supabase Error:", error);
-                showError("Database Error. Check console.");
-                return;
-            }
-
-            if (!data) {
-                showError("Bill not found in database.");
+            if (error || !data) {
+                showError("Bill not found or database error.");
                 return;
             }
 
@@ -150,6 +144,14 @@
                 if (!items || items.length === 0) return;
                 el.innerHTML = items.map(i => `<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">${i}</span>`).join('');
             };
+
+            // --- NEW: Handle Key Provisions ---
+            // If the JSON has 'key_provisions', show the box. Otherwise hide it.
+            if (ai.key_provisions && ai.key_provisions.length > 0) {
+                document.getElementById('provisions-box').classList.remove('hidden');
+                fillList('provisions', ai.key_provisions, 'bg-yellow-500');
+            }
+            // ----------------------------------
 
             fillList('impact', ai.impact, 'bg-indigo-400');
             fillList('pros', ai.analysis.pros, 'bg-green-500');
