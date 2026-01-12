@@ -56,9 +56,11 @@
         -webkit-font-smoothing: antialiased;
     }
 
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+
     /* --- NAV --- */
     nav { 
-        background: rgba(255, 255, 255, 0.9); 
+        background: rgba(255, 255, 255, 0.8); 
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -66,7 +68,7 @@
         position: sticky; top: 0; z-index: 100;
     }
     .nav-inner { 
-        max-width: 1200px; margin: 0 auto; padding: 0 24px; 
+        max-width: 1000px; margin: 0 auto; padding: 0 24px; 
         display: flex; justify-content: space-between; align-items: center; 
     }
     .logo { 
@@ -74,6 +76,12 @@
         color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
         letter-spacing: -0.5px;
     }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-link { 
+        color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; 
+        transition: color 0.2s; cursor: pointer; 
+    }
+    .nav-link:hover { color: var(--brand-primary); }
     
     .sub-btn { 
         background: var(--brand-primary); 
@@ -83,66 +91,153 @@
         font-weight: 600; 
         text-decoration: none; 
         font-size: 0.85rem; 
-        border: none;
-        cursor: pointer;
         transition: transform 0.1s;
     }
     .sub-btn:hover { background: var(--brand-dark); }
 
-    /* --- LAYOUT GRID --- */
-    .main-container { 
-        max-width: 1200px; margin: 40px auto; padding: 0 24px; 
-        display: grid; grid-template-columns: 1fr 320px; gap: 40px; 
-        position: relative; z-index: 2;
-    }
-
-    /* --- TOGGLE BUTTONS --- */
-    .toggle-container {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 30px;
-    }
-    .toggle-btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
+    /* --- DROPDOWN --- */
+    .dropdown { position: relative; display: inline-block; }
+    .dropdown-content { 
+        display: none; position: absolute; 
         background: white;
-        color: var(--text-muted);
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-size: 0.95rem;
-        box-shadow: var(--card-shadow);
+        min-width: 200px; 
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px; 
+        z-index: 100; top: 120%; left: 50%; transform: translateX(-50%); 
+        padding: 6px; 
+        opacity: 0; transition: opacity 0.2s;
+        border: 1px solid #e2e8f0;
     }
-    .toggle-btn:hover {
-        background: #f1f5f9;
-        color: var(--brand-primary);
+    .dropdown:hover .dropdown-content { display: block; opacity: 1; top: 100%; animation: slideUpFade 0.2s ease-out; }
+    .dropdown-content a { 
+        color: var(--text-main); padding: 8px 12px; text-decoration: none; display: block; 
+        font-size: 0.85rem; font-weight: 500; border-radius: 4px; 
     }
-    .toggle-btn.active {
-        background: var(--brand-primary); 
-        color: white;
-        border-color: var(--brand-primary);
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
-    }
+    .dropdown-content a:hover { background-color: #eff6ff; color: var(--brand-primary); }
 
-    /* --- HEADER & STATUS --- */
-    .week-header-box { margin-bottom: 20px; }
-    .week-header-text { 
+    /* --- HERO SECTION --- */
+    /* UPDATED: Removed bottom padding almost entirely */
+    .hero { text-align: center; padding: 100px 0 0px; position: relative; }
+    
+    .hero h1 { 
         font-family: 'Merriweather', serif; 
-        font-size: 2.2rem; 
+        font-size: 3.5rem; 
         color: var(--text-main); 
-        font-weight: 700; 
+        margin-bottom: 24px; 
+        line-height: 1.1;
         letter-spacing: -1px;
-        line-height: 1.2;
+    }
+    .hero h1 span.highlight {
+        color: var(--brand-primary);
+        position: relative;
+    }
+    .hero h1 span.highlight::after {
+        content: ''; position: absolute; bottom: 5px; left: 0; width: 100%; height: 6px;
+        background: rgba(37, 99, 235, 0.1); z-index: -1; transform: rotate(-1deg);
     }
 
-    .status-bar { 
+    /* Typewriter */
+    .typing-wrapper { display: inline-block; }
+    
+    .typing-text {
+        display: inline-block;
+        font-family: 'Merriweather', serif; 
+        font-weight: 700; 
+        color: var(--brand-primary);
+        border-right: 3px solid var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        width: 0;
+        
+        /* Speed and Typewriter Steps */
+        animation: typing 1.5s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
+
+        /* FIX: Align to bottom to counter the 'overflow: hidden' jump */
+        vertical-align: bottom; 
+        
+        /* FIX: Adjust line height to prevent 'g' cutoff */
+        line-height: 1.2;
+        padding-bottom: 3px;
+        
+        /* FIX: Tiny negative margin to align baseline perfectly with "House Floor" */
+        margin-bottom: -3px; 
+    }
+    @keyframes typing { to { width: 100%; } }
+    @keyframes blink-caret { 50% { border-color: transparent; } }
+
+    /* Checklist */
+    .hero-checklist {
+        display: inline-block; text-align: left;
+        color: var(--text-muted);
+        font-size: 1.1rem; line-height: 1.8;
+        margin: 0 auto 40px; max-width: 680px;
+    }
+    .check { color: var(--success); margin-right: 12px; font-weight: bold; }
+    .hero-checklist strong { color: var(--text-main); font-weight: 600; }
+    
+    .hero-checklist a {
+        color: var(--brand-primary);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--brand-primary);
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .hero-checklist a:hover { color: var(--brand-dark); border-bottom-style: solid; }
+
+    /* --- FORM (UPDATED) --- */
+    .form-wrapper { 
+        max-width: 480px; margin: 0 auto; display: flex; gap: 10px; 
+        padding: 4px;
+        position: relative;
+        z-index: 10;
+    }
+    input { 
+        flex: 1; padding: 16px 20px; 
+        border: 1px solid #cbd5e1; 
+        background: white; 
+        color: var(--text-main);
+        border-radius: 8px; font-size: 1rem; 
+        transition: all 0.2s; 
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    input::placeholder { color: #94a3b8; }
+    input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+    
+    /* UPDATED: Super "Pop" Button */
+    button.form-btn { 
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white; border: none; 
+        padding: 16px 28px; border-radius: 8px; 
+        font-weight: 700; cursor: pointer; 
+        font-size: 1rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+    }
+    button.form-btn:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3), 0 4px 6px -2px rgba(37, 99, 235, 0.1);
+    }
+    button.form-btn:disabled { opacity: 0.7; cursor: wait; }
+    
+    /* Reduced margin for the message area */
+    .msg { margin-top: 5px; font-size: 0.9rem; min-height: 24px; font-weight: 500; } 
+
+    /* --- FEED WRAPPER --- */
+    .feed-wrapper { padding: 0 0 80px; }
+
+    /* Status Bar (UPDATED Spacing) */
+    .status-bar {
         display: flex; align-items: center; gap: 12px;
         font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
-        background: white; padding: 10px 16px; border-radius: 100px; 
-        border: 1px solid #e2e8f0; margin-bottom: 30px; 
-        box-shadow: var(--card-shadow);
+        background: white; padding: 8px 16px; border-radius: 100px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 30px;
         width: fit-content;
+        margin-left: auto; margin-right: auto; 
+        
+        /* UPDATED: Very tight top margin */
+        margin-top: 10px; 
     }
     
     .live-dot { 
@@ -158,28 +253,32 @@
         100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 
-    /* --- FEED SECTIONS --- */
+    /* Feed Sections */
     .feed-section { 
         background: var(--card-bg); 
         border: var(--card-border); 
         border-radius: 12px; 
         box-shadow: var(--card-shadow); 
         margin-bottom: 30px; overflow: hidden; 
-        transition: all 0.2s;
+        opacity: 0; transform: translateY(20px);
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .feed-section:hover { box-shadow: var(--card-hover-shadow); }
+    .feed-section.visible { opacity: 1; transform: translateY(0); }
 
-    .section-header { 
-        background: #f8fafc; 
-        padding: 14px 24px; 
-        font-family: 'Inter', sans-serif; 
-        font-weight: 700; font-size: 0.8rem; 
-        color: var(--text-muted); 
-        border-bottom: 1px solid #e2e8f0; 
-        text-transform: uppercase; letter-spacing: 0.5px; 
+    .section-header {
+        background: #f8fafc;
+        padding: 14px 20px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 700; font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase; letter-spacing: 0.5px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex; align-items: center; gap: 8px;
     }
+    
     .bill-item { 
-        padding: 20px 24px; 
+        padding: 18px 20px; 
         border-bottom: 1px solid #f1f5f9; 
         display: flex; flex-direction: column; gap: 6px; 
         transition: background 0.1s; 
@@ -188,97 +287,52 @@
     .bill-item:hover { background: #f8fafc; }
     
     .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
-    .bill-title { color: var(--text-main); font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; }
-    .bill-title strong { font-weight: 700; color: var(--text-main); font-family: 'Merriweather', serif; }
     
-    .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+    .bill-title { 
+        color: var(--text-main); font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; 
+    }
+    .bill-title strong { 
+        font-weight: 700; color: var(--text-main); 
+        font-family: 'Merriweather', serif;
+    }
+    
+    .bill-links { display: flex; gap: 8px; }
     .doc-link { 
         color: var(--brand-primary); text-decoration: none; 
         background: #eff6ff; padding: 3px 8px; border-radius: 4px; 
+        font-size: 0.75rem; font-weight: 600; 
         transition: all 0.2s;
     }
     .doc-link:hover { background: var(--brand-primary); color: white; }
     
-    .bill-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .bill-meta { 
+        font-size: 0.8rem; color: var(--text-muted); 
+        display: flex; align-items: center; gap: 8px; margin-top: 4px; 
+    }
     .meta-time { 
         color: #be123c; font-weight: 600; background: #fff1f2; 
         padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
     }
 
-    /* --- SIDEBAR & CALENDAR --- */
-    .sidebar { display: flex; flex-direction: column; gap: 24px; }
-    
-    .widget { 
-        background: var(--card-bg); 
-        border: var(--card-border); 
-        border-radius: 12px; 
-        padding: 24px; 
-        box-shadow: var(--card-shadow); 
+    footer { 
+        padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; 
+        border-top: 1px solid #e2e8f0; margin-top: 60px;
     }
-    .widget h3 { 
-        font-family: 'Inter', sans-serif; 
-        font-size: 0.9rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
-        color: var(--text-muted); 
-        margin-bottom: 20px; 
-        border-bottom: 1px solid #e2e8f0; 
-        padding-bottom: 12px; 
-    }
-
-    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .cal-btn { background: none; border: none; font-weight: bold; cursor: pointer; color: var(--brand-primary); font-size: 1.2rem; padding: 0 8px; }
-    .cal-btn:hover { color: var(--brand-dark); }
-    .cal-month { font-weight: 700; color: var(--text-main); font-family:'Merriweather', serif; }
-    
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; font-size: 0.85rem; }
-    .cal-day-header { font-weight: 600; color: var(--text-muted); font-size: 0.75rem; padding-bottom: 5px; }
-    
-    .cal-day { 
-        padding: 6px 0; color: var(--text-main); border-radius: 6px; 
-        font-variant-numeric: tabular-nums;
-    }
-    .cal-session { 
-        background: #eff6ff; color: var(--brand-primary); font-weight: 700; 
-        border: 1px solid #dbeafe;
-    } 
-    .cal-today { 
-        background: var(--brand-primary); color: white; font-weight:700; 
-    } 
-
-    /* --- MODAL --- */
-    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display:none; justify-content:center; align-items:center; z-index:200; }
-    .modal { background:white; padding:40px 30px; border-radius:16px; width:90%; max-width:420px; text-align:center; position:relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-    .close-modal { position:absolute; top:15px; right:20px; cursor:pointer; font-size:1.5rem; color:#94a3b8; transition: color 0.2s; }
-    .close-modal:hover { color: var(--text-main); }
-    
-    .modal h3 { margin-bottom:10px; color:var(--text-main); font-family: 'Merriweather', serif; font-size: 1.5rem; }
-    .modal p { color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; }
-    
-    .modal input { width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; margin-bottom:12px; font-size: 1rem; }
-    .modal input:focus { border-color: var(--brand-primary); outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-    
-    .modal button { 
-        width:100%; padding:12px; 
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); 
-        color:white; border:none; border-radius:8px; 
-        font-weight:600; cursor:pointer; font-size: 1rem;
-        transition: transform 0.1s;
-    }
-    .modal button:hover { background: var(--brand-dark); transform: translateY(-1px); }
-    .modal button:disabled { background: #94a3b8; cursor: wait; transform: none; }
-    .modal-msg { margin-top:15px; font-size:0.9rem; min-height: 20px; }
-
-    footer { padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 60px; grid-column: 1 / -1; }
     footer a { color: #64748b; text-decoration: none; transition: color 0.2s; }
     footer a:hover { color: var(--brand-primary); text-decoration: underline; }
     .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
 
-    @media (max-width: 900px) {
-        .main-container { grid-template-columns: 1fr; gap: 30px; }
-        .sidebar { width: 100%; order: 2; }
-        .content-area { order: 1; }
-        .week-header-text { font-size: 1.8rem; }
+    @media (max-width: 768px) { 
+        .hero h1 { font-size: 2.2rem; }
+        .form-wrapper { flex-direction: column; padding: 0; }
+        input { width: 100%; margin-bottom: 10px; }
+        button.form-btn { width: 100%; }
+        .nav-inner { flex-direction: column; gap: 15px; }
         .bill-row { flex-direction: column; gap: 10px; }
+        .hero-checklist { padding-left: 10px; font-size: 1rem; }
     }
+    
+    @keyframes slideUpFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
   </style>
 </head>
 <body>
@@ -286,86 +340,85 @@
   <nav>
     <div class="nav-inner">
       <a href="/" class="logo">🏛️ The Capitol Wire</a>
-      <button class="sub-btn" onclick="openModal()">Get Alerts</button>
+      <div class="nav-links">
+        
+        <div class="dropdown">
+          <a href="#live-feed" class="nav-link">Live Feed ▾</a>
+          <div class="dropdown-content">
+            <a href="#latest-container">⚡ Latest Activity</a>
+            <a href="#cat-suspension">Suspensions</a>
+            <a href="#cat-rule">Rules</a>
+            <a href="#cat-possible-consideration">Possible Consideration</a>
+          </div>
+        </div>
+
+        <a href="dashboard/" class="nav-link">Dashboard</a>
+        <a href="#hero" class="sub-btn">Get Alerts</a>
+      </div>
     </div>
   </nav>
 
-  <div class="main-container">
-    
-    <div class="content-area">
-        <div class="toggle-container">
-            <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This Week</button>
-            <button class="toggle-btn" id="btn-next-week" onclick="switchSection('NEXT_WEEK')">Next Week</button>
+  <section id="hero" class="hero">
+    <div class="container">
+      <h1>
+        Real-Time Alerts for the<br>
+        <span class="highlight">House Floor</span> 
+        <span class="typing-wrapper"><span class="typing-text">Weekly Agenda.</span></span>
+      </h1>
+      
+      <div class="hero-checklist">
+        <div>
+          <span class="check">✓</span> Monitors 
+          <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov/floor</a> 
+          and 
+          <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.gov</a> 
+          every 60 seconds.
         </div>
-
-        <div class="week-header-box">
-            <h2 id="weekly-header" class="week-header-text">Loading Agenda...</h2>
-        </div>
-
-        <div class="status-bar">
-            <div class="live-dot"></div>
-            <div id="status-line">System Online. Monitoring active feeds...</div>
-        </div>
-
-        <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
-            <div class="section-header" style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
-                ⚡ Latest Activity (New)
-            </div>
-            <div id="latest-list"></div>
-        </div>
-
-        <div id="schedule-list">
-            <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">Initializing secure connection...</div>
-        </div>
+        <div><span class="check">✓</span> Auto-detects <strong>Advance Notices</strong> (items not yet filed with the Clerk).</div>
+        <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly to you for free.</div>
+      </div>
+      
+      <div class="form-wrapper">
+        <input type="email" id="email" placeholder="Enter your email" required />
+        <button id="submitBtn" class="form-btn">Subscribe for Free</button>
+      </div>
+      <div id="status" class="msg"></div>
     </div>
+  </section>
 
-    <div class="sidebar">
-        <div class="widget">
-            <h3>Legislative Calendar</h3>
-            <div class="cal-header">
-                <button class="cal-btn" onclick="changeMonth(-1)">&lt;</button>
-                <div id="calendar-month" class="cal-month">Loading...</div>
-                <button class="cal-btn" onclick="changeMonth(1)">&gt;</button>
-            </div>
-            <div class="calendar-grid" id="calendar-grid">
-                <div class="cal-day-header">S</div>
-                <div class="cal-day-header">M</div>
-                <div class="cal-day-header">T</div>
-                <div class="cal-day-header">W</div>
-                <div class="cal-day-header">T</div>
-                <div class="cal-day-header">F</div>
-                <div class="cal-day-header">S</div>
-            </div>
-            <div style="font-size:0.75rem; color: var(--text-muted); margin-top:16px; text-align:center; display:flex; justify-content:center; gap: 15px;">
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <span style="width:8px; height:8px; background:#eff6ff; border:1px solid #dbeafe; border-radius:2px;"></span> In Session
-                </div>
-            </div>
-        </div>
-    </div>
+  <div id="live-feed" class="feed-wrapper">
+    <div class="container">
+        
+      <div class="status-bar">
+          <div class="live-dot"></div>
+          <div id="status-line">System Online. Monitoring active feeds...</div>
+      </div>
 
-    <footer>
-        <div class="container">
-          <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
-          <div class="footer-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+      <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
+          <div class="section-header" style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
+             ⚡ Latest Activity (New)
           </div>
-        </div>
-    </footer>
-  </div>
+          <div id="latest-list"></div>
+      </div>
 
-  <div class="modal-overlay" id="modal">
-    <div class="modal">
-      <span class="close-modal" onclick="closeModal()">&times;</span>
-      <h3>Get Instant Alerts</h3>
-      <p>Enter your email to get notified immediately when the Majority Leader or Clerk updates the schedule.</p>
-      <input type="email" id="modal-email" placeholder="Enter your email" />
-      <button id="modal-submit">Subscribe Free</button>
-      <div id="modal-status" class="modal-msg"></div>
+      <div id="schedule-list">
+          <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">
+            Initializing secure connection to Clerk...
+          </div>
+      </div>
     </div>
   </div>
+
+  <footer>
+    <div class="container">
+      <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+      </div>
+    </div>
+  </footer>
 
   <script>
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
@@ -373,222 +426,84 @@
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const CATEGORIES = [
-        { key: 'SUSPENSION', label: 'Suspension of the Rules' },
-        { key: 'RULE', label: 'Pursuant to a Rule' },
-        { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
-        { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
+        { key: 'Suspension', label: 'Suspension of the Rules' },
+        { key: 'Rule', label: 'Pursuant to a Rule' },
+        { key: 'Possible Consideration', label: 'Possible Consideration' }
     ];
 
-    // Global State
-    let activeSection = 'THIS_WEEK'; 
-    let allBillData = [];
-    let lastFetchedHash = "";
+    let lastKnownTimestamp = "";
 
-    // --- CALENDAR LOGIC (2025-2026 Session Dates) ---
-    const SESSION_DATES = [
-        "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04",
-        "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11",
-        "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18",
-        
-        "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09",
-        "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15",
-        "2026-01-20", "2026-01-21", "2026-01-22",
-        "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30",
-        "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05",
-        "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12",
-        "2026-02-24", "2026-02-25", "2026-02-26",
-        "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05",
-        "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12",
-        "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19",
-        "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26",
-        "2026-04-13", "2026-04-14", "2026-04-15", "2026-04-16",
-        "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23",
-        "2026-04-28", "2026-04-29", "2026-04-30",
-        "2026-05-04", "2026-05-05", "2026-05-06", "2026-05-07",
-        "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15",
-        "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21",
-        "2026-06-02", "2026-06-03", "2026-06-04",
-        "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11",
-        "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18",
-        "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25",
-        "2026-06-29", "2026-06-30",
-        "2026-07-07", "2026-07-08", "2026-07-09",
-        "2026-07-13", "2026-07-14", "2026-07-15", "2026-07-16",
-        "2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23",
-        "2026-07-27", "2026-07-28", "2026-07-29", "2026-07-30",
-        "2026-09-08", "2026-09-09", "2026-09-10",
-        "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17",
-        "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24",
-        "2026-09-28", "2026-09-29", "2026-09-30",
-        "2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19",
-        "2026-11-30",
-        "2026-12-01", "2026-12-02", "2026-12-03",
-        "2026-12-07", "2026-12-08", "2026-12-09", "2026-12-10",
-        "2026-12-14", "2026-12-15", "2026-12-16", "2026-12-17"
-    ];
-    const SESSION_SET = new Set(SESSION_DATES);
-    let calendarCursor = new Date(); 
-
-    function changeMonth(delta) {
-        calendarCursor.setMonth(calendarCursor.getMonth() + delta);
-        renderCalendar();
-    }
-
-    function renderCalendar() {
-        const year = calendarCursor.getFullYear();
-        const month = calendarCursor.getMonth();
-        const todayObj = new Date();
-
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        document.getElementById('calendar-month').innerText = monthNames[month] + " " + year;
-        
-        const grid = document.getElementById('calendar-grid');
-        while (grid.children.length > 7) { grid.removeChild(grid.lastChild); }
-
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        for (let i = 0; i < firstDay; i++) {
-            const div = document.createElement('div');
-            grid.appendChild(div);
-        }
-
-        for (let i = 1; i <= daysInMonth; i++) {
-            const div = document.createElement('div');
-            div.className = 'cal-day';
-            div.innerText = i;
-            
-            const monthStr = (month + 1).toString().padStart(2, '0');
-            const dayStr = i.toString().padStart(2, '0');
-            const dateString = `${year}-${monthStr}-${dayStr}`;
-
-            if (SESSION_SET.has(dateString)) div.classList.add('cal-session');
-            if (year === todayObj.getFullYear() && month === todayObj.getMonth() && i === todayObj.getDate()) {
-                div.classList.add('cal-today');
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                obs.unobserve(entry.target);
             }
-            grid.appendChild(div);
-        }
-    }
-    renderCalendar();
+        });
+    }, observerOptions);
 
-    // --- TOGGLE LOGIC ---
-    function switchSection(section) {
-        activeSection = section;
-        
-        // Update Buttons
-        document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
-        document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
-        
-        // Redraw
-        renderFeed();
-    }
-
-    // --- FEED LOGIC ---
     async function initFeed() {
-        try {
-            // Fetch everything
-            const { data, error } = await _supabase
-                .from('live_feed')
-                .select('*')
-                .order('id', { ascending: true })
-                .limit(100);
-
-            if (error) {
-                console.error("Supabase Error:", error);
-                document.getElementById('schedule-list').innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error.</div>';
-                return;
-            }
-
-            if (data) {
-                // Check if data changed to avoid UI flicker
-                const currentHash = JSON.stringify(data.map(d => d.id));
-                if (currentHash !== lastFetchedHash) {
-                    allBillData = data;
-                    lastFetchedHash = currentHash;
-                    renderFeed();
-                }
-            }
-        } catch (e) { console.error("Feed Crash:", e); }
-    }
-
-    function renderFeed() {
         const latestContainer = document.getElementById('latest-container');
         const latestList = document.getElementById('latest-list');
         const scheduleList = document.getElementById('schedule-list');
-        const headerText = document.getElementById('weekly-header');
         const statusLine = document.getElementById('status-line');
 
-        // Clear View
-        scheduleList.innerHTML = '';
-        latestList.innerHTML = '';
+        try {
+            const { data, error } = await _supabase.from('live_feed').select('*').order('id', { ascending: true });
 
-        // Filter by Active Section
-        // Fallback: If item.section is missing, treat as THIS_WEEK
-        const filteredData = allBillData.filter(item => {
-            const itemSec = item.section || 'THIS_WEEK';
-            return itemSec === activeSection;
-        });
+            if (data && data.length > 0) {
+                const newestTimestamp = data[0].timestamp;
+                
+                if (newestTimestamp !== lastKnownTimestamp) {
+                    lastKnownTimestamp = newestTimestamp;
 
-        // Update Header Text
-        if (activeSection === 'NEXT_WEEK') {
-            headerText.innerText = "Agenda: Next Week";
-        } else {
-            headerText.innerText = "Agenda: This Week";
-        }
+                    scheduleList.innerHTML = '';
+                    latestList.innerHTML = '';
+                    
+                    if (newestTimestamp && newestTimestamp.trim() !== "") {
+                        statusLine.innerHTML = "Last confirmed update: <b>" + newestTimestamp + "</b>";
+                    }
 
-        if (filteredData.length === 0) {
-            scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color: #94a3b8;">No items scheduled for this period.</div>';
-            latestContainer.style.display = 'none';
-            statusLine.innerHTML = "System Active. Monitoring for updates...";
-            return;
-        }
+                    let hasLatest = false;
+                    if (newestTimestamp && newestTimestamp.trim() !== "") {
+                        data.forEach(item => {
+                            if (item.timestamp === newestTimestamp) {
+                                latestList.appendChild(createBillItem(item));
+                                hasLatest = true;
+                            }
+                        });
+                    }
+                    latestContainer.style.display = hasLatest ? 'block' : 'none';
+                    if(hasLatest) observer.observe(latestContainer);
 
-        // Sort Newest First for display
-        // (Assuming higher ID = newer)
-        const displayData = [...filteredData].sort((a, b) => b.id - a.id);
-
-        // Update Status Line
-        // Logic: Use global page_timestamp first, then fallback to item timestamp
-        const newestItem = displayData[0];
-        const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
-
-        if (bannerTime) {
-            statusLine.innerHTML = "Last update from the Clerk: <b>" + bannerTime + "</b>";
-        } else {
-            statusLine.innerHTML = "System Active. Monitoring for updates...";
-        }
-
-        // --- 1. FILL LATEST ACTIVITY (Top Box - Filtered to this view) ---
-        let hasLatest = false;
-        // Use standard bill timestamp for identifying "Latest" activity logic
-        if (newestItem && newestItem.timestamp) {
-            displayData.forEach(item => {
-                if (item.timestamp === newestItem.timestamp) {
-                    latestList.appendChild(createBillItem(item));
-                    hasLatest = true;
+                    CATEGORIES.forEach(cat => {
+                        const catItems = data.filter(i => i.category === cat.key);
+                        if (catItems.length > 0) {
+                            const section = document.createElement('div');
+                            section.className = 'feed-section';
+                            
+                            const header = document.createElement('div');
+                            header.className = 'section-header';
+                            let icon = "📄";
+                            if(cat.key === 'Suspension') icon = "🚀";
+                            if(cat.key === 'Rule') icon = "⚖️";
+                            if(cat.key === 'Possible Consideration') icon = "👀";
+                            
+                            header.innerHTML = `${icon} &nbsp; ${cat.label}`;
+                            section.appendChild(header);
+                            
+                            catItems.forEach(item => section.appendChild(createBillItem(item)));
+                            scheduleList.appendChild(section);
+                            
+                            observer.observe(section);
+                        }
+                    });
                 }
-            });
-        }
-        latestContainer.style.display = hasLatest ? 'block' : 'none';
-
-        // --- 2. FILL MAIN CATEGORIES (Bottom Lists) ---
-        CATEGORIES.forEach(cat => {
-            // Case insensitive match
-            const catItems = displayData.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
-            
-            if (catItems.length > 0) {
-                const section = document.createElement('div');
-                section.className = 'feed-section';
-                
-                const header = document.createElement('div');
-                header.className = 'section-header';
-                header.innerText = cat.label;
-                section.appendChild(header);
-                
-                catItems.forEach(item => section.appendChild(createBillItem(item)));
-                scheduleList.appendChild(section);
+            } else {
+                scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color:#94a3b8;">No Active Schedule Data Found.</div>';
             }
-        });
+        } catch (e) { console.error(e); }
     }
 
     function createBillItem(item) {
@@ -601,14 +516,12 @@
             linkHtml = `<div class="bill-links"><a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a></div>`;
         }
         
-        // Bill Card always uses the standard item.timestamp
         let timeHtml = '';
         if (item.timestamp && item.timestamp.trim() !== "") {
             timeHtml = `<div class="bill-meta">Updated: <span class="meta-time">${item.timestamp}</span></div>`;
         }
 
-        // Title Bold Logic
-        let fullTitle = item.title || "";
+        let fullTitle = item.title;
         let boldPart = fullTitle;
         let normalPart = "";
 
@@ -618,6 +531,8 @@
         if (splitIndex !== -1) {
             boldPart = fullTitle.substring(0, splitIndex).trim(); 
             normalPart = fullTitle.substring(splitIndex); 
+        } else {
+            boldPart = fullTitle;
         }
 
         div.innerHTML = `
@@ -630,51 +545,50 @@
         return div;
     }
     
-    // START
     initFeed();
     setInterval(initFeed, 10000);
 
-    // MODAL
-    const modal = document.getElementById('modal');
-    const modalInput = document.getElementById('modal-email');
-    const modalBtn = document.getElementById('modal-submit');
-    const modalStatus = document.getElementById('modal-status');
+    const btn = document.getElementById('submitBtn');
+    const input = document.getElementById('email');
+    const stat = document.getElementById('status');
 
-    function openModal() { modal.style.display = 'flex'; }
-    function closeModal() { modal.style.display = 'none'; }
-    
-    // Auto-open modal after 3s (optional, remove if annoying)
-    // window.addEventListener('load', () => { setTimeout(openModal, 3000); });
+    btn.addEventListener('click', async () => {
+      const email = input.value.trim();
+      
+      if (!email.includes('@')) { 
+          stat.textContent = "Please enter a valid email."; 
+          stat.style.color = "#dc2626"; 
+          return; 
+      }
 
-    modalBtn.addEventListener('click', async () => {
-        const email = modalInput.value.trim();
-        if (!email || !email.includes('@')) {
-            modalStatus.innerText = "Please enter a valid email.";
-            modalStatus.style.color = "#dc2626";
-            return;
-        }
-        modalBtn.disabled = true;
-        modalBtn.innerText = "Processing...";
-        modalStatus.innerText = "";
+      btn.disabled = true; 
+      btn.textContent = "Authenticating...";
+      stat.textContent = "";
 
-        const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
-        
-        if (error) {
-            if (error.code === '23505') {
-                modalStatus.innerText = "You are already subscribed!";
-                modalStatus.style.color = "#2563eb";
-            } else {
-                modalStatus.innerText = "Error. Try again.";
-                modalStatus.style.color = "#dc2626";
-            }
-            modalBtn.disabled = false;
-            modalBtn.innerText = "Subscribe Free";
-        } else {
-            modalStatus.innerText = "Subscribed!";
-            modalStatus.style.color = "#16a34a";
-            modalInput.value = "";
-            setTimeout(closeModal, 2000);
-        }
+      const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
+
+      if (error) {
+          if (error.code === '23505') {
+              stat.textContent = "You are already in the system.";
+              stat.style.color = "#2563eb"; 
+          } else {
+              stat.textContent = "Connection error. Please retry.";
+              stat.style.color = "#dc2626"; 
+          }
+          btn.disabled = false; 
+          btn.textContent = "Subscribe for Free";
+      } else {
+          stat.textContent = "Confirmed. You are now tracking the floor.";
+          stat.style.color = "#16a34a"; // Green
+          input.value = "";
+          btn.textContent = "Success";
+          
+          setTimeout(() => {
+              btn.disabled = false;
+              btn.textContent = "Subscribe Colleague";
+              stat.textContent = "";
+          }, 3000);
+      }
     });
   </script>
 </body>
