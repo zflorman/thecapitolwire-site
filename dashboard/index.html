@@ -607,7 +607,7 @@
         }
         
         // Intelligence Brief button (only shows when analysis exists)
-        if (item.ai_analysis) {
+        if (item.ai_analysis && item.ai_analysis.trim() !== "") {
           links.push(`<a href="/analysis/?id=${item.id}" target="_blank" class="doc-link" style="background:#dcfce7; color:#166534;">INTELLIGENCE BRIEF</a>`);
         }
         
