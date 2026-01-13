@@ -29,7 +29,6 @@
       --card-border: 1px solid #e2e8f0;
       --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-
       --text-main: #0f172a; 
       --text-muted: #64748b; 
       
@@ -46,7 +45,7 @@
     html { scroll-behavior: smooth; }
     
     body { 
-        font-family: 'Inter', sans-serif; 
+        font-family: 'Inter', sans-serif;
         color: var(--text-main); 
         background: var(--bg-main); 
         background-image: var(--bg-gradient);
@@ -60,7 +59,7 @@
 
     /* --- NAV --- */
     nav { 
-        background: rgba(255, 255, 255, 0.8); 
+        background: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -68,23 +67,26 @@
         position: sticky; top: 0; z-index: 100;
     }
     .nav-inner { 
-        max-width: 1000px; margin: 0 auto; padding: 0 24px; 
+        max-width: 1000px; margin: 0 auto;
+        padding: 0 24px; 
         display: flex; justify-content: space-between; align-items: center; 
     }
     .logo { 
-        font-family: 'Merriweather', serif; font-weight: 800; font-size: 1.2rem; 
+        font-family: 'Merriweather', serif;
+        font-weight: 800; font-size: 1.2rem; 
         color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
         letter-spacing: -0.5px;
     }
     .nav-links { display: flex; align-items: center; gap: 24px; }
     .nav-link { 
-        color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; 
+        color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
+        font-weight: 500; 
         transition: color 0.2s; cursor: pointer; 
     }
     .nav-link:hover { color: var(--brand-primary); }
     
     .sub-btn { 
-        background: var(--brand-primary); 
+        background: var(--brand-primary);
         color: white; 
         padding: 8px 16px; 
         border-radius: 6px; 
@@ -98,7 +100,7 @@
     /* --- DROPDOWN --- */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-content { 
-        display: none; position: absolute; 
+        display: none; position: absolute;
         background: white;
         min-width: 200px; 
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
@@ -110,8 +112,9 @@
     }
     .dropdown:hover .dropdown-content { display: block; opacity: 1; top: 100%; animation: slideUpFade 0.2s ease-out; }
     .dropdown-content a { 
-        color: var(--text-main); padding: 8px 12px; text-decoration: none; display: block; 
-        font-size: 0.85rem; font-weight: 500; border-radius: 4px; 
+        color: var(--text-main);
+        padding: 8px 12px; text-decoration: none; display: block; 
+        font-size: 0.85rem; font-weight: 500; border-radius: 4px;
     }
     .dropdown-content a:hover { background-color: #eff6ff; color: var(--brand-primary); }
 
@@ -119,7 +122,7 @@
     .hero { text-align: center; padding: 100px 0 0px; position: relative; }
     
     .hero h1 { 
-        font-family: 'Merriweather', serif; 
+        font-family: 'Merriweather', serif;
         font-size: 3.5rem; 
         color: var(--text-main); 
         margin-bottom: 24px; 
@@ -131,7 +134,8 @@
         position: relative;
     }
     .hero h1 span.highlight::after {
-        content: ''; position: absolute; bottom: 5px; left: 0; width: 100%; height: 6px;
+        content: ''; position: absolute;
+        bottom: 5px; left: 0; width: 100%; height: 6px;
         background: rgba(37, 99, 235, 0.1); z-index: -1; transform: rotate(-1deg);
     }
 
@@ -147,7 +151,6 @@
         white-space: nowrap;
         overflow: hidden;
         width: 0;
-        
         /* RESTORED: These exact values fix the alignment */
         animation: typing 1.5s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
         vertical-align: bottom; 
@@ -160,7 +163,8 @@
 
     /* Checklist */
     .hero-checklist {
-        display: inline-block; text-align: left;
+        display: inline-block;
+        text-align: left;
         color: var(--text-muted);
         font-size: 1.1rem; line-height: 1.8;
         margin: 0 auto 40px; max-width: 680px;
@@ -179,13 +183,14 @@
 
     /* --- FORM --- */
     .form-wrapper { 
-        max-width: 480px; margin: 0 auto; display: flex; gap: 10px; 
+        max-width: 480px;
+        margin: 0 auto; display: flex; gap: 10px; 
         padding: 4px;
         position: relative;
         z-index: 10;
     }
     input { 
-        flex: 1; padding: 16px 20px; 
+        flex: 1; padding: 16px 20px;
         border: 1px solid #cbd5e1; 
         background: white; 
         color: var(--text-main);
@@ -206,7 +211,7 @@
         box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
     }
     button.form-btn:hover { 
-        transform: translateY(-2px); 
+        transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3), 0 4px 6px -2px rgba(37, 99, 235, 0.1);
     }
     button.form-btn:disabled { opacity: 0.7; cursor: wait; }
@@ -250,18 +255,20 @@
 
     /* Status Bar */
     .status-bar {
-        display: flex; align-items: center; gap: 12px;
+        display: flex;
+        align-items: center; gap: 12px;
         font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
         background: white; padding: 8px 16px; border-radius: 100px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         border: 1px solid #e2e8f0;
         margin-bottom: 30px;
         width: fit-content;
-        margin-left: auto; margin-right: auto; 
+        margin-left: auto; margin-right: auto;
     }
     
     .live-dot { 
-        width: 8px; height: 8px; 
+        width: 8px;
+        height: 8px; 
         background: #22c55e; 
         border-radius: 50%; 
         box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
@@ -275,7 +282,7 @@
 
     /* Feed Sections */
     .feed-section { 
-        background: var(--card-bg); 
+        background: var(--card-bg);
         border: var(--card-border); 
         border-radius: 12px; 
         box-shadow: var(--card-shadow); 
@@ -296,10 +303,10 @@
     }
     
     .bill-item { 
-        padding: 18px 20px; 
+        padding: 18px 20px;
         border-bottom: 1px solid #f1f5f9; 
         display: flex; flex-direction: column; gap: 6px; 
-        transition: background 0.1s; 
+        transition: background 0.1s;
     }
     .bill-item:last-child { border-bottom: none; }
     .bill-item:hover { background: #f8fafc; }
@@ -307,33 +314,48 @@
     .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
     
     .bill-title { 
-        color: var(--text-main); font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; 
+        color: var(--text-main);
+        font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; 
         display: flex; flex-direction: column; gap: 2px;
     }
     .bill-id { font-weight: 700; font-family: 'Merriweather', serif; color: var(--brand-dark); font-size: 1.05rem; }
     .bill-desc { font-size: 1rem; color: var(--text-main); font-weight: 400; line-height: 1.5; }
 
     
-    .bill-links { display: flex; gap: 8px; }
+    .bill-links { display: flex; gap: 8px; align-items: center; }
     .doc-link { 
         color: var(--brand-primary); text-decoration: none; 
-        background: #eff6ff; padding: 3px 8px; border-radius: 4px; 
+        background: #eff6ff;
+        padding: 3px 8px; border-radius: 4px; 
         font-size: 0.75rem; font-weight: 600; 
         transition: all 0.2s;
     }
     .doc-link:hover { background: var(--brand-primary); color: white; }
     
+    .ai-link {
+        color: #15803d; text-decoration: none;
+        background: #dcfce7;
+        padding: 3px 8px; border-radius: 4px;
+        font-size: 0.75rem; font-weight: 700;
+        transition: all 0.2s;
+        border: 1px solid #bbf7d0;
+        display: flex; align-items: center; gap: 4px;
+    }
+    .ai-link:hover { background: #bbf7d0; color: #14532d; }
+    
     .bill-meta { 
-        font-size: 0.8rem; color: var(--text-muted); 
-        display: flex; align-items: center; gap: 8px; margin-top: 4px; 
+        font-size: 0.8rem;
+        color: var(--text-muted); 
+        display: flex; align-items: center; gap: 8px; margin-top: 4px;
     }
     .meta-time { 
-        color: #be123c; font-weight: 600; background: #fff1f2; 
+        color: #be123c; font-weight: 600; background: #fff1f2;
         padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
     }
 
     footer { 
-        padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; 
+        padding: 60px 0;
+        text-align: center; color: #94a3b8; font-size: 0.9rem; 
         border-top: 1px solid #e2e8f0; margin-top: 60px;
     }
     footer a { color: #64748b; text-decoration: none; transition: color 0.2s; }
@@ -398,6 +420,7 @@
         <button id="submitBtn" class="form-btn">Subscribe for Free</button>
       </div>
       <div id="status" class="msg"></div>
+    
     </div>
   </section>
 
@@ -452,20 +475,16 @@
         { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
         { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
     ];
-
     // Global State
     let activeSection = 'THIS_WEEK'; 
     let allBillData = [];
     let lastFetchedHash = "";
-
     // --- TOGGLE LOGIC ---
     function switchSection(section) {
         activeSection = section;
-        
         // Update Buttons
         document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
         document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
-        
         // Redraw
         renderFeed();
     }
@@ -479,7 +498,6 @@
                 .select('*')
                 .order('id', { ascending: true })
                 .limit(100);
-
             if (error) {
                 console.error("Supabase Error:", error);
                 document.getElementById('schedule-list').innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error.</div>';
@@ -503,17 +521,14 @@
         const latestList = document.getElementById('latest-list');
         const scheduleList = document.getElementById('schedule-list');
         const statusLine = document.getElementById('status-line');
-
         // Clear View
         scheduleList.innerHTML = '';
         latestList.innerHTML = '';
-
         // Filter by Active Section
         const filteredData = allBillData.filter(item => {
             const itemSec = item.section || 'THIS_WEEK';
             return itemSec === activeSection;
         });
-
         if (filteredData.length === 0) {
             scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color: #94a3b8;">No items scheduled for this period.</div>';
             latestContainer.style.display = 'none';
@@ -523,7 +538,6 @@
 
         // Sort Newest First
         const displayData = [...filteredData].sort((a, b) => b.id - a.id);
-
         // Update Status Line
         const newestItem = displayData[0];
         const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
@@ -569,10 +583,22 @@
         const div = document.createElement('div');
         div.className = 'bill-item';
         
-        let linkHtml = '';
+        let buttonsHtml = '';
+
+        // 1. AI Button
+        if (item.ai_analysis) {
+             buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">⚡ INTELLIGENCE</a>`;
+        }
+
+        // 2. Doc Link
         if (item.link) {
             const isPdf = item.link.toLowerCase().endsWith('pdf');
-            linkHtml = `<div class="bill-links"><a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a></div>`;
+            buttonsHtml += `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
+        }
+
+        let linkHtml = '';
+        if (buttonsHtml) {
+            linkHtml = `<div class="bill-links">${buttonsHtml}</div>`;
         }
         
         let timeHtml = '';
@@ -586,9 +612,8 @@
 
         let splitIndex = fullTitle.indexOf("—");
         if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
-
         if (splitIndex !== -1) {
-            boldPart = fullTitle.substring(0, splitIndex).trim(); 
+            boldPart = fullTitle.substring(0, splitIndex).trim();
             normalPart = fullTitle.substring(splitIndex + 1).trim(); 
         } else {
             boldPart = fullTitle;
