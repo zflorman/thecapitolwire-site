@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legislative Intelligence Report | The Capitol Wire</title>
+    <title>Legislative Policy Brief | The Capitol Wire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Merriweather:wght@300;700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
     <div class="bg-blue-900 text-white py-6 border-b-4 border-blue-800">
         <div class="max-w-3xl mx-auto px-6 text-center">
             <h1 class="text-2xl font-bold tracking-wide">🏛️ THE CAPITOL WIRE</h1>
-            <p class="text-blue-200 text-sm mt-1 font-medium tracking-wider uppercase">Legislative Intelligence Report</p>
+            <p class="text-blue-200 text-sm mt-1 font-medium tracking-wider uppercase">Legislative Policy Brief</p>
         </div>
     </div>
 
@@ -154,7 +154,7 @@
 
             <div class="mt-8 text-xs text-gray-400 leading-relaxed">
                 <span class="font-semibold text-gray-500">AI notice:</span>
-                This intelligence report is generated with AI and may contain errors or omissions. Please verify details against the official bill text and supporting documents.
+                This Policy Brief is generated with AI and may contain errors or omissions. Please verify details against the official bill text and supporting documents.
             </div>
 
             <div class="text-center pt-8 pb-12">
@@ -313,7 +313,7 @@
             awaitingRowId = data.id;
 
             if (!data.ai_analysis) {
-                showPending("Generating intelligence report… This page will update automatically.");
+                showPending("Generating Policy Brief… This page will update automatically.");
                 subscribeForAnalysis(awaitingRowId);
                 return;
             }
@@ -326,7 +326,7 @@
             document.getElementById('error').classList.add('hidden');
             document.getElementById('report').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
-            document.getElementById('loading-msg').innerText = msg || "Generating intelligence report…";
+            document.getElementById('loading-msg').innerText = msg || "Generating Policy Brief…";
         }
         // ----------------------------------------------------------------------
 
