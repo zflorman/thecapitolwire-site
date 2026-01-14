@@ -4,31 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legislative Intelligence Report | The Capitol Wire</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Merriweather:wght@300;700&display=swap" rel="stylesheet">
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Merriweather:wght@300;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Merriweather:wght@300;700&display=swap)" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         h1, h2, h3 { font-family: 'Merriweather', serif; }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #1e3a8a;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="text-gray-800">
-
-  <!-- Top Halo Nav (added) -->
-  <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-black/5">
-    <div class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-      <a href="/" class="font-extrabold text-blue-600 flex items-center gap-2" style="font-family: 'Merriweather', serif; letter-spacing:-0.5px;">
-        <span aria-hidden="true">🏛️</span> <span>The Capitol Wire</span>
-      </a>
-      <div class="flex items-center gap-4">
-        <a href="/dashboard/" class="text-sm font-medium text-slate-600 hover:text-blue-600">Dashboard</a>
-        <button class="text-sm font-semibold bg-blue-600 hover:bg-blue-900 text-white px-4 py-2 rounded-md" onclick="openModal()">
-          Get Notifications
-        </button>
-      </div>
-    </div>
-  </nav>
-
 
     <div class="bg-blue-900 text-white py-6 border-b-4 border-blue-800">
         <div class="max-w-3xl mx-auto px-6 text-center">
@@ -39,309 +32,238 @@
 
     <div class="max-w-3xl mx-auto px-6 py-10">
 
-        <div id="loading" class="text-center py-20">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900 mx-auto mb-4"></div>
-            <p id="loading-msg" class="text-gray-500">Accessing Legislative Database...</p>
+        <div id="loading" class="flex flex-col items-center justify-center py-20 text-center">
+            <div class="spinner mb-4"></div>
+            <p class="text-gray-600 font-medium animate-pulse">Generating Intelligence Brief...</p>
+            <p class="text-gray-400 text-sm mt-2">This usually takes about 30-60 seconds.</p>
         </div>
 
-        <div id="error" class="hidden bg-red-50 border-l-4 border-red-500 p-6 rounded shadow-sm">
-            <p class="text-red-700 font-bold">Report Unavailable</p>
-            <p id="error-msg" class="text-red-600 text-sm mt-1">We could not find analysis for this bill.</p>
+        <div id="error" class="hidden bg-red-50 border-l-4 border-red-500 p-6 rounded shadow-sm text-center">
+            <h3 class="text-red-700 font-bold text-lg mb-1">Report Unavailable</h3>
+            <p id="error-msg" class="text-red-600 text-sm"></p>
         </div>
 
-        <div id="report" class="hidden space-y-8">
-            <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-                <div class="flex items-center space-x-3 mb-4">
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded uppercase tracking-wide">Analyst Brief</span>
-                    <span id="timestamp" class="text-gray-400 text-xs font-medium"></span>
-                </div>
-                <h2 id="bill-title" class="text-3xl font-black text-gray-900 leading-tight mb-4"></h2>
-                <div class="prose prose-blue text-gray-600 leading-relaxed" id="summary"></div>
-            </div>
-
-            <div id="provisions-box" class="hidden bg-white p-6 rounded-lg shadow-sm border-t-4 border-yellow-500">
-                <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">📋 Key Provisions & Funding</h3>
-                <ul id="provisions" class="space-y-2 text-sm text-gray-600"></ul>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-gray-400">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">⚙️ Mechanism</h3>
-                    <p id="mechanism" class="text-sm text-gray-600 leading-relaxed"></p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-indigo-500">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">🎯 Impact Groups</h3>
-                    <ul id="impact" class="space-y-2 text-sm text-gray-600"></ul>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-green-500">
-                    <h3 class="text-lg font-bold text-green-800 mb-4 bg-green-50 inline-block px-3 py-1 rounded">Arguments For</h3>
-                    <ul id="pros" class="space-y-3"></ul>
-                    <div class="mt-6 pt-4 border-t border-gray-100">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Supporters</span>
-                        <div id="supporters" class="flex flex-wrap gap-2 mt-2"></div>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-red-500">
-                    <h3 class="text-lg font-bold text-red-800 mb-4 bg-red-50 inline-block px-3 py-1 rounded">Arguments Against</h3>
-                    <ul id="cons" class="space-y-3"></ul>
-                    <div class="mt-6 pt-4 border-t border-gray-100">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Opponents</span>
-                        <div id="opponents" class="flex flex-wrap gap-2 mt-2"></div>
-                    </div>
-                </div>
-            </div>
-
+        <div id="report" class="hidden animate-fade-in space-y-8">
             
-            <div class="mt-8 text-xs text-gray-400 leading-relaxed">
-                <span class="font-semibold text-gray-500">AI notice:</span>
-                This intelligence report is generated with AI and may contain errors or omissions. Please verify details against the official bill text and supporting documents.
+            <div>
+                <div id="category-badge" class="inline-block px-3 py-1 text-xs font-bold text-blue-900 bg-blue-100 rounded-full mb-3 uppercase tracking-wide"></div>
+                <h2 id="bill-title" class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-4"></h2>
+                <div class="flex flex-wrap gap-3 text-sm">
+                    <a id="source-link" href="#" target="_blank" class="flex items-center text-blue-700 hover:text-blue-900 font-semibold bg-white px-3 py-1.5 rounded border border-blue-200 shadow-sm transition hover:shadow-md">
+                        📄 Read Official Text
+                    </a>
+                </div>
             </div>
 
-            <div class="text-center pt-8 pb-12">
-                <a href="/" class="text-blue-600 hover:text-blue-800 font-semibold text-sm">← Back to Dashboard</a>
+            <div id="layout-rule" class="hidden space-y-6">
+                <div id="sneak-box" class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded shadow-sm">
+                    <div class="flex items-start">
+                        <span class="text-2xl mr-4">⚠️</span>
+                        <div>
+                            <h3 id="sneak-headline" class="text-lg font-bold text-yellow-800 mb-1">Procedural Note</h3>
+                            <p id="sneak-desc" class="text-yellow-700 text-sm leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center">
+                        <span class="bg-purple-600 w-1.5 h-6 mr-3 rounded-full"></span> The Playbook (Rule Terms)
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <div class="bg-gray-50 p-3 rounded">
+                            <span class="block text-xs font-bold text-gray-400 uppercase">Rule Type</span>
+                            <span id="rule-type" class="text-lg font-bold text-gray-800"></span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <span class="block text-xs font-bold text-gray-400 uppercase">Debate Time</span>
+                            <span id="rule-time" class="text-lg font-bold text-gray-800"></span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <span class="block text-xs font-bold text-gray-400 uppercase">Amendments</span>
+                            <span id="rule-amends" class="text-lg font-bold text-gray-800"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center">
+                        <span class="bg-blue-600 w-1.5 h-6 mr-3 rounded-full"></span> Procedural Analysis
+                    </h3>
+                    <ul id="rule-analysis" class="space-y-3"></ul>
+                </div>
             </div>
+
+            <div id="layout-standard" class="hidden space-y-8">
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center">
+                        <span class="bg-blue-600 w-1.5 h-6 mr-3 rounded-full"></span> Executive Summary
+                    </h3>
+                    <p id="summary" class="text-gray-700 leading-relaxed text-lg"></p>
+                </div>
+
+                <div id="provisions-box" class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200 hidden">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center">
+                        <span class="bg-yellow-500 w-1.5 h-6 mr-3 rounded-full"></span> Key Provisions
+                    </h3>
+                    <ul id="provisions" class="space-y-3"></ul>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center">
+                        <span class="bg-indigo-500 w-1.5 h-6 mr-3 rounded-full"></span> Strategic Impact
+                    </h3>
+                    <ul id="impact" class="space-y-3"></ul>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-t-4 border-t-green-500">
+                        <h3 class="font-bold text-green-800 mb-4 flex items-center">Arguments For</h3>
+                        <ul id="pros" class="space-y-2"></ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 border-t-4 border-t-red-500">
+                        <h3 class="font-bold text-red-800 mb-4 flex items-center">Arguments Against</h3>
+                        <ul id="cons" class="space-y-2"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-xl border border-gray-200">
+                <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Political Landscape</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <span class="text-xs font-bold text-gray-400 block mb-2">LIKELY SUPPORTERS</span>
+                        <div id="supporters" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-gray-400 block mb-2">LIKELY OPPONENTS</span>
+                        <div id="opponents" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center pt-8 text-gray-400 text-xs">
+                Generated by AI based on official legislative text. Not legal advice.
+            </div>
+
         </div>
     </div>
-
-
-  <!-- Get Notifications Modal (added) -->
-  <div id="modal" class="hidden fixed inset-0 z-[60] items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-    <div class="w-[92%] max-w-md rounded-2xl bg-white shadow-xl border border-slate-200 p-8 relative">
-      <button class="absolute right-4 top-4 text-slate-400 hover:text-slate-700 text-2xl leading-none" onclick="closeModal()" aria-label="Close">&times;</button>
-      <h3 class="text-xl font-bold text-slate-900" style="font-family:'Merriweather', serif;">Get Instant Alerts</h3>
-      <p class="mt-2 text-sm text-slate-600">Enter your email to get notified when the schedule or analysis updates.</p>
-      <input id="modal-email" type="email" placeholder="Enter your email" class="mt-5 w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400" />
-      <button id="modal-submit" class="mt-3 w-full rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-900 hover:to-blue-900 text-white font-semibold py-3 text-sm disabled:opacity-70 disabled:cursor-wait">
-        Subscribe Free
-      </button>
-      <div id="modal-status" class="mt-3 text-sm min-h-[20px]"></div>
-    </div>
-  </div>
 
     <script>
-        const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjcnNkeXlxcmJ0eHl6aHZlc3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzIzOTYsImV4cCI6MjA4MTc0ODM5Nn0.FzTqjfTSDsz4MnLKNHlPcXdyR53UvnOmkV0bjZSbCGw'; 
+        const SUPABASE_URL = "[https://jcrsdyyqrbtxyzhveszx.supabase.co](https://jcrsdyyqrbtxyzhveszx.supabase.co)";
+        // NOTE: Please make sure to paste your ANON KEY here!
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY_HERE"; 
+        
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        // Separate publishable key used on the site for subscriber inserts (matches other pages)
-        const SUBSCRIBE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
-        const subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
 
-        // Modal controls
-        const modalEl = document.getElementById('modal');
-        const modalEmail = document.getElementById('modal-email');
-        const modalSubmit = document.getElementById('modal-submit');
-        const modalStatus = document.getElementById('modal-status');
-
-        function openModal() {
-            if (!modalEl) return;
-            modalEl.classList.remove('hidden');
-            modalEl.classList.add('flex');
-            if (modalEmail) modalEmail.focus();
-        }
-        function closeModal() {
-            if (!modalEl) return;
-            modalEl.classList.add('hidden');
-            modalEl.classList.remove('flex');
-            if (modalStatus) { modalStatus.textContent = ""; modalStatus.style.color = ""; }
-            if (modalSubmit) { modalSubmit.disabled = false; modalSubmit.textContent = "Subscribe Free"; }
-        }
-
-        // Click outside to close
-        if (modalEl) {
-            modalEl.addEventListener('click', (e) => {
-                if (e.target === modalEl) closeModal();
-            });
-        }
-
-        // Subscribe handler
-        if (modalSubmit) {
-            modalSubmit.addEventListener('click', async () => {
-                const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : "");
-                if (!email || !email.includes('@')) {
-                    modalStatus.textContent = "Please enter a valid email.";
-                    modalStatus.style.color = "#dc2626";
-                    return;
-                }
-                modalSubmit.disabled = true;
-                modalSubmit.textContent = "Processing...";
-                modalStatus.textContent = "";
-
-                const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
-
-                if (error) {
-                    // 23505 = unique violation (already subscribed)
-                    if (error.code === '23505') {
-                        modalStatus.textContent = "You are already subscribed!";
-                        modalStatus.style.color = "#2563eb";
-                    } else {
-                        modalStatus.textContent = "Error. Try again.";
-                        modalStatus.style.color = "#dc2626";
-                    }
-                    modalSubmit.disabled = false;
-                    modalSubmit.textContent = "Subscribe Free";
-                    return;
-                }
-
-                modalStatus.textContent = "Subscribed!";
-                modalStatus.style.color = "#16a34a";
-                if (modalEmail) modalEmail.value = "";
-                setTimeout(closeModal, 1200);
-            });
-        }
-
-
-        // --- NEW (Option B): Realtime subscription handle ---
-        let realtimeChannel = null;
-        let awaitingRowId = null;
-        // ----------------------------------------------------
+        let retryCount = 0;
+        const MAX_RETRIES = 50; 
 
         async function loadReport() {
-            const params = new URLSearchParams(window.location.search);
-            const billParam = params.get('bill');
-            const idParam = params.get('id');
+            if (!id) { showError("No report ID provided."); return; }
 
-            let query = client.from('live_feed').select('*');
+            const { data, error } = await sb.from('live_feed').select('*').eq('id', id).single();
 
-            if (idParam) {
-                query = query.eq('id', idParam);
-            } else if (billParam) {
-                const billNumber = billParam.replace(/\D/g, ''); 
-                if (billNumber) {
-                    query = query.ilike('title', `%${billNumber}%`);
-                } else {
-                    showError("Invalid bill parameter.");
-                    return;
-                }
-            } else {
-                showError("Missing bill id.");
-                return;
-            }
-
-            const { data, error } = await query.maybeSingle();
-
-            if (error || !data) {
-                showError("Bill not found or database error.");
-                return;
-            }
-
-            // Track the row id so we can subscribe for updates if analysis isn't ready yet
-            awaitingRowId = data.id;
+            if (error || !data) { showError("Report not found."); return; }
 
             if (!data.ai_analysis) {
-                showPending("Generating intelligence report… This page will update automatically.");
-                subscribeForAnalysis(awaitingRowId);
+                if (retryCount >= MAX_RETRIES) {
+                    showError("Analysis timed out. Please refresh the page manually.");
+                    return;
+                }
+                retryCount++;
+                console.log(`Waiting for analysis... attempt ${retryCount}/${MAX_RETRIES}`);
+                setTimeout(loadReport, 5000); 
                 return;
             }
 
-            renderData(data);
-        }
+            const ai = data.ai_analysis;
+            if (ai.error) { showError("AI Analysis Failed: " + ai.error); return; }
 
-        // --- NEW: keep loading state for "pending" instead of showing an error ---
-        function showPending(msg) {
-            document.getElementById('error').classList.add('hidden');
-            document.getElementById('report').classList.add('hidden');
-            document.getElementById('loading').classList.remove('hidden');
-            document.getElementById('loading-msg').innerText = msg || "Generating intelligence report…";
-        }
-        // ----------------------------------------------------------------------
+            // --- RENDER LOGIC ---
+            document.getElementById('bill-title').innerText = data.title;
+            document.getElementById('category-badge').innerText = data.category.replace(/_/g, ' ');
+            document.getElementById('source-link').href = data.link;
 
-        // --- NEW (Option B): subscribe to row updates; render when ai_analysis arrives ---
-        function subscribeForAnalysis(rowId) {
-            if (!rowId) return;
-
-            // If already subscribed, don't duplicate
-            if (realtimeChannel) return;
-
-            realtimeChannel = client
-                .channel(`live_feed_ai_${rowId}`)
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'live_feed',
-                        filter: `id=eq.${rowId}`
-                    },
-                    (payload) => {
-                        try {
-                            const newRow = payload && payload.new ? payload.new : null;
-                            if (newRow && newRow.ai_analysis) {
-                                // Got analysis—render and clean up subscription
-                                renderData(newRow);
-                                unsubscribeRealtime();
-                            }
-                        } catch (e) {
-                            // If anything goes wrong, fall back to a visible error
-                            showError("Report update failed. Please refresh.");
-                            unsubscribeRealtime();
-                        }
-                    }
-                )
-                .subscribe((status) => {
-                    // If realtime can't connect, fail gracefully
-                    if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                        showError("Live updates unavailable. Please refresh in a moment.");
-                        unsubscribeRealtime();
-                    }
-                });
-        }
-
-        function unsubscribeRealtime() {
-            if (realtimeChannel) {
-                client.removeChannel(realtimeChannel);
-                realtimeChannel = null;
-            }
-        }
-
-        // Clean up if user navigates away
-        window.addEventListener('beforeunload', unsubscribeRealtime);
-        // ----------------------------------------------------------------------
-
-        function renderData(row) {
-            const ai = row.ai_analysis;
-
-            document.getElementById('bill-title').innerText = row.title;
-            document.getElementById('summary').innerText = ai.summary || "No summary available.";
-            document.getElementById('timestamp').innerText = new Date().toLocaleDateString();
-            document.getElementById('mechanism').innerText = ai.mechanism || "Technical details not provided.";
-
-            const fillList = (id, items, bulletColor) => {
+            const fillList = (id, items, bulletColorClass) => {
                 const el = document.getElementById(id);
-                if (!items || items.length === 0) { el.innerHTML = '<li class="italic text-gray-400">None specified</li>'; return; }
-                el.innerHTML = items.map(i => `<li class="flex items-start"><span class="mr-2 mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${bulletColor}"></span><span class="leading-relaxed">${i}</span></li>`).join('');
+                if (!el || !items || items.length === 0) return;
+                el.innerHTML = items.map(i => `
+                    <li class="flex items-start">
+                        <span class="${bulletColorClass} w-2 h-2 mt-2 mr-3 rounded-full flex-shrink-0"></span>
+                        <span class="text-gray-700">${i}</span>
+                    </li>
+                `).join('');
             };
-
+            
             const fillTags = (id, items) => {
                 const el = document.getElementById(id);
-                if (!items || items.length === 0) return;
+                if (!el || !items || items.length === 0) return;
                 el.innerHTML = items.map(i => `<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">${i}</span>`).join('');
             };
 
-            // Handle Key Provisions
-            if (ai.key_provisions && ai.key_provisions.length > 0) {
-                document.getElementById('provisions-box').classList.remove('hidden');
-                fillList('provisions', ai.key_provisions, 'bg-yellow-500');
+            // --- SWITCH: RULE VS STANDARD ---
+            const isRule = (ai.category === "RULE") || (data.title.toLowerCase().includes("providing for consideration"));
+
+            if (isRule && ai.sneak_alert) {
+                // RENDER RULE LAYOUT
+                document.getElementById('layout-rule').classList.remove('hidden');
+                
+                // Alert Box
+                const alertBox = document.getElementById('sneak-box');
+                const alertHead = document.getElementById('sneak-headline');
+                const alertDesc = document.getElementById('sneak-desc');
+                
+                if (ai.sneak_alert.detected) {
+                    alertBox.classList.remove('bg-yellow-50', 'border-yellow-500');
+                    alertBox.classList.add('bg-red-50', 'border-red-600');
+                    alertHead.classList.replace('text-yellow-800', 'text-red-800');
+                    alertHead.innerText = "🚨 SNEAK ALERT: " + ai.sneak_alert.headline;
+                    alertDesc.classList.replace('text-yellow-700', 'text-red-700');
+                    alertDesc.innerText = ai.sneak_alert.description;
+                } else {
+                    alertHead.innerText = "Standard Procedure";
+                    alertDesc.innerText = "No unusual waivers or self-executing provisions detected.";
+                }
+
+                // Breakdown
+                if (ai.rule_breakdown) {
+                    document.getElementById('rule-type').innerText = ai.rule_breakdown.type || "N/A";
+                    document.getElementById('rule-time').innerText = ai.rule_breakdown.debate_time || "N/A";
+                    document.getElementById('rule-amends').innerText = ai.rule_breakdown.amendments_allowed || "N/A";
+                }
+
+                fillList('rule-analysis', ai.analysis?.procedural_analysis, 'bg-blue-500');
+
+            } else {
+                // RENDER STANDARD LAYOUT
+                document.getElementById('layout-standard').classList.remove('hidden');
+                
+                document.getElementById('summary').innerText = ai.summary || "";
+                
+                if (ai.key_provisions && ai.key_provisions.length > 0) {
+                    document.getElementById('provisions-box').classList.remove('hidden');
+                    fillList('provisions', ai.key_provisions, 'bg-yellow-500');
+                }
+
+                fillList('impact', ai.impact, 'bg-indigo-400');
+                fillList('pros', ai.analysis?.pros, 'bg-green-500');
+                fillList('cons', ai.analysis?.cons, 'bg-red-500');
             }
 
-            fillList('impact', ai.impact, 'bg-indigo-400');
-            fillList('pros', ai.analysis.pros, 'bg-green-500');
-            fillList('cons', ai.analysis.cons, 'bg-red-500');
-            fillTags('supporters', ai.analysis.likely_supporters);
-            fillTags('opponents', ai.analysis.likely_opponents);
+            // Shared Politics
+            fillTags('supporters', ai.analysis?.likely_supporters);
+            fillTags('opponents', ai.analysis?.likely_opponents);
 
             document.getElementById('loading').classList.add('hidden');
-            document.getElementById('error').classList.add('hidden');
             document.getElementById('report').classList.remove('hidden');
         }
 
         function showError(msg) {
-            unsubscribeRealtime();
             document.getElementById('loading').classList.add('hidden');
-            document.getElementById('report').classList.add('hidden');
             document.getElementById('error').classList.remove('hidden');
             document.getElementById('error-msg').innerText = msg;
         }
