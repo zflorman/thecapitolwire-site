@@ -56,79 +56,102 @@
                     <span id="timestamp" class="text-gray-400 text-xs font-medium"></span>
                 </div>
                 <h2 id="bill-title" class="text-3xl font-black text-gray-900 leading-tight mb-4"></h2>
+
+                <!-- Standard: summary text lives here -->
                 <div class="prose prose-blue text-gray-600 leading-relaxed" id="summary"></div>
-            
-            <!-- Rule Mode Sections (hidden by default) -->
-            <div id="rule-alert" class="hidden bg-white p-6 rounded-lg shadow-sm border-l-4">
-                <div class="flex items-start gap-3">
-                    <div class="text-xl leading-none">🚨</div>
-                    <div>
-                        <p id="rule-alert-headline" class="font-bold text-lg"></p>
-                        <p id="rule-alert-desc" class="text-sm mt-1 leading-relaxed"></p>
+
+                <!-- Rule-only: Sneak Alert box -->
+                <div id="rule-alert" class="hidden mt-6 rounded-lg border-l-4 p-6 shadow-sm">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider opacity-80">Sneak Alert</p>
+                            <h3 id="rule-alert-headline" class="text-lg font-extrabold mt-1"></h3>
+                            <p id="rule-alert-description" class="text-sm mt-2 leading-relaxed"></p>
+                        </div>
+                        <span id="rule-alert-badge" class="px-3 py-1 rounded-full text-xs font-extrabold"></span>
                     </div>
                 </div>
             </div>
 
-            <div id="rule-playbook" class="hidden bg-white p-6 rounded-lg shadow-sm border-t-4 border-slate-700">
+            <!-- Rule-only: Playbook -->
+            <div id="rule-playbook" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">🧩 Rule Playbook</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="rounded-lg border border-gray-200 p-4 bg-gray-50">
-                        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Rule Type</div>
-                        <div id="rule-type" class="mt-2 text-sm font-semibold text-gray-800"></div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div class="text-[11px] font-extrabold tracking-wider text-gray-500">RULE TYPE</div>
+                        <div id="rb-type" class="mt-2 font-black text-gray-900">Not specified</div>
                     </div>
-                    <div class="rounded-lg border border-gray-200 p-4 bg-gray-50">
-                        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Debate Time</div>
-                        <div id="rule-debate-time" class="mt-2 text-sm font-semibold text-gray-800"></div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div class="text-[11px] font-extrabold tracking-wider text-gray-500">DEBATE TIME</div>
+                        <div id="rb-debate" class="mt-2 font-black text-gray-900">Not specified</div>
                     </div>
-                    <div class="rounded-lg border border-gray-200 p-4 bg-gray-50">
-                        <div class="text-xs font-bold text-gray-500 uppercase tracking-wider">Amendments</div>
-                        <div id="rule-amendments" class="mt-2 text-sm font-semibold text-gray-800"></div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div class="text-[11px] font-extrabold tracking-wider text-gray-500">AMENDMENTS</div>
+                        <div id="rb-amendments" class="mt-2 font-black text-gray-900">Not specified</div>
                     </div>
                 </div>
             </div>
 
-            <div id="procedural-box" class="hidden bg-white p-6 rounded-lg shadow-sm border-t-4 border-blue-500">
+            <!-- Rule-only: Procedural analysis -->
+            <div id="rule-procedural" class="hidden bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">🧠 Procedural Analysis</h3>
-                <ul id="procedural-analysis" class="space-y-2 text-sm text-gray-600"></ul>
-            </div>
-</div>
-
-            <div id="provisions-box" class="hidden bg-white p-6 rounded-lg shadow-sm border-t-4 border-yellow-500">
-                <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">📋 Key Provisions & Funding</h3>
-                <ul id="provisions" class="space-y-2 text-sm text-gray-600"></ul>
+                <ul id="procedural-analysis" class="space-y-3"></ul>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-gray-400">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">⚙️ Mechanism</h3>
-                    <p id="mechanism" class="text-sm text-gray-600 leading-relaxed"></p>
+            <!-- Standard-only sections (we toggle this entire wrapper in rule mode) -->
+            <div id="standard-sections" class="space-y-8">
+                <div id="provisions-box" class="hidden bg-white p-6 rounded-lg shadow-sm border-t-4 border-yellow-500">
+                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">📋 Key Provisions & Funding</h3>
+                    <ul id="provisions" class="space-y-2 text-sm text-gray-600"></ul>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-indigo-500">
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">🎯 Impact Groups</h3>
-                    <ul id="impact" class="space-y-2 text-sm text-gray-600"></ul>
-                </div>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-green-500">
-                    <h3 class="text-lg font-bold text-green-800 mb-4 bg-green-50 inline-block px-3 py-1 rounded">Arguments For</h3>
-                    <ul id="pros" class="space-y-3"></ul>
-                    <div class="mt-6 pt-4 border-t border-gray-100">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Supporters</span>
-                        <div id="supporters" class="flex flex-wrap gap-2 mt-2"></div>
+                <!-- CRITICAL: preserve mechanism box + 2-column grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-gray-400">
+                        <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">⚙️ Mechanism</h3>
+                        <p id="mechanism" class="text-sm text-gray-600 leading-relaxed"></p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-indigo-500">
+                        <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center">🎯 Impact Groups</h3>
+                        <ul id="impact" class="space-y-2 text-sm text-gray-600"></ul>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-red-500">
-                    <h3 class="text-lg font-bold text-red-800 mb-4 bg-red-50 inline-block px-3 py-1 rounded">Arguments Against</h3>
-                    <ul id="cons" class="space-y-3"></ul>
-                    <div class="mt-6 pt-4 border-t border-gray-100">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Opponents</span>
-                        <div id="opponents" class="flex flex-wrap gap-2 mt-2"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-green-500">
+                        <h3 class="text-lg font-bold text-green-800 mb-4 bg-green-50 inline-block px-3 py-1 rounded">Arguments For</h3>
+                        <ul id="pros" class="space-y-3"></ul>
+                        <div class="mt-6 pt-4 border-t border-gray-100">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Supporters</span>
+                            <div id="supporters" class="flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-red-500">
+                        <h3 class="text-lg font-bold text-red-800 mb-4 bg-red-50 inline-block px-3 py-1 rounded">Arguments Against</h3>
+                        <ul id="cons" class="space-y-3"></ul>
+                        <div class="mt-6 pt-4 border-t border-gray-100">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Opponents</span>
+                            <div id="opponents" class="flex flex-wrap gap-2 mt-2"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            
+            <!-- Politics footer (ALWAYS shown, both modes) -->
+            <div id="politics-footer" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Likely Supporters / Opponents</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Supporters</div>
+                        <div id="supporters-footer" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">Likely Opponents</div>
+                        <div id="opponents-footer" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="mt-8 text-xs text-gray-400 leading-relaxed">
                 <span class="font-semibold text-gray-500">AI notice:</span>
                 This intelligence report is generated with AI and may contain errors or omissions. Please verify details against the official bill text and supporting documents.
@@ -233,6 +256,30 @@
         let awaitingRowId = null;
         // ----------------------------------------------------
 
+        function safeLower(s) { return (s || "").toString().toLowerCase(); }
+
+        // Normalize stored JSON:
+        // - handles parsed objects
+        // - handles JSON strings
+        // - handles single-item arrays like [ { ... } ]
+        function normalizeAi(maybeJson) {
+            if (!maybeJson) return null;
+
+            if (Array.isArray(maybeJson)) return maybeJson[0] || null;
+            if (typeof maybeJson === "object") return maybeJson;
+
+            if (typeof maybeJson === "string") {
+                try {
+                    const parsed = JSON.parse(maybeJson);
+                    if (Array.isArray(parsed)) return parsed[0] || null;
+                    return parsed;
+                } catch {
+                    return null;
+                }
+            }
+            return null;
+        }
+
         async function loadReport() {
             const params = new URLSearchParams(window.location.search);
             const billParam = params.get('bill');
@@ -243,7 +290,7 @@
             if (idParam) {
                 query = query.eq('id', idParam);
             } else if (billParam) {
-                const billNumber = billParam.replace(/\D/g, ''); 
+                const billNumber = billParam.replace(/\\D/g, ''); 
                 if (billNumber) {
                     query = query.ilike('title', `%${billNumber}%`);
                 } else {
@@ -336,113 +383,116 @@
         // ----------------------------------------------------------------------
 
         function renderData(row) {
-            const ai = row && row.ai_analysis ? row.ai_analysis : {};
-            const titleLower = (row && row.title ? row.title : "").toLowerCase();
-            const category = (ai && ai.category ? String(ai.category).toUpperCase() : "");
-            const isRuleMode = (category === "RULE") || titleLower.includes("providing for consideration");
+            const ai = normalizeAi(row.ai_analysis) || {};
 
-            // Core header fields (always)
-            document.getElementById('bill-title').innerText = row.title || "";
-            document.getElementById('timestamp').innerText = new Date().toLocaleDateString();
-
-            // Helpers
-            const toArray = (v) => Array.isArray(v) ? v : (v ? [v] : []);
             const fillList = (id, items, bulletColor) => {
                 const el = document.getElementById(id);
-                const arr = toArray(items).filter(x => x !== null && x !== undefined && String(x).trim() !== "");
                 if (!el) return;
-                if (!arr || arr.length === 0) {
-                    el.innerHTML = '<li class="italic text-gray-400">None specified</li>';
-                    return;
-                }
-                el.innerHTML = arr.map(i => `<li class="flex items-start"><span class="mr-2 mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${bulletColor}"></span><span class="leading-relaxed">${String(i)}</span></li>`).join('');
+                if (!items || !Array.isArray(items) || items.length === 0) { el.innerHTML = '<li class="italic text-gray-400">None specified</li>'; return; }
+                el.innerHTML = items.map(i => `<li class="flex items-start"><span class="mr-2 mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${bulletColor}"></span><span class="leading-relaxed">${i}</span></li>`).join('');
             };
 
             const fillTags = (id, items) => {
                 const el = document.getElementById(id);
-                const arr = toArray(items).filter(x => x !== null && x !== undefined && String(x).trim() !== "");
                 if (!el) return;
-                if (!arr || arr.length === 0) { el.innerHTML = ""; return; }
-                el.innerHTML = arr.map(i => `<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">${String(i)}</span>`).join('');
+                if (!items || !Array.isArray(items) || items.length === 0) { el.innerHTML = ''; return; }
+                el.innerHTML = items.map(i => `<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">${i}</span>`).join('');
             };
 
-            // Reset/hide conditional sections so switching modes doesn't leave artifacts
-            const ruleAlertEl = document.getElementById('rule-alert');
-            const rulePlaybookEl = document.getElementById('rule-playbook');
-            const proceduralBoxEl = document.getElementById('procedural-box');
-            const provisionsBoxEl = document.getElementById('provisions-box');
+            const title = row.title || "";
+            document.getElementById('bill-title').innerText = title;
+            document.getElementById('timestamp').innerText = new Date().toLocaleDateString();
 
-            if (ruleAlertEl) ruleAlertEl.classList.add('hidden');
-            if (rulePlaybookEl) rulePlaybookEl.classList.add('hidden');
-            if (proceduralBoxEl) proceduralBoxEl.classList.add('hidden');
-            if (provisionsBoxEl) provisionsBoxEl.classList.add('hidden');
+            const isRule =
+                ((ai.category || "").toString().toUpperCase() === "RULE") ||
+                safeLower(title).includes("providing for consideration");
 
-            // --- Layout A: Rule Mode ---
-            if (isRuleMode) {
-                const sneak = ai.sneak_alert || {};
-                const detected = !!sneak.detected;
-
-                // Alert box (red if detected, otherwise yellow/green)
-                if (ruleAlertEl) {
-                    ruleAlertEl.classList.remove('hidden');
-                    ruleAlertEl.classList.remove('border-red-500', 'border-yellow-500', 'border-emerald-500', 'bg-red-50', 'bg-yellow-50', 'bg-emerald-50', 'text-red-800', 'text-yellow-800', 'text-emerald-800');
-                    if (detected) {
-                        ruleAlertEl.classList.add('border-red-500', 'bg-red-50', 'text-red-800');
-                    } else {
-                        ruleAlertEl.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-800');
-                    }
-                    const h = document.getElementById('rule-alert-headline');
-                    const d = document.getElementById('rule-alert-desc');
-                    if (h) h.innerText = sneak.headline || (detected ? "Potential procedural trap detected" : "No procedural trap detected");
-                    if (d) d.innerText = sneak.description || "No additional description provided.";
-                }
-
-                // Use sneak_alert description as the top narrative if summary is absent
-                document.getElementById('summary').innerText =
-                    sneak.description || sneak.headline || ai.summary || "No summary available.";
-
-                // Playbook
-                const rb = ai.rule_breakdown || {};
-                if (rulePlaybookEl) {
-                    rulePlaybookEl.classList.remove('hidden');
-                    const typeEl = document.getElementById('rule-type');
-                    const debateEl = document.getElementById('rule-debate-time');
-                    const amendEl = document.getElementById('rule-amendments');
-                    if (typeEl) typeEl.innerText = rb.type || "Not specified";
-                    if (debateEl) debateEl.innerText = rb.debate_time || "Not specified";
-                    if (amendEl) amendEl.innerText = rb.amendments_allowed || "Not specified";
-                }
-
-                // Procedural Analysis list
-                const proc = (ai.analysis && ai.analysis.procedural_analysis) ? ai.analysis.procedural_analysis : [];
-                if (proceduralBoxEl) {
-                    proceduralBoxEl.classList.remove('hidden');
-                    fillList('procedural-analysis', proc, 'bg-blue-500');
-                }
-
-            // --- Layout B: Standard Bill Mode (original layout preserved) ---
-            } else {
-                document.getElementById('summary').innerText = ai.summary || "No summary available.";
-
-                // Handle Key Provisions (original behavior)
-                if (ai.key_provisions && Array.isArray(ai.key_provisions) && ai.key_provisions.length > 0) {
-                    if (provisionsBoxEl) provisionsBoxEl.classList.remove('hidden');
-                    fillList('provisions', ai.key_provisions, 'bg-yellow-500');
-                }
-            }
-
-            // Shared sections (show for both modes; graceful if missing)
-            document.getElementById('mechanism').innerText = ai.mechanism || "Technical details not provided.";
-
-            fillList('impact', ai.impact, 'bg-indigo-400');
-
+            // Always render politics footer from ai.analysis (both modes)
             const analysis = ai.analysis || {};
-            fillList('pros', analysis.pros, 'bg-green-500');
-            fillList('cons', analysis.cons, 'bg-red-500');
+            fillTags('supporters-footer', analysis.likely_supporters);
+            fillTags('opponents-footer', analysis.likely_opponents);
 
-            // Politics footer: keep for both modes
-            fillTags('supporters', analysis.likely_supporters);
-            fillTags('opponents', analysis.likely_opponents);
+            // Toggle layouts
+            document.getElementById('rule-alert').classList.add('hidden');
+            document.getElementById('rule-playbook').classList.add('hidden');
+            document.getElementById('rule-procedural').classList.add('hidden');
+            document.getElementById('standard-sections').classList.remove('hidden');
+
+            if (isRule) {
+                // Hide standard-only sections for rules
+                document.getElementById('standard-sections').classList.add('hidden');
+
+                // Clear standard fields so nothing "weird" shows up
+                document.getElementById('summary').innerText = "";
+
+                // Sneak alert
+                const sa = ai.sneak_alert || {};
+                const detected = !!sa.detected;
+
+                const alertEl = document.getElementById('rule-alert');
+                const headlineEl = document.getElementById('rule-alert-headline');
+                const descEl = document.getElementById('rule-alert-description');
+                const badgeEl = document.getElementById('rule-alert-badge');
+
+                // Color: red flagged, green clear
+                if (detected) {
+                    alertEl.className = "mt-6 rounded-lg border-l-4 p-6 shadow-sm bg-red-50 border-red-500";
+                    badgeEl.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-red-600 text-white";
+                    badgeEl.innerText = "FLAGGED";
+                    headlineEl.className = "text-lg font-extrabold mt-1 text-red-900";
+                    descEl.className = "text-sm mt-2 leading-relaxed text-red-900";
+                } else {
+                    alertEl.className = "mt-6 rounded-lg border-l-4 p-6 shadow-sm bg-green-50 border-green-500";
+                    badgeEl.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-green-600 text-white";
+                    badgeEl.innerText = "CLEAR";
+                    headlineEl.className = "text-lg font-extrabold mt-1 text-green-900";
+                    descEl.className = "text-sm mt-2 leading-relaxed text-green-900";
+                }
+
+                // Avoid duplication: prefer sneak_alert description/headline; fall back to summary only if sneak text missing.
+                const sneakText = (sa.description || sa.headline || "").toString().trim();
+                const fallbackSummary = (ai.summary || "").toString().trim();
+                const chosen = sneakText || fallbackSummary;
+
+                headlineEl.innerText = (sa.headline || "").toString().trim() || (detected ? "Procedural red flags detected" : "No major procedural tricks detected");
+                descEl.innerText = chosen || "";
+
+                alertEl.classList.remove('hidden');
+
+                // Rule breakdown (3 cols)
+                const rb = ai.rule_breakdown || {};
+                document.getElementById('rb-type').innerText = rb.type || rb.rule_type || "Not specified";
+                document.getElementById('rb-debate').innerText = rb.debate_time || rb.debate || "Not specified";
+                document.getElementById('rb-amendments').innerText = rb.amendments_allowed || rb.amendments || rb.amendment_structure || "Not specified";
+                document.getElementById('rule-playbook').classList.remove('hidden');
+
+                // Procedural analysis list (backend: ai.analysis.procedural_analysis)
+                const pa = Array.isArray(analysis.procedural_analysis) ? analysis.procedural_analysis : [];
+                fillList('procedural-analysis', pa, detected ? 'bg-red-500' : 'bg-gray-400');
+                document.getElementById('rule-procedural').classList.remove('hidden');
+
+                // Also fill inline supporters/opponents (kept for compatibility but hidden since standard-sections hidden)
+                fillTags('supporters', analysis.likely_supporters);
+                fillTags('opponents', analysis.likely_opponents);
+            } else {
+                // STANDARD BILL MODE (original layout preserved)
+                document.getElementById('summary').innerText = ai.summary ? ai.summary : "";
+                document.getElementById('mechanism').innerText = ai.mechanism || "Technical details not provided.";
+
+                // Handle Key Provisions
+                if (ai.key_provisions && Array.isArray(ai.key_provisions) && ai.key_provisions.length > 0) {
+                    document.getElementById('provisions-box').classList.remove('hidden');
+                    fillList('provisions', ai.key_provisions, 'bg-yellow-500');
+                } else {
+                    document.getElementById('provisions-box').classList.add('hidden');
+                }
+
+                fillList('impact', ai.impact, 'bg-indigo-400');
+                fillList('pros', (analysis && Array.isArray(analysis.pros)) ? analysis.pros : ai.pros, 'bg-green-500');
+                fillList('cons', (analysis && Array.isArray(analysis.cons)) ? analysis.cons : ai.cons, 'bg-red-500');
+                fillTags('supporters', analysis.likely_supporters);
+                fillTags('opponents', analysis.likely_opponents);
+            }
 
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('error').classList.add('hidden');
@@ -461,3 +511,9 @@
     </script>
 </body>
 </html>
+"""
+
+path = Path("/mnt/data/now_index_21_updated.html")
+path.write_text(updated, encoding="utf-8")
+str(path)
+
