@@ -22,10 +22,10 @@
     </div>
 
     <div class="max-w-3xl mx-auto px-6 py-10">
-        
+
         <div id="loading" class="text-center py-20">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900 mx-auto mb-4"></div>
-            <p class="text-gray-500">Accessing Legislative Database...</p>
+            <p id="loading-msg" class="text-gray-500">Accessing Legislative Database...</p>
         </div>
 
         <div id="error" class="hidden bg-red-50 border-l-4 border-red-500 p-6 rounded shadow-sm">
@@ -77,7 +77,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="text-center pt-8 pb-12">
                 <a href="/" class="text-blue-600 hover:text-blue-800 font-semibold text-sm">← Back to Dashboard</a>
             </div>
@@ -90,13 +90,18 @@
 
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // --- NEW (Option B): Realtime subscription handle ---
+        let realtimeChannel = null;
+        let awaitingRowId = null;
+        // ----------------------------------------------------
+
         async function loadReport() {
             const params = new URLSearchParams(window.location.search);
             const billParam = params.get('bill');
             const idParam = params.get('id');
 
             let query = client.from('live_feed').select('*');
-            
+
             if (idParam) {
                 query = query.eq('id', idParam);
             } else if (billParam) {
@@ -104,9 +109,11 @@
                 if (billNumber) {
                     query = query.ilike('title', `%${billNumber}%`);
                 } else {
+                    showError("Invalid bill parameter.");
                     return;
                 }
             } else {
+                showError("Missing bill id.");
                 return;
             }
 
@@ -117,17 +124,82 @@
                 return;
             }
 
+            // Track the row id so we can subscribe for updates if analysis isn't ready yet
+            awaitingRowId = data.id;
+
             if (!data.ai_analysis) {
-                showError("Analysis pending processing.");
+                showPending("Generating intelligence report… This page will update automatically.");
+                subscribeForAnalysis(awaitingRowId);
                 return;
             }
 
             renderData(data);
         }
 
+        // --- NEW: keep loading state for "pending" instead of showing an error ---
+        function showPending(msg) {
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('report').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('loading-msg').innerText = msg || "Generating intelligence report…";
+        }
+        // ----------------------------------------------------------------------
+
+        // --- NEW (Option B): subscribe to row updates; render when ai_analysis arrives ---
+        function subscribeForAnalysis(rowId) {
+            if (!rowId) return;
+
+            // If already subscribed, don't duplicate
+            if (realtimeChannel) return;
+
+            realtimeChannel = client
+                .channel(`live_feed_ai_${rowId}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'live_feed',
+                        filter: `id=eq.${rowId}`
+                    },
+                    (payload) => {
+                        try {
+                            const newRow = payload && payload.new ? payload.new : null;
+                            if (newRow && newRow.ai_analysis) {
+                                // Got analysis—render and clean up subscription
+                                renderData(newRow);
+                                unsubscribeRealtime();
+                            }
+                        } catch (e) {
+                            // If anything goes wrong, fall back to a visible error
+                            showError("Report update failed. Please refresh.");
+                            unsubscribeRealtime();
+                        }
+                    }
+                )
+                .subscribe((status) => {
+                    // If realtime can't connect, fail gracefully
+                    if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                        showError("Live updates unavailable. Please refresh in a moment.");
+                        unsubscribeRealtime();
+                    }
+                });
+        }
+
+        function unsubscribeRealtime() {
+            if (realtimeChannel) {
+                client.removeChannel(realtimeChannel);
+                realtimeChannel = null;
+            }
+        }
+
+        // Clean up if user navigates away
+        window.addEventListener('beforeunload', unsubscribeRealtime);
+        // ----------------------------------------------------------------------
+
         function renderData(row) {
             const ai = row.ai_analysis;
-            
+
             document.getElementById('bill-title').innerText = row.title;
             document.getElementById('summary').innerText = ai.summary || "No summary available.";
             document.getElementById('timestamp').innerText = new Date().toLocaleDateString();
@@ -145,13 +217,11 @@
                 el.innerHTML = items.map(i => `<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">${i}</span>`).join('');
             };
 
-            // --- NEW: Handle Key Provisions ---
-            // If the JSON has 'key_provisions', show the box. Otherwise hide it.
+            // Handle Key Provisions
             if (ai.key_provisions && ai.key_provisions.length > 0) {
                 document.getElementById('provisions-box').classList.remove('hidden');
                 fillList('provisions', ai.key_provisions, 'bg-yellow-500');
             }
-            // ----------------------------------
 
             fillList('impact', ai.impact, 'bg-indigo-400');
             fillList('pros', ai.analysis.pros, 'bg-green-500');
@@ -160,11 +230,14 @@
             fillTags('opponents', ai.analysis.likely_opponents);
 
             document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
             document.getElementById('report').classList.remove('hidden');
         }
 
         function showError(msg) {
+            unsubscribeRealtime();
             document.getElementById('loading').classList.add('hidden');
+            document.getElementById('report').classList.add('hidden');
             document.getElementById('error').classList.remove('hidden');
             document.getElementById('error-msg').innerText = msg;
         }
