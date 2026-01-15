@@ -1,697 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-CEV5ME0C6L');
-  </script>
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Capitol Wire | Real-Time House Floor Alerts</title>
-  
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://thecapitolwire.com/" />
-  <meta property="og:title" content="The Capitol Wire | Real-Time House Floor Alerts" />
-  <meta property="og:description" content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule. Track Congress in real-time - 100% Free." />
-  <meta property="og:image" content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="The Capitol Wire | Real-Time House Floor Alerts" />
-  <meta name="twitter:description" content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule - 100% Free." />
-  <meta name="twitter:image" content="https://emojiguide.org/images/emoji/f/1wfkzqn103691f.png" />
-  
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
-
-  <style>
-    /* --- MODERN LIGHT THEME --- */
-    :root {
-      --bg-main: #ffffff;
-      --bg-subtle: #f8fafc; 
-      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%); 
-      
-      --card-bg: #ffffff;
-      --card-border: 1px solid #e2e8f0;
-      --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-      --text-main: #0f172a; 
-      --text-muted: #64748b; 
-      
-      --brand-primary: #2563eb; 
-      --brand-dark: #1e3a8a;    
-      
-      --success: #10b981;
-      --warning-bg: #fffbeb;
-      --warning-text: #92400e;
-      --warning-border: #fcd34d;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-    html { scroll-behavior: smooth; }
-    
-    body { 
-        font-family: 'Inter', sans-serif;
-        color: var(--text-main); 
-        background: var(--bg-main); 
-        background-image: var(--bg-gradient);
-        background-attachment: fixed;
-        min-height: 100vh;
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
-
-    /* --- NAV --- */
-    nav { 
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        padding: 16px 0; 
-        position: sticky; top: 0; z-index: 100;
-    }
-    .nav-inner { 
-        max-width: 1000px; margin: 0 auto;
-        padding: 0 24px; 
-        display: flex; justify-content: space-between; align-items: center; 
-    }
-    .logo { 
-        font-family: 'Merriweather', serif;
-        font-weight: 800; font-size: 1.2rem; 
-        color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
-        letter-spacing: -0.5px;
-    }
-    .nav-links { display: flex; align-items: center; gap: 24px; }
-    .nav-link { 
-        color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
-        font-weight: 500; 
-        transition: color 0.2s; cursor: pointer; 
-    }
-    .nav-link:hover { color: var(--brand-primary); }
-    
-    .sub-btn { 
-        background: var(--brand-primary);
-        color: white; 
-        padding: 8px 16px; 
-        border-radius: 6px; 
-        font-weight: 600; 
-        text-decoration: none; 
-        font-size: 0.85rem; 
-        transition: transform 0.1s;
-    }
-    .sub-btn:hover { background: var(--brand-dark); }
-
-    /* --- DROPDOWN --- */
-    .dropdown { position: relative; display: inline-block; }
-    .dropdown-content { 
-        display: none; position: absolute;
-        background: white;
-        min-width: 200px; 
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        border-radius: 8px; 
-        z-index: 100; top: 120%; left: 50%; transform: translateX(-50%); 
-        padding: 6px; 
-        opacity: 0; transition: opacity 0.2s;
-        border: 1px solid #e2e8f0;
-    }
-    .dropdown:hover .dropdown-content { display: block; opacity: 1; top: 100%; animation: slideUpFade 0.2s ease-out; }
-    .dropdown-content a { 
-        color: var(--text-main);
-        padding: 8px 12px; text-decoration: none; display: block; 
-        font-size: 0.85rem; font-weight: 500; border-radius: 4px;
-    }
-    .dropdown-content a:hover { background-color: #eff6ff; color: var(--brand-primary); }
-
-    /* --- HERO SECTION --- */
-    .hero { text-align: center; padding: 40px 0 0px; position: relative; }
-    
-    .hero h1 { 
-        font-family: 'Merriweather', serif;
-        font-size: 3.5rem; 
-        color: var(--text-main); 
-        margin-bottom: 24px; 
-        line-height: 1.1;
-        letter-spacing: -1px;
-    }
-    .hero h1 span.highlight {
-        color: var(--brand-primary);
-        position: relative;
-    }
-    .hero h1 span.highlight::after {
-        content: ''; position: absolute;
-        bottom: 5px; left: 0; width: 100%; height: 6px;
-        background: rgba(37, 99, 235, 0.1); z-index: -1; transform: rotate(-1deg);
-    }
-
-    /* Typewriter - RESTORED EXACTLY FROM INDEX (11) */
-    .typing-wrapper { display: inline-block; }
-    
-    .typing-text {
-        display: inline-block;
-        font-family: 'Merriweather', serif; 
-        font-weight: 700; 
-        color: var(--brand-primary);
-        border-right: 3px solid var(--text-main);
-        white-space: nowrap;
-        overflow: hidden;
-        width: 0;
-        /* RESTORED: These exact values fix the alignment */
-        animation: typing 1.5s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
-        vertical-align: bottom; 
-        line-height: 1.2;
-        padding-bottom: 3px;
-        margin-bottom: -3px; 
-    }
-    @keyframes typing { to { width: 100%; } }
-    @keyframes blink-caret { 50% { border-color: transparent; } }
-
-    /* Checklist */
-    .hero-checklist {
-        display: inline-block;
-        text-align: left;
-        color: var(--text-muted);
-        font-size: 1.1rem; line-height: 1.8;
-        margin: 0 auto 40px; max-width: 680px;
-    }
-    .check { color: var(--success); margin-right: 12px; font-weight: bold; }
-    .hero-checklist strong { color: var(--text-main); font-weight: 600; }
-    
-    .hero-checklist a {
-        color: var(--brand-primary);
-        text-decoration: none;
-        border-bottom: 1px dotted var(--brand-primary);
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-    .hero-checklist a:hover { color: var(--brand-dark); border-bottom-style: solid; }
-
-    /* --- FORM --- */
-    .form-wrapper { 
-        max-width: 480px;
-        margin: 0 auto; display: flex; gap: 10px; 
-        padding: 4px;
-        position: relative;
-        z-index: 10;
-    }
-    input { 
-        flex: 1; padding: 16px 20px;
-        border: 1px solid #cbd5e1; 
-        background: white; 
-        color: var(--text-main);
-        border-radius: 8px; font-size: 1rem; 
-        transition: all 0.2s; 
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    input::placeholder { color: #94a3b8; }
-    input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-    
-    button.form-btn { 
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: white; border: none; 
-        padding: 16px 28px; border-radius: 8px; 
-        font-weight: 700; cursor: pointer; 
-        font-size: 1rem;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
-    }
-    button.form-btn:hover { 
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3), 0 4px 6px -2px rgba(37, 99, 235, 0.1);
-    }
-    button.form-btn:disabled { opacity: 0.7; cursor: wait; }
-    
-    .msg { margin-top: 5px; font-size: 0.9rem; min-height: 24px; font-weight: 500; text-align: center; } 
-
-    /* --- FEED WRAPPER & DASHBOARD STYLES --- */
-    /* Reduced top padding */
-    .feed-wrapper { padding: 10px 0 80px; }
-
-    /* Toggle Buttons */
-    .toggle-container {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-bottom: 20px;
-        margin-top: 10px;
-    }
-    .toggle-btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        color: var(--text-muted);
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-size: 0.95rem;
-        box-shadow: var(--card-shadow);
-    }
-    .toggle-btn:hover {
-        background: #f1f5f9;
-        color: var(--brand-primary);
-    }
-    .toggle-btn.active {
-        background: var(--brand-primary); 
-        color: white;
-        border-color: var(--brand-primary);
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
-    }
-
-    /* Status Bar */
-    .status-bar {
-        display: flex;
-        align-items: center; gap: 12px;
-        font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
-        background: white; padding: 8px 16px; border-radius: 100px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border: 1px solid #e2e8f0;
-        margin-bottom: 30px;
-        width: fit-content;
-        margin-left: auto; margin-right: auto;
-    }
-    
-    .live-dot { 
-        width: 8px;
-        height: 8px; 
-        background: #22c55e; 
-        border-radius: 50%; 
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-        animation: ripple 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
-    }
-    @keyframes ripple {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
-
-    /* Feed Sections */
-    .feed-section { 
-        background: var(--card-bg);
-        border: var(--card-border); 
-        border-radius: 12px; 
-        box-shadow: var(--card-shadow); 
-        margin-bottom: 30px; overflow: hidden; 
-        transition: all 0.2s;
-    }
-    .feed-section:hover { box-shadow: var(--card-hover-shadow); }
-
-    .section-header {
-        background: #f8fafc;
-        padding: 14px 20px;
-        font-family: 'Inter', sans-serif;
-        font-weight: 700; font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase; letter-spacing: 0.5px;
-        border-bottom: 1px solid #e2e8f0;
-        display: flex; align-items: center; gap: 8px;
-    }
-    
-    .bill-item { 
-        padding: 18px 20px;
-        border-bottom: 1px solid #f1f5f9; 
-        display: flex; flex-direction: column; gap: 6px; 
-        transition: background 0.1s;
-    }
-    .bill-item:last-child { border-bottom: none; }
-    .bill-item:hover { background: #f8fafc; }
-    
-    .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
-    
-    .bill-title { 
-        color: var(--text-main);
-        font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; 
-        display: flex; flex-direction: column; gap: 2px;
-    }
-    .bill-id { font-weight: 700; font-family: 'Merriweather', serif; color: var(--brand-dark); font-size: 1.05rem; }
-    .bill-desc { font-size: 1rem; color: var(--text-main); font-weight: 400; line-height: 1.5; }
-
-    
-    .bill-links { display: flex; gap: 8px; align-items: center; }
-    .doc-link { 
-        color: var(--brand-primary); text-decoration: none; 
-        background: #eff6ff;
-        padding: 3px 8px; border-radius: 4px; 
-        font-size: 0.75rem; font-weight: 600; 
-        transition: all 0.2s;
-    }
-    .doc-link:hover { background: var(--brand-primary); color: white; }
-    
-    .ai-link {
-        color: #15803d; text-decoration: none;
-        background: #dcfce7;
-        padding: 3px 8px; border-radius: 4px;
-        font-size: 0.75rem; font-weight: 700;
-        transition: all 0.2s;
-        border: 1px solid #bbf7d0;
-        display: flex; align-items: center; gap: 4px;
-    }
-    .ai-link:hover { background: #bbf7d0; color: #14532d; }
-    
-    .bill-meta { 
-        font-size: 0.8rem;
-        color: var(--text-muted); 
-        display: flex; align-items: center; gap: 8px; margin-top: 4px;
-    }
-    .meta-time { 
-        color: #be123c; font-weight: 600; background: #fff1f2;
-        padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
-    }
-
-    footer { 
-        padding: 60px 0;
-        text-align: center; color: #94a3b8; font-size: 0.9rem; 
-        border-top: 1px solid #e2e8f0; margin-top: 60px;
-    }
-    footer a { color: #64748b; text-decoration: none; transition: color 0.2s; }
-    footer a:hover { color: var(--brand-primary); text-decoration: underline; }
-    .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
-
-    @media (max-width: 768px) { 
-        .hero h1 { font-size: 1.75rem; line-height: 1.3; } /* Smaller and tighter */
-        .form-wrapper { flex-direction: column; padding: 0; }
-        input { width: 100%; margin-bottom: 10px; }
-        button.form-btn { width: 100%; }
-        .nav-inner { flex-direction: column; gap: 15px; }
-        .bill-row { flex-direction: column; gap: 10px; }
-        .hero-checklist { padding-left: 10px; font-size: 1rem; }
-    }
-    
-    @keyframes slideUpFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legislative Policy Brief | The Capitol Wire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        h1, h2, h3, .serif { font-family: 'Merriweather', serif; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
 </head>
-<body>
+<body class="text-slate-800 antialiased">
 
-  <nav>
-    <div class="nav-inner">
-      <a href="/" class="logo">🏛️ The Capitol Wire</a>
-      <div class="nav-links">
-        <div class="dropdown">
-          <a href="#live-feed" class="nav-link">Live Feed ▾</a>
-          <div class="dropdown-content">
-            <a href="#latest-container">⚡ Latest Activity</a>
-            <a href="#cat-suspension">Suspensions</a>
-            <a href="#cat-rule">Rules</a>
-          </div>
-        </div>
-        <a href="dashboard/" class="nav-link">Dashboard</a>
-        <a href="#hero" class="sub-btn">Get Alerts</a>
+  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-6">
+          <a href="/" class="font-bold text-blue-700 text-xl flex items-center gap-2 serif tracking-tight">
+            <span aria-hidden="true">🏛️</span> The Capitol Wire
+          </a>
+          <span class="hidden md:inline-block h-6 w-px bg-slate-200"></span>
+          <span class="hidden md:inline-block text-sm font-semibold text-slate-500 uppercase tracking-wider">Policy Brief</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <a href="/dashboard/" class="text-sm font-semibold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Dashboard</a>
+        <button class="text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded shadow-sm transition-colors" onclick="openModal()">
+          Get Alerts
+        </button>
       </div>
     </div>
   </nav>
 
-  <section id="hero" class="hero">
-    <div class="container">
-      <h1>
-        Real-Time Alerts for the<br>
-        <span class="highlight">House Floor</span> 
-        <span class="typing-wrapper"><span class="typing-text">Weekly Agenda.</span></span>
-      </h1>
-      
-      <div class="hero-checklist">
-        <div>
-          <span class="check">✓</span> Monitors 
-          <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov/floor</a> 
-          and 
-          <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.gov</a> 
-          every 60 seconds.
+    <div class="max-w-[1600px] mx-auto px-6 py-8">
+
+        <div id="loading" class="text-center py-32">
+            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-900 mx-auto mb-4"></div>
+            <p id="loading-msg" class="text-slate-500 font-medium text-sm">Accessing Legislative Database...</p>
         </div>
-        <div><span class="check">✓</span> Auto-detects <strong>Advance Notices</strong> (items not yet filed with the Clerk).</div>
-        <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly to you for free.</div>
-        <div><span class="check">✓</span> <strong>Automatic Policy Briefs</strong> for every bill as it's announced.</div>
-      </div>
-      
-      <div class="form-wrapper">
-        <input type="email" id="email" placeholder="Enter your email" required />
-        <button id="submitBtn" class="form-btn">Subscribe for Free</button>
-      </div>
-      <div id="status" class="msg"></div>
-    
+
+        <div id="error" class="hidden max-w-2xl mx-auto bg-red-50 border-l-4 border-red-500 p-6 rounded shadow-sm">
+            <p class="text-red-800 font-bold">Report Unavailable</p>
+            <p id="error-msg" class="text-red-700 text-sm mt-1">We could not find analysis for this bill.</p>
+        </div>
+
+        <div id="report" class="hidden fade-in">
+            
+            <div class="mb-8 border-b border-slate-200 pb-6">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide border border-blue-200">Analyst Brief</span>
+                            <span id="timestamp" class="text-slate-400 text-[10px] font-semibold uppercase tracking-wide"></span>
+                        </div>
+                        <h1 id="bill-title" class="text-2xl md:text-3xl font-black text-slate-900 leading-tight"></h1>
+                    </div>
+                    <div id="header-status-badge" class="hidden px-4 py-2 bg-slate-100 border border-slate-200 rounded text-right">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Current Status</div>
+                        <div id="header-status-text" class="text-sm font-bold text-slate-800"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="rule-mode-container" class="hidden mb-12">
+                 <div id="rule-alert" class="rounded-lg border-l-4 p-6 shadow-sm bg-white border border-slate-100 mb-6">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Sneak Alert</p>
+                            <h3 id="rule-alert-headline" class="text-lg font-bold mt-1"></h3>
+                            <p id="rule-alert-description" class="text-sm mt-2 text-slate-600 leading-relaxed"></p>
+                        </div>
+                        <span id="rule-alert-badge" class="px-3 py-1 rounded-full text-xs font-extrabold shadow-sm"></span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white border border-slate-200 rounded p-4 shadow-sm">
+                        <div class="text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">Rule Type</div>
+                        <div id="rb-type" class="mt-1 font-bold text-slate-900 text-sm">-</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded p-4 shadow-sm">
+                        <div class="text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">Debate Time</div>
+                        <div id="rb-debate" class="mt-1 font-bold text-slate-900 text-sm">-</div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded p-4 shadow-sm">
+                        <div class="text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">Amendments</div>
+                        <div id="rb-amendments" class="mt-1 font-bold text-slate-900 text-sm">-</div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded border border-slate-200 shadow-sm">
+                    <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wide">Procedural Analysis</h3>
+                    <ul id="procedural-analysis" class="space-y-2 text-sm text-slate-600"></ul>
+                </div>
+            </div>
+
+            <div id="bill-mode-container" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <div class="lg:col-span-8 flex flex-col gap-6">
+                    <div class="bg-white p-8 rounded border-l-4 border-blue-600 shadow-sm ring-1 ring-slate-900/5 h-full">
+                        <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wide flex items-center gap-2">
+                            Executive Summary
+                        </h3>
+                        <div class="prose prose-slate max-w-none text-slate-700 leading-loose font-medium" id="executive-summary"></div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <div class="bg-slate-50 p-6 rounded border border-slate-200 shadow-sm h-full">
+                        <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-200 pb-2">Bill Data</h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <div class="text-[10px] font-bold text-slate-500 uppercase">Sponsor</div>
+                                <div id="meta-sponsor" class="text-base font-bold text-slate-900"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div class="text-[10px] font-bold text-slate-500 uppercase">Bill Number</div>
+                                    <div id="meta-number" class="text-sm font-medium text-slate-700 font-mono"></div>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] font-bold text-slate-500 uppercase">Cosponsors</div>
+                                    <div id="meta-cosponsors" class="text-sm font-medium text-slate-700"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6">
+                    <div class="bg-white h-full p-6 rounded border border-slate-200 shadow-sm border-t-4 border-green-500">
+                        <h3 class="text-sm font-bold text-green-900 bg-green-50 px-3 py-1 rounded uppercase tracking-wide inline-block mb-4">Arguments For</h3>
+                        <ul id="pros-list" class="space-y-3 mb-6"></ul>
+                        
+                        <div class="pt-4 border-t border-slate-100">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Likely Supporters</div>
+                            <div id="supporters-tags" class="flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6">
+                    <div class="bg-white h-full p-6 rounded border border-slate-200 shadow-sm border-t-4 border-red-500">
+                        <h3 class="text-sm font-bold text-red-900 bg-red-50 px-3 py-1 rounded uppercase tracking-wide inline-block mb-4">Arguments Against</h3>
+                        <ul id="cons-list" class="space-y-3 mb-6"></ul>
+
+                        <div class="pt-4 border-t border-slate-100">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Likely Opponents</div>
+                            <div id="opponents-tags" class="flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="provisions-container" class="lg:col-span-12 hidden">
+                    <div class="bg-white p-6 rounded border border-slate-200 shadow-sm border-t-4 border-yellow-400">
+                        <h3 class="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wide">📋 Key Provisions</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+                             <ul id="key-provisions" class="space-y-3 text-sm text-slate-700"></ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <div class="mt-12 pt-6 border-t border-slate-200 text-center">
+                 <p class="text-[10px] text-slate-400 uppercase tracking-wider">Generated by The Capitol Wire AI • Verification Required</p>
+                 <a href="/" class="inline-block mt-4 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">← Back to Dashboard</a>
+            </div>
+
+        </div>
     </div>
-  </section>
 
-  <div id="live-feed" class="feed-wrapper">
-    <div class="container">
-        
-      <div class="toggle-container">
-          <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This Week</button>
-          <button class="toggle-btn" id="btn-next-week" onclick="switchSection('NEXT_WEEK')">Next Week</button>
-      </div>
 
-      <div class="status-bar">
-          <div class="live-dot"></div>
-          <div id="status-line">System Online. Monitoring active feeds...</div>
-      </div>
-
-      <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
-          <div class="section-header" style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
-             ⚡ Latest Activity (New)
-          </div>
-          <div id="latest-list"></div>
-      </div>
-
-      <div id="schedule-list">
-          <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">
-            Initializing secure connection...
-          </div>
-      </div>
-
+  <div id="modal" class="hidden fixed inset-0 z-[100] items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+    <div class="w-[92%] max-w-md rounded-xl bg-white shadow-2xl border border-slate-200 p-8 relative">
+      <button class="absolute right-4 top-4 text-slate-400 hover:text-slate-700 text-2xl leading-none" onclick="closeModal()" aria-label="Close">&times;</button>
+      <h3 class="text-lg font-bold text-slate-900 serif">Get Instant Alerts</h3>
+      <p class="mt-2 text-sm text-slate-600">Enter your email to get notified when the schedule or analysis updates.</p>
+      <input id="modal-email" type="email" placeholder="Enter your email" class="mt-5 w-full rounded border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+      <button id="modal-submit" class="mt-3 w-full rounded bg-slate-900 hover:bg-black text-white font-bold py-3 text-sm transition-all shadow-md">
+        Subscribe Free
+      </button>
+      <div id="modal-status" class="mt-3 text-xs font-semibold min-h-[20px]"></div>
     </div>
   </div>
 
-  <footer>
-    <div class="container">
-      <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms of Service</a>
-        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
-      </div>
-    </div>
-  </footer>
+    <script>
+        const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjcnNkeXlxcmJ0eHl6aHZlc3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzIzOTYsImV4cCI6MjA4MTc0ODM5Nn0.FzTqjfTSDsz4MnLKNHlPcXdyR53UvnOmkV0bjZSbCGw'; 
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const SUBSCRIBE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
+        const subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
 
-  <script>
-    const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    const CATEGORIES = [
-        { key: 'SUSPENSION', label: 'Suspension of the Rules' },
-        { key: 'RULE', label: 'Pursuant to a Rule' },
-        { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
-        { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
-    ];
-    // Global State
-    let activeSection = 'THIS_WEEK'; 
-    let allBillData = [];
-    let lastFetchedHash = "";
-    // --- TOGGLE LOGIC ---
-    function switchSection(section) {
-        activeSection = section;
-        // Update Buttons
-        document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
-        document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
-        // Redraw
-        renderFeed();
-    }
-
-    // --- FEED LOGIC ---
-    async function initFeed() {
-        try {
-            // Fetch everything
-            const { data, error } = await _supabase
-                .from('live_feed')
-                .select('*')
-                .order('id', { ascending: true })
-                .limit(100);
-            if (error) {
-                console.error("Supabase Error:", error);
-                document.getElementById('schedule-list').innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error.</div>';
-                return;
-            }
-
-            if (data) {
-                // Check if data changed to avoid UI flicker
-                const currentHash = JSON.stringify(data.map(d => d.id));
-                if (currentHash !== lastFetchedHash) {
-                    allBillData = data;
-                    lastFetchedHash = currentHash;
-                    renderFeed();
+        const modalEl = document.getElementById('modal');
+        const modalEmail = document.getElementById('modal-email');
+        const modalSubmit = document.getElementById('modal-submit');
+        const modalStatus = document.getElementById('modal-status');
+        function openModal() { if(modalEl) { modalEl.classList.remove('hidden'); modalEl.classList.add('flex'); if(modalEmail) modalEmail.focus(); }}
+        function closeModal() { if(modalEl) { modalEl.classList.add('hidden'); modalEl.classList.remove('flex'); if(modalStatus) modalStatus.textContent=""; if(modalSubmit) { modalSubmit.disabled=false; modalSubmit.textContent="Subscribe Free"; }}}
+        if(modalEl) modalEl.addEventListener('click', (e) => { if(e.target===modalEl) closeModal(); });
+        if(modalSubmit) {
+            modalSubmit.addEventListener('click', async () => {
+                const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : "");
+                if(!email || !email.includes('@')) { modalStatus.textContent="Please enter a valid email."; modalStatus.style.color="#ef4444"; return; }
+                modalSubmit.disabled=true; modalSubmit.textContent="Processing..."; modalStatus.textContent="";
+                const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
+                if(error) {
+                     if(error.code==='23505') { modalStatus.textContent="You are already subscribed!"; modalStatus.style.color="#3b82f6"; }
+                     else { modalStatus.textContent="Error. Try again."; modalStatus.style.color="#ef4444"; }
+                     modalSubmit.disabled=false; modalSubmit.textContent="Subscribe Free"; return;
                 }
-            }
-        } catch (e) { console.error("Feed Crash:", e); }
-    }
-
-    function renderFeed() {
-        const latestContainer = document.getElementById('latest-container');
-        const latestList = document.getElementById('latest-list');
-        const scheduleList = document.getElementById('schedule-list');
-        const statusLine = document.getElementById('status-line');
-        // Clear View
-        scheduleList.innerHTML = '';
-        latestList.innerHTML = '';
-        // Filter by Active Section
-        const filteredData = allBillData.filter(item => {
-            const itemSec = item.section || 'THIS_WEEK';
-            return itemSec === activeSection;
-        });
-        if (filteredData.length === 0) {
-            scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color: #94a3b8;">No items scheduled for this period.</div>';
-            latestContainer.style.display = 'none';
-            statusLine.innerHTML = "System Active. Monitoring for updates...";
-            return;
-        }
-
-        // Sort Newest First
-        const displayData = [...filteredData].sort((a, b) => b.id - a.id);
-        // Update Status Line
-        const newestItem = displayData[0];
-        const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
-
-        if (bannerTime) {
-            statusLine.innerHTML = "Last update from the Clerk: <b>" + bannerTime + "</b>";
-        } else {
-            statusLine.innerHTML = "System Active. Monitoring for updates...";
-        }
-
-        // --- 1. FILL LATEST ACTIVITY ---
-        let hasLatest = false;
-        if (newestItem && newestItem.timestamp) {
-            displayData.forEach(item => {
-                if (item.timestamp === newestItem.timestamp) {
-                    latestList.appendChild(createBillItem(item));
-                    hasLatest = true;
-                }
+                modalStatus.textContent="Subscribed!"; modalStatus.style.color="#22c55e";
+                if(modalEmail) modalEmail.value="";
+                setTimeout(closeModal, 1200);
             });
         }
-        latestContainer.style.display = hasLatest ? 'block' : 'none';
 
-        // --- 2. FILL MAIN CATEGORIES ---
-        CATEGORIES.forEach(cat => {
-            const catItems = displayData.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
-            
-            if (catItems.length > 0) {
-                const section = document.createElement('div');
-                section.className = 'feed-section';
-                
-                const header = document.createElement('div');
-                header.className = 'section-header';
-                header.innerText = cat.label;
-                section.appendChild(header);
-                
-                catItems.forEach(item => section.appendChild(createBillItem(item)));
-                scheduleList.appendChild(section);
+        // --- Data Loading Logic ---
+        let realtimeChannel = null;
+
+        function safeLower(s) { return (s || "").toString().toLowerCase(); }
+        function normalizeAi(maybeJson) {
+            if (!maybeJson) return null;
+            if (Array.isArray(maybeJson)) return maybeJson[0] || null;
+            if (typeof maybeJson === "object") return maybeJson;
+            if (typeof maybeJson === "string") {
+                try { const parsed = JSON.parse(maybeJson); if (Array.isArray(parsed)) return parsed[0] || null; return parsed; } catch { return null; }
             }
-        });
-    }
-
-    function createBillItem(item) {
-        const div = document.createElement('div');
-        div.className = 'bill-item';
-        
-        let buttonsHtml = '';
-
-        // 1. AI Button
-        if (item.ai_analysis) {
-             buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">⚡ Policy Brief</a>`;
+            return null;
         }
 
-        // 2. Doc Link
-        if (item.link) {
-            const isPdf = item.link.toLowerCase().endsWith('pdf');
-            buttonsHtml += `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
+        async function loadReport() {
+            const params = new URLSearchParams(window.location.search);
+            const billParam = params.get('bill');
+            const idParam = params.get('id');
+            let query = client.from('live_feed').select('*');
+            
+            if (idParam) query = query.eq('id', idParam);
+            else if (billParam) {
+                const billNumber = billParam.replace(/\D/g, '');
+                if (billNumber) query = query.ilike('title', `%${billNumber}%`);
+                else { showError("Invalid bill parameter."); return; }
+            } else { showError("Missing bill id."); return; }
+
+            const { data, error } = await query.maybeSingle();
+            if (error || !data) { showError("Bill not found."); return; }
+
+            if (!data.ai_analysis) {
+                showPending();
+                subscribeForAnalysis(data.id);
+                return;
+            }
+            renderData(data);
         }
 
-        let linkHtml = '';
-        if (buttonsHtml) {
-            linkHtml = `<div class="bill-links">${buttonsHtml}</div>`;
-        }
-        
-        let timeHtml = '';
-        if (item.timestamp && item.timestamp.trim() !== "") {
-            timeHtml = `<div class="bill-meta"><span class="meta-time">${item.timestamp}</span></div>`;
+        function showPending() {
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('report').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
         }
 
-        let fullTitle = item.title || "";
-        let boldPart = fullTitle;
-        let normalPart = "";
+        function subscribeForAnalysis(rowId) {
+            if (realtimeChannel) return;
+            realtimeChannel = client.channel(`live_feed_ai_${rowId}`)
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'live_feed', filter: `id=eq.${rowId}` }, (payload) => {
+                    const newRow = payload.new;
+                    if (newRow && newRow.ai_analysis) { renderData(newRow); unsubscribeRealtime(); }
+                })
+                .subscribe();
+        }
+        function unsubscribeRealtime() { if(realtimeChannel) { client.removeChannel(realtimeChannel); realtimeChannel=null; }}
 
-        let splitIndex = fullTitle.indexOf("—");
-        if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
-        if (splitIndex !== -1) {
-            boldPart = fullTitle.substring(0, splitIndex).trim();
-            normalPart = fullTitle.substring(splitIndex + 1).trim(); 
-        } else {
-            boldPart = fullTitle;
-            normalPart = "";
+        // --- RENDER FUNCTION ---
+        function renderData(row) {
+            const ai = normalizeAi(row.ai_analysis) || {};
+            const title = row.title || "";
+            document.getElementById('bill-title').innerText = title;
+            document.getElementById('timestamp').innerText = new Date().toLocaleDateString();
+
+            const setTxt = (id, txt) => { const el=document.getElementById(id); if(el) el.innerText = txt || "Not specified"; };
+            const fillList = (id, items, colorClass) => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                if(!items || items.length===0) { el.innerHTML='<li class="italic text-slate-400 text-xs">None found</li>'; return; }
+                el.innerHTML = items.map(i => `<li class="flex items-start gap-3"><span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${colorClass}"></span><span class="leading-relaxed">${i}</span></li>`).join('');
+            };
+            const fillTags = (id, items) => {
+                 const el = document.getElementById(id);
+                 if(!el) return;
+                 if(!items || items.length===0) { el.innerHTML='<span class="text-xs text-slate-400 italic">None specified</span>'; return; }
+                 el.innerHTML = items.map(i => `<span class="px-2 py-1 bg-slate-100 text-slate-600 text-[11px] font-semibold rounded border border-slate-200 uppercase tracking-tight">${i}</span>`).join('');
+            };
+
+            const isRule = ((ai.category||"").toString().toUpperCase() === "RULE") || safeLower(title).includes("providing for consideration");
+
+            if (isRule) {
+                document.getElementById('rule-mode-container').classList.remove('hidden');
+                document.getElementById('bill-mode-container').classList.add('hidden');
+                document.getElementById('header-status-badge').classList.add('hidden'); 
+
+                const sa = ai.sneak_alert || {};
+                const detected = !!sa.detected;
+                const alertEl = document.getElementById('rule-alert');
+                const badgeEl = document.getElementById('rule-alert-badge');
+                
+                if(detected) {
+                    alertEl.className = "rounded-lg border-l-4 p-6 shadow-sm bg-red-50 border-red-500 mb-6";
+                    badgeEl.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-red-600 text-white shadow-sm";
+                    badgeEl.innerText = "FLAGGED";
+                    document.getElementById('rule-alert-headline').className = "text-lg font-bold mt-1 text-red-900";
+                } else {
+                    alertEl.className = "rounded-lg border-l-4 p-6 shadow-sm bg-green-50 border-green-500 mb-6";
+                    badgeEl.className = "px-3 py-1 rounded-full text-xs font-extrabold bg-green-600 text-white shadow-sm";
+                    badgeEl.innerText = "CLEAR";
+                    document.getElementById('rule-alert-headline').className = "text-lg font-bold mt-1 text-green-900";
+                }
+                
+                document.getElementById('rule-alert-headline').innerText = sa.headline || (detected ? "Procedural Red Flags Detected" : "Standard Rule Structure");
+                document.getElementById('rule-alert-description').innerText = sa.description || ai.summary || "";
+
+                const rb = ai.rule_breakdown || {};
+                setTxt('rb-type', rb.type || rb.rule_type);
+                setTxt('rb-debate', rb.debate_time || rb.debate);
+                setTxt('rb-amendments', rb.amendments_allowed || rb.amendments);
+                fillList('procedural-analysis', (ai.analysis && ai.analysis.procedural_analysis) ? ai.analysis.procedural_analysis : [], detected ? 'bg-red-500' : 'bg-slate-400');
+
+            } else {
+                // BILL MODE
+                document.getElementById('rule-mode-container').classList.add('hidden');
+                document.getElementById('bill-mode-container').classList.remove('hidden');
+
+                const meta = ai.bill_metadata || {};
+                setTxt('meta-sponsor', meta.sponsor || "See Bill Text");
+                setTxt('meta-number', meta.number || "H.R. --");
+                setTxt('meta-cosponsors', meta.cosponsor_count || "Unknown");
+                
+                const statusText = meta.status || "In Progress";
+                document.getElementById('header-status-text').innerText = statusText;
+                document.getElementById('header-status-badge').classList.remove('hidden');
+
+                const summary = ai.executive_summary || ai.summary || "Summary pending...";
+                document.getElementById('executive-summary').innerText = summary;
+
+                // Key Provisions - Only show if valid
+                if (ai.key_provisions && Array.isArray(ai.key_provisions) && ai.key_provisions.length > 0) {
+                     document.getElementById('provisions-container').classList.remove('hidden');
+                     fillList('key-provisions', ai.key_provisions, 'bg-yellow-400');
+                } else {
+                     document.getElementById('provisions-container').classList.add('hidden');
+                }
+
+                // Political Analysis (Poly or Old Fallback)
+                const poly = ai.political_analysis || ai.analysis || {};
+                const pros = poly.pros || ai.pros || [];
+                const cons = poly.cons || ai.cons || [];
+
+                fillList('pros-list', pros, 'bg-green-500');
+                fillList('cons-list', cons, 'bg-red-500');
+
+                const supporters = poly.likely_coalition_support || poly.likely_supporters || ai.likely_supporters || [];
+                const opponents = poly.likely_coalition_opposition || poly.likely_opponents || ai.likely_opponents || [];
+
+                fillTags('supporters-tags', supporters);
+                fillTags('opponents-tags', opponents);
+            }
+
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('report').classList.remove('hidden');
         }
 
-        div.innerHTML = `
-            <div class="bill-row">
-                <div class="bill-title">
-                    <div class="bill-id">${boldPart}</div>
-                    ${normalPart ? `<div class="bill-desc">${normalPart}</div>` : ''}
-                </div>
-                ${linkHtml}
-            </div>
-            ${timeHtml}
-        `;
-        return div;
-    }
-    
-    // START FEED
-    initFeed();
-    setInterval(initFeed, 10000);
+        function showError(msg) {
+            unsubscribeRealtime();
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('report').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-msg').innerText = msg;
+        }
 
-    // HERO FORM SUBSCRIPTION LOGIC
-    const btn = document.getElementById('submitBtn');
-    const input = document.getElementById('email');
-    const stat = document.getElementById('status');
-
-    btn.addEventListener('click', async () => {
-      const email = input.value.trim();
-      
-      if (!email.includes('@')) { 
-          stat.textContent = "Please enter a valid email."; 
-          stat.style.color = "#dc2626"; 
-          return; 
-      }
-
-      btn.disabled = true; 
-      btn.textContent = "Authenticating...";
-      stat.textContent = "";
-
-      const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
-
-      if (error) {
-          if (error.code === '23505') {
-              stat.textContent = "You are already in the system.";
-              stat.style.color = "#2563eb"; 
-          } else {
-              stat.textContent = "Connection error. Please retry.";
-              stat.style.color = "#dc2626"; 
-          }
-          btn.disabled = false; 
-          btn.textContent = "Subscribe for Free";
-      } else {
-          stat.textContent = "Confirmed. You are now tracking the floor.";
-          stat.style.color = "#16a34a"; // Green
-          input.value = "";
-          btn.textContent = "Success";
-          
-          setTimeout(() => {
-              btn.disabled = false;
-              btn.textContent = "Subscribe Colleague";
-              stat.textContent = "";
-          }, 3000);
-      }
-    });
-  </script>
+        loadReport();
+    </script>
 </body>
 </html>
