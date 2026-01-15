@@ -173,7 +173,7 @@
         100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 
-    /* --- FEED SECTIONS --- */
+    /* --- FEED SECTIONS (UPDATED TO MATCH EMAIL) --- */
     .feed-section { 
         background: var(--card-bg);
         border: var(--card-border); 
@@ -193,47 +193,54 @@
         border-bottom: 1px solid #e2e8f0; 
         text-transform: uppercase; letter-spacing: 0.5px;
     }
+    
+    /* EMAIL STYLE ITEM LIST */
     .bill-item { 
-        padding: 20px 24px;
+        padding: 16px 24px; /* Condensed Padding */
         border-bottom: 1px solid #f1f5f9; 
-        display: flex; flex-direction: column; gap: 6px; 
+        display: flex; flex-direction: column; gap: 4px; 
         transition: background 0.1s;
     }
     .bill-item:last-child { border-bottom: none; }
     .bill-item:hover { background: #f8fafc; }
     
-    .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+    /* Inline Title Row */
+    .bill-row { display: block; }
     
-    /* UPDATED BILL TITLE STYLES */
-    .bill-title { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-    .bill-id { font-weight: 700; font-family: 'Merriweather', serif; color: var(--brand-dark); font-size: 1.05rem; }
-    .bill-desc { font-size: 1rem; color: var(--text-main); font-weight: 400; line-height: 1.5; }
-    
-    .bill-links { display: flex; gap: 8px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; margin-top: 2px; align-items: center; }
-    .doc-link { 
-        color: var(--brand-primary); text-decoration: none;
-        background: #eff6ff; padding: 4px 10px; border-radius: 6px; 
-        transition: all 0.2s;
+    .bill-id { 
+        display: inline; font-weight: 700; color: #000; 
+        font-family: 'Inter', sans-serif; font-size: 1.05rem; 
     }
-    .doc-link:hover { background: var(--brand-primary); color: white; }
-
-    /* AI LINK STYLE */
+    .bill-desc { 
+        display: inline; color: #333; font-size: 1rem; font-weight: 400; 
+    }
+    
+    /* Button Links Wrapper */
+    .bill-links { display: inline-block; margin-left: 10px; vertical-align: middle; white-space: nowrap; }
+    
+    /* Email Style Tags */
+    .doc-link { 
+        color: #333 !important; text-decoration: none; 
+        background: #e5e7eb; padding: 2px 8px; 
+        border-radius: 4px; font-size: 0.75rem; font-weight: 700; 
+        border: 1px solid #d1d5db; transition: all 0.2s;
+        margin-right: 5px; text-transform: uppercase;
+    }
+    .doc-link:hover { background: #d1d5db; color: #000; }
+    
     .ai-link {
-        color: #15803d; text-decoration: none;
-        background: #dcfce7;
-        padding: 3px 8px; border-radius: 4px;
-        font-size: 0.75rem; font-weight: 700;
-        transition: all 0.2s;
-        border: 1px solid #bbf7d0;
-        display: flex; align-items: center; gap: 4px;
+        color: #166534 !important; text-decoration: none;
+        background: #dcfce7; padding: 2px 8px; 
+        border-radius: 4px; font-size: 0.75rem; font-weight: 700;
+        border: 1px solid #86efac; transition: all 0.2s;
+        display: inline-block; margin-right: 5px; text-transform: uppercase;
     }
     .ai-link:hover { background: #bbf7d0; color: #14532d; }
     
-    .bill-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-top: 6px; }
-    .meta-time { 
-        color: #be123c; font-weight: 600;
-        background: #fff1f2; 
-        padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
+    /* Email Style Timestamp (Red Text) */
+    .bill-meta { 
+        font-size: 0.8rem; color: #b91c1c; font-weight: 400;
+        margin-top: 4px; display: block;
     }
 
     /* --- SIDEBAR & CALENDAR --- */
@@ -312,7 +319,7 @@
         .sidebar { width: 100%; order: 2; }
         .content-area { order: 1; }
         .week-header-text { font-size: 1.8rem; }
-        .bill-row { flex-direction: column; gap: 10px; }
+        .bill-links { display: block; margin: 4px 0 0 0; }
     }
   </style>
 </head>
@@ -379,7 +386,9 @@
         </div>
     </div>
 
-  </div> <footer>
+  </div> 
+
+  <footer>
     <div class="container">
       <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
       <div class="footer-links">
@@ -510,31 +519,26 @@
     // --- TOGGLE LOGIC ---
     function switchSection(section) {
         activeSection = section;
-        // Update Buttons
         document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
         document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
-        // Redraw
         renderFeed();
     }
 
     // --- FEED LOGIC ---
     async function initFeed() {
         try {
-            // Fetch everything
             const { data, error } = await _supabase
                 .from('live_feed')
                 .select('*')
-           
-             .order('id', { ascending: true })
+                .order('id', { ascending: true })
                 .limit(100);
-        if (error) {
+            if (error) {
                 console.error("Supabase Error:", error);
                 document.getElementById('schedule-list').innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error.</div>';
                 return;
             }
 
             if (data) {
-                // Check if data changed to avoid UI flicker
                 const currentHash = JSON.stringify(data.map(d => d.id));
                 if (currentHash !== lastFetchedHash) {
                     allBillData = data;
@@ -542,8 +546,7 @@
                     renderFeed();
                 }
             }
-        } catch (e) { console.error("Feed Crash:", e);
-        }
+        } catch (e) { console.error("Feed Crash:", e); }
     }
 
     function renderFeed() {
@@ -552,16 +555,15 @@
         const scheduleList = document.getElementById('schedule-list');
         const headerText = document.getElementById('weekly-header');
         const statusLine = document.getElementById('status-line');
-        // Clear View
+        
         scheduleList.innerHTML = '';
         latestList.innerHTML = '';
-        // Filter by Active Section
-        // Fallback: If item.section is missing, treat as THIS_WEEK
+        
         const filteredData = allBillData.filter(item => {
             const itemSec = item.section || 'THIS_WEEK';
             return itemSec === activeSection;
         });
-        // Update Header Text
+
         if (activeSection === 'NEXT_WEEK') {
             headerText.innerText = "Agenda: Next Week";
         } else {
@@ -575,11 +577,7 @@
             return;
         }
 
-        // Sort Newest First for display
-        // (Assuming higher ID = newer)
         const displayData = [...filteredData].sort((a, b) => b.id - a.id);
-        // Update Status Line
-        // Logic: Use global page_timestamp first, then fallback to item timestamp
         const newestItem = displayData[0];
         const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
 
@@ -589,52 +587,45 @@
             statusLine.innerHTML = "System Active. Monitoring for updates...";
         }
 
-        // --- 1. FILL LATEST ACTIVITY (Top Box - Filtered to this view) ---
         let hasLatest = false;
-        // Use standard bill timestamp for identifying "Latest" activity logic
         if (newestItem && newestItem.timestamp) {
             displayData.forEach(item => {
                 if (item.timestamp === newestItem.timestamp) {
                     latestList.appendChild(createBillItem(item));
                     hasLatest = true;
-   
-             }
+                }
             });
         }
         latestContainer.style.display = hasLatest ? 'block' : 'none';
-        // --- 2. FILL MAIN CATEGORIES (Bottom Lists) ---
+
         CATEGORIES.forEach(cat => {
-            // Case insensitive match
             const catItems = displayData.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
-            
             if (catItems.length > 0) {
                 const section = document.createElement('div');
                 section.className = 'feed-section';
-                
                 const header = document.createElement('div');
                 header.className = 'section-header';
                 header.innerText = cat.label;
-          
                 section.appendChild(header);
-                
                 catItems.forEach(item => section.appendChild(createBillItem(item)));
                 scheduleList.appendChild(section);
             }
         });
     }
 
+    // --- UPDATED ITEM GENERATOR (MATCHES EMAIL) ---
     function createBillItem(item) {
         const div = document.createElement('div');
         div.className = 'bill-item';
         
         let buttonsHtml = '';
 
-        // 1. AI Button
+        // 1. AI Button (Green Tag)
         if (item.ai_analysis) {
-             buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">⚡ POLICY BRIEF</a>`;
+             buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">POLICY BRIEF</a>`;
         }
 
-        // 2. Doc Link
+        // 2. Doc Link (Gray Tag)
         if (item.link) {
             const isPdf = item.link.toLowerCase().endsWith('pdf');
             buttonsHtml += `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
@@ -642,41 +633,37 @@
 
         let linkHtml = '';
         if (buttonsHtml) {
-            linkHtml = `<div class="bill-links">${buttonsHtml}</div>`;
+            linkHtml = `<span class="bill-links">${buttonsHtml}</span>`;
         }
         
-        // Bill Card always uses the standard item.timestamp
+        // Email Style Timestamp (Red Text)
         let timeHtml = '';
         if (item.timestamp && item.timestamp.trim() !== "") {
-            // UPDATED: Removed "Updated:" text, just pill
-            timeHtml = `<div class="bill-meta"><span class="meta-time">${item.timestamp}</span></div>`;
+            timeHtml = `<div class="bill-meta">${item.timestamp}</div>`;
         }
 
-        // Title Logic: Split vertical stacking
         let fullTitle = item.title || "";
         let boldPart = fullTitle;
         let normalPart = "";
 
-        // Try em dash first, then hyphen
         let splitIndex = fullTitle.indexOf("—");
         if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
-
+        
         if (splitIndex !== -1) {
             boldPart = fullTitle.substring(0, splitIndex).trim();
-            // Skip the delimiter (+1) so it doesn't show in the description
-            normalPart = fullTitle.substring(splitIndex + 1).trim();
+            normalPart = fullTitle.substring(splitIndex + 1).trim(); 
+            normalPart = ` — ${normalPart}`;
         } else {
-            // If no dash found (e.g. "Veto Message..."), keep standard
             boldPart = fullTitle;
             normalPart = "";
         }
 
         div.innerHTML = `
             <div class="bill-row">
-                <div class="bill-title">
-                    <div class="bill-id">${boldPart}</div>
-                    ${normalPart ? `<div class="bill-desc">${normalPart}</div>` : ''}
-                </div>
+                <a href="${item.link || '#'}" target="_blank" style="text-decoration:none; color:inherit; flex:1;">
+                    <span class="bill-id">${boldPart}</span>
+                    <span class="bill-desc">${normalPart}</span>
+                </a>
                 ${linkHtml}
             </div>
             ${timeHtml}
@@ -684,9 +671,9 @@
         return div;
     }
     
-    // START
     initFeed();
     setInterval(initFeed, 10000);
+
     // MODAL
     const modal = document.getElementById('modal');
     const modalInput = document.getElementById('modal-email');
@@ -705,7 +692,6 @@
             return;
         }
         modalBtn.disabled = true;
-   
         modalBtn.innerText = "Processing...";
         modalStatus.innerText = "";
 
@@ -714,7 +700,6 @@
         if (error) {
             if (error.code === '23505') {
                 modalStatus.innerText = "You are already subscribed!";
-            
                 modalStatus.style.color = "#2563eb";
             } else {
                 modalStatus.innerText = "Error. Try again.";
