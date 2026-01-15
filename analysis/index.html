@@ -66,37 +66,6 @@
                 </div>
             </div>
 
-            <div id="rule-mode-container" class="hidden mb-8">
-                 <div id="rule-alert" class="rounded border-l-4 p-4 shadow-sm bg-white border border-slate-100 mb-4">
-                    <div class="flex items-start justify-between gap-4">
-                        <div>
-                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Sneak Alert</p>
-                            <h3 id="rule-alert-headline" class="text-base font-bold mt-0.5"></h3>
-                            <p id="rule-alert-description" class="text-sm mt-1 text-slate-600 leading-snug"></p>
-                        </div>
-                        <span id="rule-alert-badge" class="px-2 py-0.5 rounded text-[10px] font-extrabold shadow-sm"></span>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                    <div class="bg-white border border-slate-200 rounded p-3 shadow-sm">
-                        <div class="text-[9px] font-extrabold tracking-wider text-slate-400 uppercase">Rule Type</div>
-                        <div id="rb-type" class="mt-0.5 font-bold text-slate-900 text-xs">-</div>
-                    </div>
-                    <div class="bg-white border border-slate-200 rounded p-3 shadow-sm">
-                        <div class="text-[9px] font-extrabold tracking-wider text-slate-400 uppercase">Debate Time</div>
-                        <div id="rb-debate" class="mt-0.5 font-bold text-slate-900 text-xs">-</div>
-                    </div>
-                    <div class="bg-white border border-slate-200 rounded p-3 shadow-sm">
-                        <div class="text-[9px] font-extrabold tracking-wider text-slate-400 uppercase">Amendments</div>
-                        <div id="rb-amendments" class="mt-0.5 font-bold text-slate-900 text-xs">-</div>
-                    </div>
-                </div>
-                <div class="bg-white p-4 rounded border border-slate-200 shadow-sm">
-                    <h3 class="text-xs font-bold text-slate-900 mb-2 uppercase tracking-wide">Procedural Analysis</h3>
-                    <ul id="procedural-analysis" class="space-y-1.5 text-sm text-slate-600"></ul>
-                </div>
-            </div>
-
             <div id="bill-mode-container" class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
                 <div class="lg:col-span-8 flex flex-col">
@@ -110,18 +79,20 @@
                     <div class="bg-slate-50 p-5 rounded border border-slate-200 shadow-sm h-full">
                         <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-200 pb-1">Bill Data</h3>
                         
-                        <div class="grid grid-cols-2 gap-y-4 gap-x-2">
-                            <div class="col-span-2">
-                                <div class="text-[9px] font-bold text-slate-500 uppercase mb-0.5">Sponsor</div>
+                        <div class="grid grid-cols-1 gap-y-4">
+                            <div>
+                                <div class="text-[9px] font-bold text-slate-500 uppercase mb-0.5">Primary Sponsor</div>
                                 <div id="meta-sponsor" class="text-sm font-bold text-slate-900 leading-tight"></div>
                             </div>
-                            <div>
-                                <div class="text-[9px] font-bold text-slate-500 uppercase mb-0.5">Bill Number</div>
-                                <div id="meta-number" class="text-xs font-medium text-slate-700 font-mono"></div>
-                            </div>
-                            <div>
-                                <div class="text-[9px] font-bold text-slate-500 uppercase mb-0.5">Cosponsors</div>
-                                <div id="meta-cosponsors" class="text-xs font-medium text-slate-700"></div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <div class="text-[9px] font-bold text-slate-500 uppercase mb-0.5">Bill Number</div>
+                                    <div id="meta-number" class="text-xs font-medium text-slate-700 font-mono"></div>
+                                </div>
+                                <div>
+                                    <div class="text-[9px] font-bold text-slate-500 uppercase mb-0.5">Co-Sponsors</div>
+                                    <div id="meta-cosponsors" class="text-xs font-medium text-slate-700 leading-snug"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -166,6 +137,19 @@
             </div>
 
         </div>
+        
+        <div id="rule-mode-container" class="hidden mb-8">
+             <div id="rule-alert" class="rounded border-l-4 p-4 shadow-sm bg-white border-slate-100 mb-4">
+                <h3 id="rule-alert-headline" class="text-base font-bold"></h3>
+                <p id="rule-alert-description" class="text-sm mt-1 text-slate-600"></p>
+            </div>
+            <div id="rule-playbook" class="hidden grid grid-cols-3 gap-3 mb-4">
+                 <div class="bg-white border rounded p-3"><div class="text-[9px] font-bold text-slate-400 uppercase">Rule Type</div><div id="rb-type" class="text-xs font-bold"></div></div>
+                 <div class="bg-white border rounded p-3"><div class="text-[9px] font-bold text-slate-400 uppercase">Debate</div><div id="rb-debate" class="text-xs font-bold"></div></div>
+                 <div class="bg-white border rounded p-3"><div class="text-[9px] font-bold text-slate-400 uppercase">Amendments</div><div id="rb-amendments" class="text-xs font-bold"></div></div>
+            </div>
+            <ul id="procedural-analysis" class="bg-white p-4 rounded border text-sm space-y-2"></ul>
+        </div>
     </div>
 
 
@@ -175,9 +159,7 @@
       <h3 class="text-lg font-bold text-slate-900 serif">Get Instant Alerts</h3>
       <p class="mt-1 text-sm text-slate-600">Enter your email to get notified when the schedule or analysis updates.</p>
       <input id="modal-email" type="email" placeholder="Enter your email" class="mt-4 w-full rounded border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-      <button id="modal-submit" class="mt-3 w-full rounded bg-slate-900 hover:bg-black text-white font-bold py-2.5 text-sm transition-all shadow-md">
-        Subscribe Free
-      </button>
+      <button id="modal-submit" class="mt-3 w-full rounded bg-slate-900 hover:bg-black text-white font-bold py-2.5 text-sm transition-all shadow-md">Subscribe Free</button>
       <div id="modal-status" class="mt-2 text-xs font-semibold min-h-[20px]"></div>
     </div>
   </div>
@@ -282,11 +264,34 @@
                 if(!items || items.length===0) { el.innerHTML='<li class="italic text-slate-400 text-xs">None found</li>'; return; }
                 el.innerHTML = items.map(i => `<li class="flex items-start gap-2.5"><span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${colorClass}"></span><span class="leading-snug">${i}</span></li>`).join('');
             };
-            const fillTags = (id, items) => {
+            const fillTags = (id, items, partyItems, isSupport) => {
                  const el = document.getElementById(id);
                  if(!el) return;
-                 if(!items || items.length===0) { el.innerHTML='<span class="text-xs text-slate-400 italic">None specified</span>'; return; }
-                 el.innerHTML = items.map(i => `<span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-semibold rounded border border-slate-200 uppercase tracking-tight">${i}</span>`).join('');
+                 let html = "";
+                 
+                 // 1. Party Badges (Blue/Red)
+                 if (partyItems && Array.isArray(partyItems)) {
+                     partyItems.forEach(p => {
+                        const pLower = p.toLowerCase();
+                        if (pLower.includes("democrat")) {
+                            html += `<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded border border-blue-200 uppercase tracking-tight mr-1 mb-1">Democrats</span>`;
+                        } else if (pLower.includes("republican")) {
+                            html += `<span class="px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded border border-red-200 uppercase tracking-tight mr-1 mb-1">Republicans</span>`;
+                        } else {
+                            html += `<span class="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-semibold rounded border border-purple-200 uppercase tracking-tight mr-1 mb-1">${p}</span>`;
+                        }
+                     });
+                 }
+
+                 // 2. Organization Tags (Gray)
+                 if (items && Array.isArray(items)) {
+                    items.forEach(i => {
+                        html += `<span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-semibold rounded border border-slate-200 uppercase tracking-tight mr-1 mb-1">${i}</span>`;
+                    });
+                 }
+                 
+                 if (!html) html = '<span class="text-xs text-slate-400 italic">None specified</span>';
+                 el.innerHTML = html;
             };
 
             const isRule = ((ai.category||"").toString().toUpperCase() === "RULE") || safeLower(title).includes("providing for consideration");
@@ -299,27 +304,25 @@
                 const sa = ai.sneak_alert || {};
                 const detected = !!sa.detected;
                 const alertEl = document.getElementById('rule-alert');
-                const badgeEl = document.getElementById('rule-alert-badge');
                 
                 if(detected) {
                     alertEl.className = "rounded border-l-4 p-4 shadow-sm bg-red-50 border-red-500 mb-4";
-                    badgeEl.className = "px-2 py-0.5 rounded text-[10px] font-extrabold bg-red-600 text-white shadow-sm";
-                    badgeEl.innerText = "FLAGGED";
                     document.getElementById('rule-alert-headline').className = "text-base font-bold mt-0.5 text-red-900";
+                    document.getElementById('rule-alert-headline').innerText = sa.headline || "Procedural Red Flags Detected";
                 } else {
                     alertEl.className = "rounded border-l-4 p-4 shadow-sm bg-green-50 border-green-500 mb-4";
-                    badgeEl.className = "px-2 py-0.5 rounded text-[10px] font-extrabold bg-green-600 text-white shadow-sm";
-                    badgeEl.innerText = "CLEAR";
                     document.getElementById('rule-alert-headline').className = "text-base font-bold mt-0.5 text-green-900";
+                    document.getElementById('rule-alert-headline').innerText = sa.headline || "Standard Rule Structure";
                 }
                 
-                document.getElementById('rule-alert-headline').innerText = sa.headline || (detected ? "Procedural Red Flags Detected" : "Standard Rule Structure");
                 document.getElementById('rule-alert-description').innerText = sa.description || ai.summary || "";
 
                 const rb = ai.rule_breakdown || {};
                 setTxt('rb-type', rb.type || rb.rule_type);
                 setTxt('rb-debate', rb.debate_time || rb.debate);
                 setTxt('rb-amendments', rb.amendments_allowed || rb.amendments);
+                
+                document.getElementById('rule-playbook').classList.remove('hidden');
                 fillList('procedural-analysis', (ai.analysis && ai.analysis.procedural_analysis) ? ai.analysis.procedural_analysis : [], detected ? 'bg-red-500' : 'bg-slate-400');
 
             } else {
@@ -330,8 +333,17 @@
                 const meta = ai.bill_metadata || {};
                 setTxt('meta-sponsor', meta.sponsor || "See Bill Text");
                 setTxt('meta-number', meta.number || "H.R. --");
-                setTxt('meta-cosponsors', meta.cosponsor_count || "Unknown");
                 
+                // COSPONSORS: Check if it's a list or a count
+                const cos = meta.cosponsors;
+                if (Array.isArray(cos) && cos.length > 0) {
+                     // If list is long, take top 3 and add count
+                     const display = cos.join(", ");
+                     document.getElementById('meta-cosponsors').innerText = display;
+                } else {
+                    document.getElementById('meta-cosponsors').innerText = meta.cosponsor_count || "None";
+                }
+
                 const statusText = meta.status || "In Progress";
                 document.getElementById('header-status-text').innerText = statusText;
                 document.getElementById('header-status-badge').classList.remove('hidden');
@@ -355,11 +367,15 @@
                 fillList('pros-list', pros, 'bg-green-500');
                 fillList('cons-list', cons, 'bg-red-500');
 
+                // Pass Party arrays to the tag renderer
                 const supporters = poly.likely_coalition_support || poly.likely_supporters || ai.likely_supporters || [];
                 const opponents = poly.likely_coalition_opposition || poly.likely_opponents || ai.likely_opponents || [];
+                
+                const partySupport = poly.partisan_support || [];
+                const partyOppose = poly.partisan_opposition || [];
 
-                fillTags('supporters-tags', supporters);
-                fillTags('opponents-tags', opponents);
+                fillTags('supporters-tags', supporters, partySupport, true);
+                fillTags('opponents-tags', opponents, partyOppose, false);
             }
 
             document.getElementById('loading').classList.add('hidden');
