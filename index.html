@@ -33,13 +33,12 @@
     /* --- MODERN LIGHT THEME --- */
     :root {
       --bg-main: #ffffff;
-      --bg-subtle: #f8fafc; 
       --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%); 
       
       --card-bg: #ffffff;
       --card-border: 1px solid #e2e8f0;
       --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --card-hover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+      
       --text-main: #0f172a; 
       --text-muted: #64748b; 
       
@@ -131,7 +130,6 @@
 
     /* --- HERO SECTION --- */
     .hero { text-align: center; padding: 40px 0 0px; position: relative; }
-    
     .hero h1 { 
         font-family: 'Merriweather', serif;
         font-size: 3.5rem; 
@@ -140,73 +138,50 @@
         line-height: 1.1;
         letter-spacing: -1px;
     }
-    .hero h1 span.highlight {
-        color: var(--brand-primary);
-        position: relative;
-    }
+    .hero h1 span.highlight { color: var(--brand-primary); position: relative; }
     .hero h1 span.highlight::after {
         content: ''; position: absolute;
         bottom: 5px; left: 0; width: 100%; height: 6px;
         background: rgba(37, 99, 235, 0.1); z-index: -1; transform: rotate(-1deg);
     }
-
-    /* Typewriter - RESTORED EXACTLY FROM INDEX (11) */
     .typing-wrapper { display: inline-block; }
-    
     .typing-text {
         display: inline-block;
         font-family: 'Merriweather', serif; 
         font-weight: 700; 
         color: var(--brand-primary);
         border-right: 3px solid var(--text-main);
-        white-space: nowrap;
-        overflow: hidden;
-        width: 0;
-        /* RESTORED: These exact values fix the alignment */
+        white-space: nowrap; overflow: hidden; width: 0;
         animation: typing 1.5s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
-        vertical-align: bottom; 
-        line-height: 1.2;
-        padding-bottom: 3px;
-        margin-bottom: -3px; 
+        vertical-align: bottom; line-height: 1.2;
+        padding-bottom: 3px; margin-bottom: -3px; 
     }
     @keyframes typing { to { width: 100%; } }
     @keyframes blink-caret { 50% { border-color: transparent; } }
 
-    /* Checklist */
     .hero-checklist {
-        display: inline-block;
-        text-align: left;
-        color: var(--text-muted);
-        font-size: 1.1rem; line-height: 1.8;
+        display: inline-block; text-align: left;
+        color: var(--text-muted); font-size: 1.1rem; line-height: 1.8;
         margin: 0 auto 40px; max-width: 680px;
     }
     .check { color: var(--success); margin-right: 12px; font-weight: bold; }
     .hero-checklist strong { color: var(--text-main); font-weight: 600; }
-    
     .hero-checklist a {
-        color: var(--brand-primary);
-        text-decoration: none;
+        color: var(--brand-primary); text-decoration: none;
         border-bottom: 1px dotted var(--brand-primary);
-        font-weight: 600;
-        transition: all 0.2s;
+        font-weight: 600; transition: all 0.2s;
     }
     .hero-checklist a:hover { color: var(--brand-dark); border-bottom-style: solid; }
 
     /* --- FORM --- */
     .form-wrapper { 
-        max-width: 480px;
-        margin: 0 auto; display: flex; gap: 10px; 
-        padding: 4px;
-        position: relative;
-        z-index: 10;
+        max-width: 480px; margin: 0 auto; display: flex; gap: 10px; 
+        padding: 4px; position: relative; z-index: 10;
     }
     input { 
         flex: 1; padding: 16px 20px;
-        border: 1px solid #cbd5e1; 
-        background: white; 
-        color: var(--text-main);
-        border-radius: 8px; font-size: 1rem; 
-        transition: all 0.2s; 
+        border: 1px solid #cbd5e1; background: white; color: var(--text-main);
+        border-radius: 8px; font-size: 1rem; transition: all 0.2s; 
         box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     input::placeholder { color: #94a3b8; }
@@ -214,75 +189,48 @@
     
     button.form-btn { 
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: white; border: none; 
-        padding: 16px 28px; border-radius: 8px; 
-        font-weight: 700; cursor: pointer; 
-        font-size: 1rem;
+        color: white; border: none; padding: 16px 28px; border-radius: 8px; 
+        font-weight: 700; cursor: pointer; font-size: 1rem;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
     }
-    button.form-btn:hover { 
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3), 0 4px 6px -2px rgba(37, 99, 235, 0.1);
-    }
+    button.form-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
     button.form-btn:disabled { opacity: 0.7; cursor: wait; }
-    
     .msg { margin-top: 5px; font-size: 0.9rem; min-height: 24px; font-weight: 500; text-align: center; } 
 
-    /* --- FEED WRAPPER & DASHBOARD STYLES --- */
-    /* Reduced top padding */
+    /* --- DASHBOARD / FEED STYLES (MATCHING EMAIL) --- */
     .feed-wrapper { padding: 10px 0 80px; }
 
-    /* Toggle Buttons */
     .toggle-container {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-bottom: 20px;
-        margin-top: 10px;
+        display: flex; justify-content: center; gap: 10px;
+        margin-bottom: 20px; margin-top: 10px;
     }
     .toggle-btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        color: var(--text-muted);
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-size: 0.95rem;
+        padding: 12px 24px; border-radius: 8px;
+        border: 1px solid #e2e8f0; background: white;
+        color: var(--text-muted); font-weight: 600;
+        cursor: pointer; transition: all 0.2s;
         box-shadow: var(--card-shadow);
     }
-    .toggle-btn:hover {
-        background: #f1f5f9;
-        color: var(--brand-primary);
-    }
+    .toggle-btn:hover { background: #f1f5f9; color: var(--brand-primary); }
     .toggle-btn.active {
-        background: var(--brand-primary); 
-        color: white;
+        background: var(--brand-primary); color: white;
         border-color: var(--brand-primary);
         box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
     }
 
-    /* Status Bar */
     .status-bar {
-        display: flex;
-        align-items: center; gap: 12px;
+        display: flex; align-items: center; gap: 12px;
         font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
         background: white; padding: 8px 16px; border-radius: 100px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         border: 1px solid #e2e8f0;
-        margin-bottom: 30px;
-        width: fit-content;
+        margin-bottom: 30px; width: fit-content;
         margin-left: auto; margin-right: auto;
     }
-    
     .live-dot { 
-        width: 8px;
-        height: 8px; 
-        background: #22c55e; 
-        border-radius: 50%; 
-        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        width: 8px; height: 8px; background: #22c55e; 
+        border-radius: 50%; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
         animation: ripple 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
     }
     @keyframes ripple {
@@ -291,82 +239,69 @@
         100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
 
-    /* Feed Sections */
     .feed-section { 
-        background: var(--card-bg);
-        border: var(--card-border); 
-        border-radius: 12px; 
-        box-shadow: var(--card-shadow); 
+        background: var(--card-bg); border: var(--card-border); 
+        border-radius: 12px; box-shadow: var(--card-shadow); 
         margin-bottom: 30px; overflow: hidden; 
-        transition: all 0.2s;
     }
-    .feed-section:hover { box-shadow: var(--card-hover-shadow); }
 
     .section-header {
-        background: #f8fafc;
-        padding: 14px 20px;
-        font-family: 'Inter', sans-serif;
-        font-weight: 700; font-size: 0.8rem;
-        color: var(--text-muted);
-        text-transform: uppercase; letter-spacing: 0.5px;
+        background: #f8fafc; padding: 14px 20px;
+        font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem;
+        color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
         border-bottom: 1px solid #e2e8f0;
-        display: flex; align-items: center; gap: 8px;
     }
     
+    /* EMAIL MATCHING ITEM STYLES */
     .bill-item { 
-        padding: 18px 20px;
+        padding: 14px 20px; /* Condensed padding */
         border-bottom: 1px solid #f1f5f9; 
-        display: flex; flex-direction: column; gap: 6px; 
+        display: flex; flex-direction: column; gap: 4px; 
         transition: background 0.1s;
     }
     .bill-item:last-child { border-bottom: none; }
     .bill-item:hover { background: #f8fafc; }
     
-    .bill-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+    /* Inline Title Row */
+    .bill-row { display: block; }
     
-    .bill-title { 
-        color: var(--text-main);
-        font-size: 1rem; line-height: 1.5; flex: 1; font-weight: 400; 
-        display: flex; flex-direction: column; gap: 2px;
+    .bill-id { 
+        display: inline; font-weight: 700; color: #000; 
+        font-family: 'Inter', sans-serif; font-size: 0.95rem; 
     }
-    .bill-id { font-weight: 700; font-family: 'Merriweather', serif; color: var(--brand-dark); font-size: 1.05rem; }
-    .bill-desc { font-size: 1rem; color: var(--text-main); font-weight: 400; line-height: 1.5; }
-
+    .bill-desc { 
+        display: inline; color: #333; font-size: 0.95rem; font-weight: 400; 
+    }
     
-    .bill-links { display: flex; gap: 8px; align-items: center; }
+    .bill-links { display: inline-block; margin-left: 8px; vertical-align: middle; white-space: nowrap; }
+    
+    /* Email Style Tags */
     .doc-link { 
-        color: var(--brand-primary); text-decoration: none; 
-        background: #eff6ff;
-        padding: 3px 8px; border-radius: 4px; 
-        font-size: 0.75rem; font-weight: 600; 
-        transition: all 0.2s;
+        color: #333 !important; text-decoration: none; 
+        background: #e5e7eb; padding: 1px 6px; 
+        border-radius: 3px; font-size: 0.7rem; font-weight: 700; 
+        border: 1px solid #d1d5db; transition: all 0.2s;
+        margin-right: 4px; text-transform: uppercase;
     }
-    .doc-link:hover { background: var(--brand-primary); color: white; }
+    .doc-link:hover { background: #d1d5db; color: #000; }
     
     .ai-link {
-        color: #15803d; text-decoration: none;
-        background: #dcfce7;
-        padding: 3px 8px; border-radius: 4px;
-        font-size: 0.75rem; font-weight: 700;
-        transition: all 0.2s;
-        border: 1px solid #bbf7d0;
-        display: flex; align-items: center; gap: 4px;
+        color: #166534 !important; text-decoration: none;
+        background: #dcfce7; padding: 1px 6px; 
+        border-radius: 3px; font-size: 0.7rem; font-weight: 700;
+        border: 1px solid #86efac; transition: all 0.2s;
+        display: inline-block; margin-right: 4px; text-transform: uppercase;
     }
     .ai-link:hover { background: #bbf7d0; color: #14532d; }
     
+    /* Email Style Timestamp (Red Text) */
     .bill-meta { 
-        font-size: 0.8rem;
-        color: var(--text-muted); 
-        display: flex; align-items: center; gap: 8px; margin-top: 4px;
-    }
-    .meta-time { 
-        color: #be123c; font-weight: 600; background: #fff1f2;
-        padding: 1px 6px; border-radius: 4px; font-size: 0.75rem;
+        font-size: 0.75rem; color: #b91c1c; font-weight: 400;
+        margin-top: 2px; display: block;
     }
 
     footer { 
-        padding: 60px 0;
-        text-align: center; color: #94a3b8; font-size: 0.9rem; 
+        padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; 
         border-top: 1px solid #e2e8f0; margin-top: 60px;
     }
     footer a { color: #64748b; text-decoration: none; transition: color 0.2s; }
@@ -374,15 +309,9 @@
     .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
 
     @media (max-width: 768px) { 
-        .hero h1 { font-size: 1.75rem; line-height: 1.3; } /* Smaller and tighter */
-        .form-wrapper { flex-direction: column; padding: 0; }
-        input { width: 100%; margin-bottom: 10px; }
-        button.form-btn { width: 100%; }
-        .nav-inner { flex-direction: column; gap: 15px; }
-        .bill-row { flex-direction: column; gap: 10px; }
-        .hero-checklist { padding-left: 10px; font-size: 1rem; }
+        .hero h1 { font-size: 1.75rem; }
+        .bill-links { display: block; margin: 4px 0 0 0; }
     }
-    
     @keyframes slideUpFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
   </style>
 </head>
@@ -415,13 +344,7 @@
       </h1>
       
       <div class="hero-checklist">
-        <div>
-          <span class="check">✓</span> Monitors 
-          <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov/floor</a> 
-          and 
-          <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.gov</a> 
-          every 60 seconds.
-        </div>
+        <div><span class="check">✓</span> Monitors <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> and <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.gov</a>.</div>
         <div><span class="check">✓</span> Auto-detects <strong>Advance Notices</strong> (items not yet filed with the Clerk).</div>
         <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly to you for free.</div>
         <div><span class="check">✓</span> <strong>Automatic Policy Briefs</strong> for every bill as it's announced.</div>
@@ -432,7 +355,6 @@
         <button id="submitBtn" class="form-btn">Subscribe for Free</button>
       </div>
       <div id="status" class="msg"></div>
-    
     </div>
   </section>
 
@@ -487,24 +409,20 @@
         { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
         { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
     ];
-    // Global State
+
     let activeSection = 'THIS_WEEK'; 
     let allBillData = [];
     let lastFetchedHash = "";
-    // --- TOGGLE LOGIC ---
+
     function switchSection(section) {
         activeSection = section;
-        // Update Buttons
         document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
         document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
-        // Redraw
         renderFeed();
     }
 
-    // --- FEED LOGIC ---
     async function initFeed() {
         try {
-            // Fetch everything
             const { data, error } = await _supabase
                 .from('live_feed')
                 .select('*')
@@ -517,7 +435,6 @@
             }
 
             if (data) {
-                // Check if data changed to avoid UI flicker
                 const currentHash = JSON.stringify(data.map(d => d.id));
                 if (currentHash !== lastFetchedHash) {
                     allBillData = data;
@@ -533,10 +450,10 @@
         const latestList = document.getElementById('latest-list');
         const scheduleList = document.getElementById('schedule-list');
         const statusLine = document.getElementById('status-line');
-        // Clear View
+        
         scheduleList.innerHTML = '';
         latestList.innerHTML = '';
-        // Filter by Active Section
+        
         const filteredData = allBillData.filter(item => {
             const itemSec = item.section || 'THIS_WEEK';
             return itemSec === activeSection;
@@ -548,9 +465,7 @@
             return;
         }
 
-        // Sort Newest First
         const displayData = [...filteredData].sort((a, b) => b.id - a.id);
-        // Update Status Line
         const newestItem = displayData[0];
         const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
 
@@ -560,7 +475,6 @@
             statusLine.innerHTML = "System Active. Monitoring for updates...";
         }
 
-        // --- 1. FILL LATEST ACTIVITY ---
         let hasLatest = false;
         if (newestItem && newestItem.timestamp) {
             displayData.forEach(item => {
@@ -572,37 +486,34 @@
         }
         latestContainer.style.display = hasLatest ? 'block' : 'none';
 
-        // --- 2. FILL MAIN CATEGORIES ---
         CATEGORIES.forEach(cat => {
             const catItems = displayData.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
-            
             if (catItems.length > 0) {
                 const section = document.createElement('div');
                 section.className = 'feed-section';
-                
                 const header = document.createElement('div');
                 header.className = 'section-header';
                 header.innerText = cat.label;
                 section.appendChild(header);
-                
                 catItems.forEach(item => section.appendChild(createBillItem(item)));
                 scheduleList.appendChild(section);
             }
         });
     }
 
+    // --- REBUILT ITEM GENERATOR (MATCHES EMAIL) ---
     function createBillItem(item) {
         const div = document.createElement('div');
         div.className = 'bill-item';
         
         let buttonsHtml = '';
 
-        // 1. AI Button
+        // 1. AI Button (Green Tag)
         if (item.ai_analysis) {
-             buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">⚡ Policy Brief</a>`;
+             buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">POLICY BRIEF</a>`;
         }
 
-        // 2. Doc Link
+        // 2. Doc Link (Gray Tag)
         if (item.link) {
             const isPdf = item.link.toLowerCase().endsWith('pdf');
             buttonsHtml += `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
@@ -610,12 +521,12 @@
 
         let linkHtml = '';
         if (buttonsHtml) {
-            linkHtml = `<div class="bill-links">${buttonsHtml}</div>`;
+            linkHtml = `<span class="bill-links">${buttonsHtml}</span>`;
         }
         
         let timeHtml = '';
         if (item.timestamp && item.timestamp.trim() !== "") {
-            timeHtml = `<div class="bill-meta"><span class="meta-time">${item.timestamp}</span></div>`;
+            timeHtml = `<div class="bill-meta">${item.timestamp}</div>`;
         }
 
         let fullTitle = item.title || "";
@@ -624,9 +535,11 @@
 
         let splitIndex = fullTitle.indexOf("—");
         if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
+        
         if (splitIndex !== -1) {
             boldPart = fullTitle.substring(0, splitIndex).trim();
             normalPart = fullTitle.substring(splitIndex + 1).trim(); 
+            normalPart = ` — ${normalPart}`;
         } else {
             boldPart = fullTitle;
             normalPart = "";
@@ -634,10 +547,10 @@
 
         div.innerHTML = `
             <div class="bill-row">
-                <div class="bill-title">
-                    <div class="bill-id">${boldPart}</div>
-                    ${normalPart ? `<div class="bill-desc">${normalPart}</div>` : ''}
-                </div>
+                <a href="${item.link || '#'}" target="_blank" style="text-decoration:none; color:inherit;">
+                    <span class="bill-id">${boldPart}</span>
+                    <span class="bill-desc">${normalPart}</span>
+                </a>
                 ${linkHtml}
             </div>
             ${timeHtml}
@@ -645,50 +558,34 @@
         return div;
     }
     
-    // START FEED
     initFeed();
     setInterval(initFeed, 10000);
 
-    // HERO FORM SUBSCRIPTION LOGIC
     const btn = document.getElementById('submitBtn');
     const input = document.getElementById('email');
     const stat = document.getElementById('status');
 
     btn.addEventListener('click', async () => {
       const email = input.value.trim();
-      
       if (!email.includes('@')) { 
-          stat.textContent = "Please enter a valid email."; 
-          stat.style.color = "#dc2626"; 
-          return; 
+          stat.textContent = "Please enter a valid email."; stat.style.color = "#dc2626"; return; 
       }
-
-      btn.disabled = true; 
-      btn.textContent = "Authenticating...";
-      stat.textContent = "";
+      btn.disabled = true; btn.textContent = "Authenticating..."; stat.textContent = "";
 
       const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
 
       if (error) {
           if (error.code === '23505') {
-              stat.textContent = "You are already in the system.";
-              stat.style.color = "#2563eb"; 
+              stat.textContent = "You are already in the system."; stat.style.color = "#2563eb"; 
           } else {
-              stat.textContent = "Connection error. Please retry.";
-              stat.style.color = "#dc2626"; 
+              stat.textContent = "Connection error. Please retry."; stat.style.color = "#dc2626"; 
           }
-          btn.disabled = false; 
-          btn.textContent = "Subscribe for Free";
+          btn.disabled = false; btn.textContent = "Subscribe for Free";
       } else {
           stat.textContent = "Confirmed. You are now tracking the floor.";
-          stat.style.color = "#16a34a"; // Green
-          input.value = "";
-          btn.textContent = "Success";
-          
+          stat.style.color = "#16a34a"; input.value = ""; btn.textContent = "Success";
           setTimeout(() => {
-              btn.disabled = false;
-              btn.textContent = "Subscribe Colleague";
-              stat.textContent = "";
+              btn.disabled = false; btn.textContent = "Subscribe Colleague"; stat.textContent = "";
           }, 3000);
       }
     });
