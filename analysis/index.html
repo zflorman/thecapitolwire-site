@@ -10,7 +10,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         h1, h2, h3, .serif { font-family: 'Merriweather', serif; }
-        /* Professional dense scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -20,17 +19,17 @@
 <body class="text-slate-800 antialiased">
 
   <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-    <div class="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
+    <div class="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-6">
-          <a href="/" class="font-bold text-slate-900 text-lg flex items-center gap-2 serif tracking-tight">
-            <span aria-hidden="true" class="text-blue-700">🏛️</span> The Capitol Wire
+          <a href="/" class="font-bold text-blue-700 text-xl flex items-center gap-2 serif tracking-tight">
+            <span aria-hidden="true">🏛️</span> The Capitol Wire
           </a>
-          <span class="hidden md:inline-block h-5 w-px bg-slate-200"></span>
-          <span class="hidden md:inline-block text-xs font-semibold text-slate-500 uppercase tracking-wider">Legislative Intelligence</span>
+          <span class="hidden md:inline-block h-6 w-px bg-slate-200"></span>
+          <span class="hidden md:inline-block text-sm font-semibold text-slate-500 uppercase tracking-wider">Policy Brief</span>
       </div>
-      <div class="flex items-center gap-4">
-        <a href="/dashboard/" class="text-xs font-semibold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Dashboard</a>
-        <button class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded shadow-sm transition-colors" onclick="openModal()">
+      <div class="flex items-center gap-5">
+        <a href="/dashboard/" class="text-sm font-semibold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Dashboard</a>
+        <button class="text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded shadow-sm transition-colors" onclick="openModal()">
           Get Alerts
         </button>
       </div>
@@ -101,31 +100,22 @@
             <div id="bill-mode-container" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
                 <div class="lg:col-span-8 flex flex-col gap-6">
-                    <div class="bg-white p-6 rounded border-l-4 border-blue-600 shadow-sm ring-1 ring-slate-900/5">
+                    <div class="bg-white p-8 rounded border-l-4 border-blue-600 shadow-sm ring-1 ring-slate-900/5 h-full">
                         <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wide flex items-center gap-2">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Executive Summary (BLUF)
+                            Executive Summary
                         </h3>
-                        <div class="prose prose-sm prose-slate max-w-none text-slate-700 leading-relaxed font-medium" id="executive-summary"></div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded border border-slate-200 shadow-sm">
-                        <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wide flex items-center gap-2">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            The Context: Why Now?
-                        </h3>
-                        <p id="background-context" class="text-sm text-slate-600 leading-relaxed"></p>
+                        <div class="prose prose-slate max-w-none text-slate-700 leading-loose font-medium" id="executive-summary"></div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-4 flex flex-col gap-6">
-                    <div class="bg-slate-50 p-5 rounded border border-slate-200 shadow-sm">
+                    <div class="bg-slate-50 p-6 rounded border border-slate-200 shadow-sm h-full">
                         <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-200 pb-2">Bill Data</h3>
                         
-                        <div class="space-y-4">
+                        <div class="space-y-6">
                             <div>
                                 <div class="text-[10px] font-bold text-slate-500 uppercase">Sponsor</div>
-                                <div id="meta-sponsor" class="text-sm font-bold text-slate-900"></div>
+                                <div id="meta-sponsor" class="text-base font-bold text-slate-900"></div>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
@@ -139,49 +129,15 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="bg-white p-5 rounded border border-slate-200 shadow-sm">
-                        <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-200 pb-2">Impact Analysis</h3>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase">Fiscal Cost (CBO)</span>
-                                </div>
-                                <p id="impact-fiscal" class="text-sm text-slate-700 leading-snug"></p>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-[10px] font-bold text-slate-500 uppercase">Regulatory Shift</span>
-                                </div>
-                                <p id="impact-regulatory" class="text-sm text-slate-700 leading-snug"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-12">
-                    <div class="bg-white p-6 rounded border border-slate-200 shadow-sm border-t-4 border-yellow-400">
-                        <h3 class="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wide">📋 Key Provisions</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
-                             <ul id="key-provisions" class="space-y-3 text-sm text-slate-700"></ul>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="lg:col-span-6">
                     <div class="bg-white h-full p-6 rounded border border-slate-200 shadow-sm border-t-4 border-green-500">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-sm font-bold text-green-900 bg-green-50 px-3 py-1 rounded uppercase tracking-wide">Support Coalition</h3>
-                        </div>
+                        <h3 class="text-sm font-bold text-green-900 bg-green-50 px-3 py-1 rounded uppercase tracking-wide inline-block mb-4">Arguments For</h3>
+                        <ul id="pros-list" class="space-y-3 mb-6"></ul>
                         
-                        <div class="mb-6">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Likely Winners</div>
-                            <ul id="winners-list" class="space-y-1"></ul>
-                        </div>
-                        
-                        <div>
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Endorsing Organizations</div>
+                        <div class="pt-4 border-t border-slate-100">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Likely Supporters</div>
                             <div id="supporters-tags" class="flex flex-wrap gap-2"></div>
                         </div>
                     </div>
@@ -189,18 +145,21 @@
 
                 <div class="lg:col-span-6">
                     <div class="bg-white h-full p-6 rounded border border-slate-200 shadow-sm border-t-4 border-red-500">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-sm font-bold text-red-900 bg-red-50 px-3 py-1 rounded uppercase tracking-wide">Opposition Coalition</h3>
-                        </div>
+                        <h3 class="text-sm font-bold text-red-900 bg-red-50 px-3 py-1 rounded uppercase tracking-wide inline-block mb-4">Arguments Against</h3>
+                        <ul id="cons-list" class="space-y-3 mb-6"></ul>
 
-                         <div class="mb-6">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Likely Losers</div>
-                            <ul id="losers-list" class="space-y-1"></ul>
-                        </div>
-
-                        <div>
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Opposing Organizations</div>
+                        <div class="pt-4 border-t border-slate-100">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Likely Opponents</div>
                             <div id="opponents-tags" class="flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="provisions-container" class="lg:col-span-12 hidden">
+                    <div class="bg-white p-6 rounded border border-slate-200 shadow-sm border-t-4 border-yellow-400">
+                        <h3 class="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wide">📋 Key Provisions</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+                             <ul id="key-provisions" class="space-y-3 text-sm text-slate-700"></ul>
                         </div>
                     </div>
                 </div>
@@ -234,7 +193,6 @@
         const SUBSCRIBE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
         const subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
 
-        // Modal Logic
         const modalEl = document.getElementById('modal');
         const modalEmail = document.getElementById('modal-email');
         const modalSubmit = document.getElementById('modal-submit');
@@ -314,14 +272,13 @@
         }
         function unsubscribeRealtime() { if(realtimeChannel) { client.removeChannel(realtimeChannel); realtimeChannel=null; }}
 
-        // --- RENDER FUNCTION (Handles New & Old Data) ---
+        // --- RENDER FUNCTION ---
         function renderData(row) {
             const ai = normalizeAi(row.ai_analysis) || {};
             const title = row.title || "";
             document.getElementById('bill-title').innerText = title;
             document.getElementById('timestamp').innerText = new Date().toLocaleDateString();
 
-            // Helpers
             const setTxt = (id, txt) => { const el=document.getElementById(id); if(el) el.innerText = txt || "Not specified"; };
             const fillList = (id, items, colorClass) => {
                 const el = document.getElementById(id);
@@ -336,16 +293,13 @@
                  el.innerHTML = items.map(i => `<span class="px-2 py-1 bg-slate-100 text-slate-600 text-[11px] font-semibold rounded border border-slate-200 uppercase tracking-tight">${i}</span>`).join('');
             };
 
-            // Detect Mode
             const isRule = ((ai.category||"").toString().toUpperCase() === "RULE") || safeLower(title).includes("providing for consideration");
 
             if (isRule) {
-                // RULE MODE
                 document.getElementById('rule-mode-container').classList.remove('hidden');
                 document.getElementById('bill-mode-container').classList.add('hidden');
-                document.getElementById('header-status-badge').classList.add('hidden'); // Rules usually don't need status badges like bills
+                document.getElementById('header-status-badge').classList.add('hidden'); 
 
-                // Sneak Alert Logic
                 const sa = ai.sneak_alert || {};
                 const detected = !!sa.detected;
                 const alertEl = document.getElementById('rule-alert');
@@ -366,12 +320,10 @@
                 document.getElementById('rule-alert-headline').innerText = sa.headline || (detected ? "Procedural Red Flags Detected" : "Standard Rule Structure");
                 document.getElementById('rule-alert-description').innerText = sa.description || ai.summary || "";
 
-                // Playbook
                 const rb = ai.rule_breakdown || {};
                 setTxt('rb-type', rb.type || rb.rule_type);
                 setTxt('rb-debate', rb.debate_time || rb.debate);
                 setTxt('rb-amendments', rb.amendments_allowed || rb.amendments);
-                
                 fillList('procedural-analysis', (ai.analysis && ai.analysis.procedural_analysis) ? ai.analysis.procedural_analysis : [], detected ? 'bg-red-500' : 'bg-slate-400');
 
             } else {
@@ -379,7 +331,6 @@
                 document.getElementById('rule-mode-container').classList.add('hidden');
                 document.getElementById('bill-mode-container').classList.remove('hidden');
 
-                // 1. Metadata (New Prompt vs Old Fallback)
                 const meta = ai.bill_metadata || {};
                 setTxt('meta-sponsor', meta.sponsor || "See Bill Text");
                 setTxt('meta-number', meta.number || "H.R. --");
@@ -389,37 +340,27 @@
                 document.getElementById('header-status-text').innerText = statusText;
                 document.getElementById('header-status-badge').classList.remove('hidden');
 
-                // 2. Executive Summary
                 const summary = ai.executive_summary || ai.summary || "Summary pending...";
                 document.getElementById('executive-summary').innerText = summary;
 
-                // 3. Background/Context
-                const context = ai.background_context || ai.mechanism || "No context provided.";
-                document.getElementById('background-context').innerText = context;
+                // Key Provisions - Only show if valid
+                if (ai.key_provisions && Array.isArray(ai.key_provisions) && ai.key_provisions.length > 0) {
+                     document.getElementById('provisions-container').classList.remove('hidden');
+                     fillList('key-provisions', ai.key_provisions, 'bg-yellow-400');
+                } else {
+                     document.getElementById('provisions-container').classList.add('hidden');
+                }
 
-                // 4. Impact Analysis
-                const impact = ai.impact_analysis || {};
-                setTxt('impact-fiscal', impact.fiscal || "Not scored.");
-                setTxt('impact-regulatory', impact.regulatory || "See analysis.");
+                // Political Analysis (Poly or Old Fallback)
+                const poly = ai.political_analysis || ai.analysis || {};
+                const pros = poly.pros || ai.pros || [];
+                const cons = poly.cons || ai.cons || [];
 
-                // 5. Key Provisions
-                fillList('key-provisions', ai.key_provisions, 'bg-yellow-400');
+                fillList('pros-list', pros, 'bg-green-500');
+                fillList('cons-list', cons, 'bg-red-500');
 
-                // 6. Political Analysis (New vs Old)
-                const poly = ai.political_analysis || {};
-                const oldAnalysis = ai.analysis || {};
-
-                // Winners/Losers
-                const winners = poly.winners || []; // New prompt
-                const losers = poly.losers || [];   // New prompt
-                
-                // If new prompt data is empty, try to map from old format if possible, otherwise just use empty
-                fillList('winners-list', winners, 'bg-green-500');
-                fillList('losers-list', losers, 'bg-red-500');
-
-                // Coalitions
-                const supporters = poly.likely_coalition_support || oldAnalysis.likely_supporters || ai.likely_supporters || [];
-                const opponents = poly.likely_coalition_opposition || oldAnalysis.likely_opponents || ai.likely_opponents || [];
+                const supporters = poly.likely_coalition_support || poly.likely_supporters || ai.likely_supporters || [];
+                const opponents = poly.likely_coalition_opposition || poly.likely_opponents || ai.likely_opponents || [];
 
                 fillTags('supporters-tags', supporters);
                 fillTags('opponents-tags', opponents);
