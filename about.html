@@ -38,58 +38,63 @@
         
         <div class="mb-10 border-b border-slate-100 pb-8">
             <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4 leading-tight">
-                Democracy shouldn't have a paywall.
+                The Capitol Wire
             </h1>
             <p class="text-lg text-slate-600 serif italic">
-                Why I built an AI to read Congress so you don't have to.
+                Automated legislative intelligence for the modern staffer.
             </p>
         </div>
 
-        <div class="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-6">
-            <p>
-                <strong>I used to be a staffer on the Hill.</strong> I remember the late nights, the cold coffee, and the sheer panic of staring at a 2,000-page bill that dropped at midnight, knowing we had to vote on it by morning.
-            </p>
-            <p>
-                The truth is, most of what happens in Congress goes unread. Not because people don't care, but because the volume is impossible for a human to keep up with. Important provisions get buried in "technical corrections," and procedural rules are used to hide what's really going on.
-            </p>
-            <p>
-                I realized that while we were drowning in paper, we had the technology to fix it. So, I built <strong>The Capitol Wire</strong>.
-            </p>
-
-            <h3 class="text-xl font-bold text-slate-900 mt-8 pt-4">How it Works</h3>
-            <p>
-                I trained an AI specifically on legislative text. It doesn't just "summarize"—it acts like a senior legislative analyst. It scans the live feed from the Clerk's office 24/7. When a new bill or rule drops, the bot:
-            </p>
-            <ul class="list-disc pl-5 space-y-2 marker:text-blue-600">
-                <li><strong>Translates Legalese:</strong> It turns dense statutory language into plain English.</li>
-                <li><strong>Flags the Tricks:</strong> It hunts for "self-executing rules" and waived points of order—the stuff leadership uses to sneak things past us.</li>
-                <li><strong>Provides Receipts:</strong> This is the most important part. I don't trust AI blindly, and neither should you. That's why every claim comes with a <em>Verification Guide</em> citing the exact page number.</li>
-            </ul>
-
-            <h3 class="text-xl font-bold text-slate-900 mt-8 pt-4">Why it's Free</h3>
-            <p>
-                In Washington, real-time legislative intelligence usually costs $20,000 a year and is only available to K Street lobbyists. That didn't sit right with me.
-            </p>
-            <p>
-                I built this tool to level the playing field. Whether you're a junior staffer trying to survive your first session, a journalist covering the beat, or just a citizen who wants to know what's actually being voted on—this is for you.
-            </p>
+        <div class="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-8">
             
-            <p class="mt-8 border-l-4 border-blue-600 pl-4 italic text-slate-600 bg-slate-50 py-2 pr-2 rounded-r">
-                "The goal isn't to tell you what to think. It's to show you exactly what is on the paper, instantly."
-            </p>
+            <div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Why is this free?</h3>
+                <p>
+                    Because I'm not a K Street firm trying to sell you a $20,000 subscription. I'm a developer who used to work on the Hill. The data is public, the hosting is cheap, and I believe access to real-time legislative tracking shouldn't be a luxury good. No ads, no tracking, no catch.
+                </p>
+            </div>
 
-            <p class="mt-8">
-                Thanks for reading,<br>
-                <span class="font-bold text-slate-900">— The Developer</span>
+            <div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Why I built it</h3>
+                <p>
+                    I spent time as a staffer, so I know the drill: refreshing the Rules Committee website, waiting for the Clerk to post PDFs, and relying on rumor to know when a bill text changed. 
+                </p>
+                <p>
+                    It honestly blew my mind that with all this data published as XML, there wasn't already an automated system to parse it instantly. We shouldn't have to manually hunt for information that is digitally available. I got tired of waiting for a better tool, so I wrote the code myself.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">A Force Multiplier</h3>
+                <p>
+                    This bot isn't here to replace the Legislative Assistant. It's here to keep you from drowning.
+                </p>
+                <p>
+                    Legislative analysis requires instinct, context, and institutional memory—things AI is terrible at. But AI is excellent at reading 800 pages of statutory text in 30 seconds to find the one clause that waives a point of order. This tool is designed to be a force multiplier. It clears the haystack so you can find the needle.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">How it works</h3>
+                <p>
+                    It’s not magic; it’s a pipeline. The system monitors the official House repository (docs.house.gov) every 60 seconds. When a new file drops, it pulls the text, cleans the formatting, and runs it through a tuned AI model.
+                </p>
+                <p>
+                    I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules. Crucially, it generates a <strong>Verification Guide</strong> with specific page numbers for every claim—because you should never trust a summary without seeing the source text.
+                </p>
+            </div>
+
+            <p class="mt-8 pt-6 border-t border-slate-100">
+                <span class="font-bold text-slate-900">— Zachary Florman</span><br>
+                <span class="text-sm text-slate-500">Developer & Former Staffer</span>
             </p>
         </div>
 
     </div>
 
     <div class="text-center mt-12">
-        <p class="text-sm text-slate-500 mb-4 font-medium uppercase tracking-wide">Ready to see it in action?</p>
         <a href="/dashboard/" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded shadow-lg transition-transform transform hover:-translate-y-0.5">
-            Go to Dashboard
+            View Live Dashboard
         </a>
     </div>
 
