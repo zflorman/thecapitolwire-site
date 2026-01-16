@@ -38,10 +38,10 @@
         
         <div class="mb-10 border-b border-slate-100 pb-8">
             <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4 leading-tight">
-                The Capitol Wire
+                About The Capitol Wire
             </h1>
             <p class="text-lg text-slate-600 serif italic">
-                Automated legislative intelligence for the modern staffer.
+                Why I built an AI to read Congress so you don't have to.
             </p>
         </div>
 
@@ -50,37 +50,37 @@
             <div>
                 <h3 class="text-xl font-bold text-slate-900 mb-3">Why is this free?</h3>
                 <p>
-                    Because I'm not a K Street firm trying to sell you a $20,000 subscription. I'm a developer who used to work on the Hill. The data is public, the hosting is cheap, and I believe access to real-time legislative tracking shouldn't be a luxury good. No ads, no tracking, no catch.
+                    Because I'm not trying to sell you a $20,000 subscription. The data is public, the hosting is cheap, and I had time on vacation to make it.
                 </p>
             </div>
 
             <div>
                 <h3 class="text-xl font-bold text-slate-900 mb-3">Why I built it</h3>
                 <p>
-                    I spent time as a staffer, so I know the drill: refreshing the Rules Committee website, waiting for the Clerk to post PDFs, and relying on rumor to know when a bill text changed. 
-                </p>
-                <p>
-                    It honestly blew my mind that with all this data published as XML, there wasn't already an automated system to parse it instantly. We shouldn't have to manually hunt for information that is digitally available. I got tired of waiting for a better tool, so I wrote the code myself.
+                    It honestly blew my mind there wasn't already an automated system to parse it instantly. We shouldn't have to manually hunt for information that is digitally available.
                 </p>
             </div>
 
             <div>
                 <h3 class="text-xl font-bold text-slate-900 mb-3">A Force Multiplier</h3>
                 <p>
-                    This bot isn't here to replace the Legislative Assistant. It's here to keep you from drowning.
+                    This bot isn't here to replace the Legislative Assistant. It's here to keep you from drowning. 
                 </p>
                 <p>
-                    Legislative analysis requires instinct, context, and institutional memory—things AI is terrible at. But AI is excellent at reading 800 pages of statutory text in 30 seconds to find the one clause that waives a point of order. This tool is designed to be a force multiplier. It clears the haystack so you can find the needle.
+                    Reading a bill and actually understanding its political impacts are two very different things. AI is already pretty good at reading 800 pages of bill text in 30 seconds. This tool is designed to be a force multiplier. It sets you up to succeed and gives you more time to focus on doing just that.
+                </p>
+                <p>
+                    I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules. It generates a <strong>Verification Guide</strong> with specific page numbers for every claim because you should never trust what someone else or AI tells you is true—verify it.
                 </p>
             </div>
 
             <div>
                 <h3 class="text-xl font-bold text-slate-900 mb-3">How it works</h3>
                 <p>
-                    It’s not magic; it’s a pipeline. The system monitors the official House repository (docs.house.gov) every 60 seconds. When a new file drops, it pulls the text, cleans the formatting, and runs it through a tuned AI model.
+                    It’s not magic; it’s a pipeline. The system monitors the official House repository (<code>docs.house.gov</code>) and the Majority Leader's site every 60 seconds[cite: 11, 14]. 
                 </p>
                 <p>
-                    I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules. Crucially, it generates a <strong>Verification Guide</strong> with specific page numbers for every claim—because you should never trust a summary without seeing the source text.
+                    It runs a "Gap Analysis"—comparing the Majority Leader's schedule against the official Clerk's feed to instantly flag added items or dropped bills[cite: 15, 16]. When a new text is filed, the AI scans the raw XML, extracts the key data points, and generates the dashboard summary immediately[cite: 19].
                 </p>
             </div>
 
