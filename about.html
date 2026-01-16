@@ -11,16 +11,30 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         h1, h2, h3, .serif { font-family: 'Merriweather', serif; }
-        /* Tighter step connector for condensed layout */
+        
+        /* Interactive Step Connector */
         .step-connector::after {
             content: '';
             position: absolute;
-            top: 1.5rem;
-            left: 50%;
-            width: 100%;
+            top: 2.5rem;
+            left: 16%;
+            right: 16%;
             height: 2px;
             background: #e2e8f0;
-            z-index: -1;
+            z-index: 0;
+        }
+        
+        /* Smooth fade for hover details */
+        .hover-detail {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+        }
+        .group:hover .hover-detail {
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 0.75rem;
         }
     </style>
 </head>
@@ -44,97 +58,129 @@
     </div>
   </nav>
 
-  <header class="bg-white border-b border-slate-200 py-8 px-6 text-center">
+  <header class="bg-white border-b border-slate-200 py-10 px-6 text-center">
       <div class="max-w-3xl mx-auto">
-          <h1 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2 leading-tight serif">
+          <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-3 leading-tight serif">
               About The Capitol Wire
           </h1>
-          <p class="text-base text-slate-600 font-light">
+          <p class="text-lg text-slate-600 font-light">
               Why I built an AI to read Congress so you don't have to.
           </p>
       </div>
   </header>
 
-  <main class="flex-grow px-4 py-6">
-    <div class="max-w-5xl mx-auto space-y-4">
+  <main class="flex-grow px-4 py-8">
+    <div class="max-w-5xl mx-auto space-y-6">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-xl">💸</div>
-                    <h3 class="text-base font-bold text-slate-900 serif">Why is this free?</h3>
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="text-2xl">💸</div>
+                    <h3 class="text-lg font-bold text-slate-900 serif">Why is this free?</h3>
                 </div>
-                <p class="text-slate-600 text-sm leading-snug">
-                    Because I'm not trying to sell you a $20,000 subscription. The data is public, the hosting is cheap, and I had time on vacation to make it.
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Because I'm not trying to sell you a $20,000 subscription. The data is public, the hosting is cheap, and I had time on break to make it.
                 </p>
             </div>
-            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-xl">🛠️</div>
-                    <h3 class="text-base font-bold text-slate-900 serif">Why I built it</h3>
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="text-2xl">🛠️</div>
+                    <h3 class="text-lg font-bold text-slate-900 serif">Why I built it</h3>
                 </div>
-                <p class="text-slate-600 text-sm leading-snug">
-                    It honestly blew my mind there wasn't already an automated system to parse it instantly. We shouldn't have to manually hunt for information that is digitally available.
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    It honestly blew my mind there wasn't already an automated system to parse this instantly. We shouldn't have to manually hunt for information that is digitally available.
                 </p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-xl">⚡</div>
-                    <h3 class="text-base font-bold text-slate-900 serif">A Force Multiplier</h3>
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="text-2xl">⚡</div>
+                    <h3 class="text-lg font-bold text-slate-900 serif">A Force Multiplier</h3>
                 </div>
-                <p class="text-slate-600 text-sm leading-snug mb-2">
-                    This bot isn't here to replace the Legislative Assistant. It's here to keep you from drowning.
+                <p class="text-slate-600 text-sm leading-relaxed mb-3">
+                    I don't want this bot to replace the Legislative Assistant. It's here to keep you from drowning.
                 </p>
-                <p class="text-slate-600 text-sm leading-snug">
+                <p class="text-slate-600 text-sm leading-relaxed">
                     Reading a bill and actually understanding its political impacts are two different things. AI is great at reading 800 pages in 30 seconds. This tool sets you up to succeed and gives you time to focus on strategy.
                 </p>
             </div>
-            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-xl">🛡️</div>
-                    <h3 class="text-base font-bold text-slate-900 serif">Verification Systems</h3>
+            <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="text-2xl">📋</div>
+                    <h3 class="text-lg font-bold text-slate-900 serif">Automated Policy Briefs</h3>
                 </div>
-                <p class="text-slate-600 text-sm leading-snug mb-2">
+                <p class="text-slate-600 text-sm leading-relaxed mb-3">
                     I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules.
                 </p>
-                <p class="text-slate-600 text-sm leading-snug">
-                    Crucially, it generates a <span class="font-bold text-blue-700">Verification Guide</span> with specific page numbers for every claim. Never trust what AI tells you—verify it.
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    It outputs a comprehensive policy brief including executive summaries and page-cited verification guides, allowing you to instantly audit the claims against the source text.
                 </p>
             </div>
         </div>
 
-        <div class="pt-6">
-            <div class="text-center mb-6">
-                <h3 class="text-lg font-bold text-slate-900 serif">How It Works</h3>
-                <p class="text-slate-500 text-xs">The pipeline from House Clerk to your dashboard.</p>
+        <div class="pt-10">
+            <div class="text-center mb-10">
+                <h3 class="text-xl font-bold text-slate-900 serif">How It Works</h3>
+                <p class="text-slate-500 text-xs uppercase tracking-widest mt-1">Hover over a step to see the logic</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
-                <div class="text-center relative z-10">
-                    <div class="w-10 h-10 mx-auto bg-white border border-slate-200 rounded-full flex items-center justify-center text-sm shadow-sm mb-2 font-bold text-slate-400">1</div>
-                    <h4 class="font-bold text-sm text-slate-900 mb-1">Monitor</h4>
-                    <p class="text-[10px] text-slate-500 px-2 leading-tight">Scans <span class="font-mono bg-slate-100 px-1 rounded">docs.house.gov</span> every 60 seconds.</p>
+            <div class="relative hidden md:block step-connector mb-8"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                
+                <div class="group bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-default text-center relative bg-white">
+                    <div class="w-12 h-12 mx-auto bg-slate-50 border border-slate-200 group-hover:bg-blue-50 group-hover:border-blue-200 rounded-full flex items-center justify-center text-lg font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-4">1</div>
+                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-blue-700">Dual-Source Monitoring</h4>
+                    <p class="text-xs text-slate-500 px-2 leading-relaxed">Scans official repositories every 60 seconds.</p>
+                    
+                    <div class="hover-detail bg-slate-50 rounded p-3 text-left border-t border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Technical Logic</p>
+                        <ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-3">
+                            <li>Polls <span class="font-mono">docs.house.gov</span> [cite: 14]</li>
+                            <li>Checks Majority Leader schedule</li>
+                            <li>Redis hashing for state changes [cite: 31]</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="text-center relative z-10">
-                    <div class="w-10 h-10 mx-auto bg-white border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm shadow-md mb-2 font-bold">2</div>
-                    <h4 class="font-bold text-sm text-slate-900 mb-1">Gap Analysis</h4>
-                    <p class="text-[10px] text-slate-500 px-2 leading-tight">Flags "Advance Notice" items and extracts XML text.</p>
+
+                <div class="group bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-default text-center relative bg-white">
+                    <div class="w-12 h-12 mx-auto bg-slate-50 border border-slate-200 group-hover:bg-blue-50 group-hover:border-blue-200 rounded-full flex items-center justify-center text-lg font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-4">2</div>
+                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-blue-700">Gap Analysis Engine</h4>
+                    <p class="text-xs text-slate-500 px-2 leading-relaxed">Compares schedules to identify hidden changes.</p>
+                    
+                    <div class="hover-detail bg-slate-50 rounded p-3 text-left border-t border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Technical Logic</p>
+                        <ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-3">
+                            <li>Flags "Advance Notice" items [cite: 16]</li>
+                            <li>Extracts XML & PDF text</li>
+                            <li>Parses "Added" timestamps [cite: 17]</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="text-center relative z-10">
-                    <div class="w-10 h-10 mx-auto bg-white border border-slate-200 rounded-full flex items-center justify-center text-sm shadow-sm mb-2 font-bold text-slate-400">3</div>
-                    <h4 class="font-bold text-sm text-slate-900 mb-1">Verify</h4>
-                    <p class="text-[10px] text-slate-500 px-2 leading-tight">Generates citations and pushes to live dashboard.</p>
+
+                <div class="group bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all duration-300 cursor-default text-center relative bg-white">
+                    <div class="w-12 h-12 mx-auto bg-slate-50 border border-slate-200 group-hover:bg-blue-50 group-hover:border-blue-200 rounded-full flex items-center justify-center text-lg font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-4">3</div>
+                    <h4 class="font-bold text-slate-900 mb-1 group-hover:text-blue-700">Delivery & Sync</h4>
+                    <p class="text-xs text-slate-500 px-2 leading-relaxed">Generates brief and broadcasts alerts.</p>
+                    
+                    <div class="hover-detail bg-slate-50 rounded p-3 text-left border-t border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Technical Logic</p>
+                        <ul class="text-[11px] text-slate-600 space-y-1 list-disc pl-3">
+                            <li>Generates stable DB IDs [cite: 26]</li>
+                            <li>Broadcasts via AWS SES [cite: 32]</li>
+                            <li>Upserts to Supabase [cite: 28]</li>
+                        </ul>
+                    </div>
                 </div>
                 
-                <div class="hidden md:block absolute top-5 left-[16%] right-[16%] h-px bg-slate-200 -z-0"></div>
             </div>
         </div>
 
-        <div class="text-center pt-8 border-t border-slate-200">
+        <div class="text-center pt-10 border-t border-slate-200 pb-8">
             <p class="font-bold text-slate-900 text-base serif">— Zachary Florman</p>
+            <a href="mailto:ZFlorman@gmail.com" class="text-xs text-slate-400 hover:text-blue-600 transition-colors font-medium mt-1 inline-block">ZFlorman@gmail.com</a>
         </div>
 
     </div>
