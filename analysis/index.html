@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legislative Policy Brief | The Capitol Wire</title>
 
-    <!-- FIXED: plain URLs (not markdown) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
@@ -135,13 +134,15 @@
                 </div>
 
                 <div id="verification-container" class="lg:col-span-12 hidden mt-2">
-                    <div class="bg-slate-50 p-6 rounded border border-slate-300 shadow-sm border-l-4 border-slate-600">
-                         <div class="flex items-center gap-2 mb-1">
-                             <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wide">🔍 Verification Guide</h3>
-                             <span class="bg-slate-200 text-slate-600 text-[9px] font-bold px-1.5 py-0.5 rounded">BETA</span>
+                    <div class="bg-slate-50 p-5 rounded border border-slate-300 shadow-sm border-l-4 border-slate-600">
+                         <div class="flex items-center justify-between mb-4">
+                             <div class="flex items-center gap-2">
+                                 <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wide">🔍 Verification Guide</h3>
+                                 <span class="bg-slate-200 text-slate-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-slate-300">BETA</span>
+                             </div>
+                             <p class="text-[10px] text-slate-500 font-medium hidden md:block">Specific citations to audit the bill text yourself.</p>
                          </div>
-                         <p class="text-xs text-slate-500 mb-5 font-medium">Don't trust AI? Neither do I. Use these specific citations to audit the bill text yourself.</p>
-                         <div id="verification-list" class="grid grid-cols-1 gap-4"></div>
+                         <div id="verification-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
                     </div>
                 </div>
 
@@ -180,11 +181,9 @@
   </div>
 
     <script>
-        // FIXED: plain URL string (not markdown)
         const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjcnNkeXlxcmJ0eHl6aHZlc3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzIzOTYsImV4cCI6MjA4MTc0ODM5Nn0.FzTqjfTSDsz4MnLKNHlPcXdyR53UvnOmkV0bjZSbCGw'; 
 
-        // Guard: ensure Supabase loaded
         if (!window.supabase) {
             document.getElementById('loading-msg').innerText = "Error: Supabase script failed to load.";
             console.error("Supabase library not loaded. Check script src URLs.");
@@ -329,7 +328,7 @@
                 document.getElementById('rule-mode-container')?.classList.remove('hidden');
                 document.getElementById('bill-mode-container')?.classList.add('hidden');
                 document.getElementById('header-status-badge')?.classList.add('hidden'); 
-                document.getElementById('verification-container')?.classList.add('hidden'); // ensure hidden in rule mode
+                document.getElementById('verification-container')?.classList.add('hidden'); 
 
                 const sa = ai.sneak_alert || {};
                 const detected = !!sa.detected;
@@ -385,26 +384,35 @@
                      document.getElementById('provisions-container').classList.add('hidden');
                 }
 
-                // VERIFICATION GUIDE (FIXED: v.verify, not v.verify_text)
+                // UPDATED VERIFICATION LOGIC
                 const vGuide = ai.verification_guide || [];
                 if (vGuide && Array.isArray(vGuide) && vGuide.length > 0) {
                     document.getElementById('verification-container').classList.remove('hidden');
+                    
                     const vListHtml = vGuide.map(v => `
-                        <div class="bg-white p-3 rounded border border-slate-200 shadow-sm flex flex-col gap-2">
-                             <div class="flex items-start justify-between gap-4">
-                                 <div class="font-bold text-sm text-slate-800 leading-snug">Claim: ${v.claim || ""}</div>
-                                 <div class="shrink-0 text-xs font-mono font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded border border-blue-100 whitespace-nowrap">
-                                    ${v.source || "Loc: N/A"}
-                                 </div>
+                        <div class="bg-white p-3 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors flex flex-col h-full">
+                             <div class="flex items-center justify-between gap-2 mb-2 border-b border-slate-100 pb-2">
+                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Claim Analysis</span>
+                                 <span class="font-mono text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 whitespace-nowrap">
+                                    ${v.source || "Ref: N/A"}
+                                 </span>
                              </div>
-                             <div class="border-t border-slate-100 pt-2 mt-1">
-                                 <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Verify: Look for text...</div>
-                                 <div class="text-xs text-slate-600 italic font-medium font-serif bg-slate-50 p-1.5 rounded text-opacity-90">
-                                    "${v.verify_text || "..."}"
+                             
+                             <p class="text-xs font-bold text-slate-800 leading-snug mb-3">
+                                ${v.claim || "Claim not specified"}
+                             </p>
+
+                             <div class="mt-auto bg-slate-50 border border-slate-100 rounded p-2 relative group">
+                                 <div class="absolute -top-1.5 left-2 bg-white px-1 text-[8px] font-bold text-slate-400 uppercase tracking-wider border border-slate-100 rounded">
+                                    Verify Text
                                  </div>
+                                 <p class="text-xs text-slate-600 italic font-medium serif leading-relaxed pt-1">
+                                    "${v.verify_text || "..."}"
+                                 </p>
                              </div>
                         </div>
                     `).join('');
+                    
                     document.getElementById('verification-list').innerHTML = vListHtml;
                 } else {
                     document.getElementById('verification-container').classList.add('hidden');
