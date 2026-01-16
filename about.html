@@ -11,6 +11,16 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         h1, h2, h3, .serif { font-family: 'Merriweather', serif; }
+        .step-connector::after {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: -1;
+        }
     </style>
 </head>
 <body class="text-slate-800 antialiased flex flex-col min-h-screen">
@@ -33,72 +43,96 @@
     </div>
   </nav>
 
-  <main class="flex-grow pt-12 pb-20 px-6">
-    <div class="max-w-3xl mx-auto bg-white border border-slate-200 shadow-sm rounded-xl p-8 md:p-12">
-        
-        <div class="mb-10 border-b border-slate-100 pb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4 leading-tight">
-                About The Capitol Wire
-            </h1>
-            <p class="text-lg text-slate-600 serif italic">
-                Why I built an AI to read Congress so you don't have to.
-            </p>
+  <header class="bg-white border-b border-slate-200 pt-16 pb-12 px-6 text-center">
+      <div class="max-w-3xl mx-auto">
+          <h1 class="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight serif">
+              Legislative intelligence for the modern staffer.
+          </h1>
+          <p class="text-lg md:text-xl text-slate-600 leading-relaxed font-light">
+              Why I built an AI to read Congress so you don't have to.
+          </p>
+      </div>
+  </header>
+
+  <main class="flex-grow px-6 py-12">
+    <div class="max-w-5xl mx-auto space-y-16">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
+                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-xl mb-4">💸</div>
+                <h3 class="text-lg font-bold text-slate-900 mb-3 serif">Why is this free?</h3>
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Because I'm not trying to sell you a $20,000 subscription. The data is public, the hosting is cheap, and I had time on vacation to make it. No ads, no tracking, no catch.
+                </p>
+            </div>
+            <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
+                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-xl mb-4">🛠️</div>
+                <h3 class="text-lg font-bold text-slate-900 mb-3 serif">Why I built it</h3>
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    It honestly blew my mind there wasn't already an automated system to parse this instantly. We shouldn't have to manually hunt for information that is digitally available.
+                </p>
+            </div>
         </div>
 
-        <div class="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-8">
+        <div class="bg-slate-900 rounded-2xl p-8 md:p-12 text-white relative overflow-hidden">
+            <div class="relative z-10 max-w-3xl mx-auto text-center">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 serif">A Force Multiplier</h2>
+                <p class="text-slate-300 text-lg leading-relaxed mb-8 font-light">
+                    This bot isn't here to replace the Legislative Assistant. It's here to keep you from drowning. Reading a bill and actually understanding its political impacts are two very different things.
+                </p>
+                <div class="bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg p-6 text-left inline-block">
+                    <p class="text-sm font-semibold text-blue-200 uppercase tracking-wider mb-2">The Verification Promise</p>
+                    <p class="text-slate-200 leading-relaxed">
+                        "I’ve prompted the model to look for specific staffer concerns: effective dates, appropriations triggers, and procedural rules. It generates a <span class="text-white font-bold underline decoration-blue-400 decoration-2 underline-offset-2">Verification Guide</span> with specific page numbers for every claim because you should never trust what AI tells you—verify it."
+                    </p>
+                </div>
+            </div>
+            <div class="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-blue-600 rounded-full blur-3xl opacity-20"></div>
+        </div>
+
+        <div>
+            <div class="text-center mb-10">
+                <h3 class="text-2xl font-bold text-slate-900 serif">How It Works</h3>
+                <p class="text-slate-500 mt-2">The pipeline from House Clerk to your dashboard.</p>
+            </div>
             
-            <div>
-                <h3 class="text-xl font-bold text-slate-900 mb-3">Why is this free?</h3>
-                <p>
-                    Because I'm not trying to sell you a $20,000 subscription. The data is public, the hosting is cheap, and I had time on vacation to make it.
-                </p>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                <div class="text-center relative z-10">
+                    <div class="w-16 h-16 mx-auto bg-white border-2 border-slate-200 rounded-full flex items-center justify-center text-2xl shadow-sm mb-4 font-bold text-slate-300">1</div>
+                    <h4 class="font-bold text-slate-900 mb-2">Monitor</h4>
+                    <p class="text-xs text-slate-500 px-4">Scans <span class="font-mono bg-slate-100 px-1 rounded">docs.house.gov</span> and the Majority Leader's site every 60 seconds for new files.</p>
+                </div>
+                
+                <div class="text-center relative z-10">
+                    <div class="w-16 h-16 mx-auto bg-white border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-2xl shadow-md mb-4 font-bold">2</div>
+                    <h4 class="font-bold text-slate-900 mb-2">Gap Analysis</h4>
+                    <p class="text-xs text-slate-500 px-4">Compares schedules to flag "Advance Notice" items and extracts raw XML text.</p>
+                </div>
 
-            <div>
-                <h3 class="text-xl font-bold text-slate-900 mb-3">Why I built it</h3>
-                <p>
-                    It honestly blew my mind there wasn't already an automated system to parse it instantly. We shouldn't have to manually hunt for information that is digitally available.
-                </p>
+                <div class="text-center relative z-10">
+                    <div class="w-16 h-16 mx-auto bg-white border-2 border-slate-200 rounded-full flex items-center justify-center text-2xl shadow-sm mb-4 font-bold text-slate-300">3</div>
+                    <h4 class="font-bold text-slate-900 mb-2">Verify</h4>
+                    <p class="text-xs text-slate-500 px-4">Generates summary & page citations, then pushes to the live dashboard instantly.</p>
+                </div>
+                
+                <div class="hidden md:block absolute top-8 left-[16%] right-[16%] h-0.5 bg-slate-200 -z-0"></div>
             </div>
+        </div>
 
-            <div>
-                <h3 class="text-xl font-bold text-slate-900 mb-3">A Force Multiplier</h3>
-                <p>
-                    This bot isn't here to replace the Legislative Assistant. It's here to keep you from drowning. 
-                </p>
-                <p>
-                    Reading a bill and actually understanding its political impacts are two very different things. AI is already pretty good at reading 800 pages of bill text in 30 seconds. This tool is designed to be a force multiplier. It sets you up to succeed and gives you more time to focus on doing just that.
-                </p>
-                <p>
-                    I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules. It generates a <strong>Verification Guide</strong> with specific page numbers for every claim because you should never trust what someone else or AI tells you is true—verify it.
-                </p>
-            </div>
-
-            <div>
-                <h3 class="text-xl font-bold text-slate-900 mb-3">How it works</h3>
-                <p>
-                    It’s not magic; it’s a pipeline. The system monitors the official House repository (<code>docs.house.gov</code>) and the Majority Leader's site every 60 seconds[cite: 11, 14]. 
-                </p>
-                <p>
-                    It runs a "Gap Analysis"—comparing the Majority Leader's schedule against the official Clerk's feed to instantly flag added items or dropped bills[cite: 15, 16]. When a new text is filed, the AI scans the raw XML, extracts the key data points, and generates the dashboard summary immediately[cite: 19].
-                </p>
-            </div>
-
-            <p class="mt-8 pt-6 border-t border-slate-100">
-                <span class="font-bold text-slate-900">— Zachary Florman</span><br>
-                <span class="text-sm text-slate-500">Developer & Former Staffer</span>
-            </p>
+        <div class="text-center pt-12 border-t border-slate-200">
+            <p class="font-bold text-slate-900 text-lg serif">— Zachary Florman</p>
+            <p class="text-sm text-slate-500 uppercase tracking-wide mt-1">Developer & Former Staffer</p>
         </div>
 
     </div>
-
-    <div class="text-center mt-12">
-        <a href="/dashboard/" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded shadow-lg transition-transform transform hover:-translate-y-0.5">
-            View Live Dashboard
-        </a>
-    </div>
-
   </main>
+
+  <footer class="bg-slate-50 border-t border-slate-200 py-12 text-center">
+      <p class="text-sm text-slate-500 mb-4 font-medium uppercase tracking-wide">Ready to see it in action?</p>
+      <a href="/dashboard/" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded shadow-lg transition-transform transform hover:-translate-y-0.5">
+          View Live Dashboard
+      </a>
+  </footer>
 
 </body>
 </html>
