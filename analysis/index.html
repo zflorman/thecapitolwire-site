@@ -287,6 +287,7 @@
                  // 1. Party Badges (Blue/Red)
                  if (partyItems && Array.isArray(partyItems)) {
                      partyItems.forEach(p => {
+                        if(typeof p !== 'string') return;
                         const pLower = p.toLowerCase();
                         if (pLower.includes("democrat")) {
                             html += `<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded border border-blue-200 uppercase tracking-tight mr-1 mb-1">Democrats</span>`;
@@ -301,7 +302,7 @@
                  // 2. Organization Tags (Gray)
                  if (items && Array.isArray(items)) {
                     items.forEach(i => {
-                        html += `<span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-semibold rounded border border-slate-200 uppercase tracking-tight mr-1 mb-1">${i}</span>`;
+                        if(i) html += `<span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-semibold rounded border border-slate-200 uppercase tracking-tight mr-1 mb-1">${i}</span>`;
                     });
                  }
                  
@@ -370,28 +371,36 @@
                      document.getElementById('provisions-container').classList.add('hidden');
                 }
 
-                // --- NEW: VERIFICATION GUIDE RENDERER ---
-                const vGuide = ai.verification_guide || [];
-                if (vGuide && Array.isArray(vGuide) && vGuide.length > 0) {
-                    document.getElementById('verification-container').classList.remove('hidden');
-                    const vListHtml = vGuide.map(v => `
-                        <div class="bg-white p-3 rounded border border-slate-200 shadow-sm flex flex-col gap-2">
-                             <div class="flex items-start justify-between gap-4">
-                                 <div class="font-bold text-sm text-slate-800 leading-snug">Claim: ${v.claim}</div>
-                                 <div class="shrink-0 text-xs font-mono font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded border border-blue-100 whitespace-nowrap">
-                                    ${v.source || "Loc: N/A"}
-                                 </div>
-                             </div>
-                             <div class="border-t border-slate-100 pt-2 mt-1">
-                                 <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Verify: Look for text...</div>
-                                 <div class="text-xs text-slate-600 italic font-medium font-serif bg-slate-50 p-1.5 rounded text-opacity-90">
-                                    "${v.verify_text || "..."}"
-                                 </div>
-                             </div>
-                        </div>
-                    `).join('');
-                    document.getElementById('verification-list').innerHTML = vListHtml;
-                } else {
+                // --- NEW: VERIFICATION GUIDE RENDERER (WRAPPED IN TRY/CATCH) ---
+                try {
+                    const vGuide = ai.verification_guide || [];
+                    if (vGuide && Array.isArray(vGuide) && vGuide.length > 0) {
+                        document.getElementById('verification-container').classList.remove('hidden');
+                        const vListHtml = vGuide.map(v => {
+                            if (!v || typeof v !== 'object') return "";
+                            return `
+                                <div class="bg-white p-3 rounded border border-slate-200 shadow-sm flex flex-col gap-2">
+                                     <div class="flex items-start justify-between gap-4">
+                                         <div class="font-bold text-sm text-slate-800 leading-snug">Claim: ${v.claim || "Not specified"}</div>
+                                         <div class="shrink-0 text-xs font-mono font-bold text-blue-700 bg-blue-50 px-2 py-1 rounded border border-blue-100 whitespace-nowrap">
+                                            ${v.source || v.source_location || "Loc: N/A"}
+                                         </div>
+                                     </div>
+                                     <div class="border-t border-slate-100 pt-2 mt-1">
+                                         <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Verify: Look for text...</div>
+                                         <div class="text-xs text-slate-600 italic font-medium font-serif bg-slate-50 p-1.5 rounded text-opacity-90">
+                                            "${v.verify_text || "..."}"
+                                         </div>
+                                     </div>
+                                </div>
+                            `;
+                        }).join('');
+                        document.getElementById('verification-list').innerHTML = vListHtml;
+                    } else {
+                        document.getElementById('verification-container').classList.add('hidden');
+                    }
+                } catch(e) {
+                    console.error("Verification render error", e);
                     document.getElementById('verification-container').classList.add('hidden');
                 }
                 // ----------------------------------------
