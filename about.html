@@ -13,150 +13,165 @@
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         h1, h2, h3, .serif { font-family: 'Merriweather', serif; }
         
-        /* Interactive Step Connector - Adjusted for compact layout */
+        /* Interactive Step Connector */
         .step-connector::after {
             content: '';
             position: absolute;
-            top: 2rem;
+            top: 2.25rem;
             left: 16%;
             right: 16%;
-            height: 1px;
+            height: 2px;
             background: #e2e8f0;
             z-index: 0;
         }
         
+        /* Smooth expand for details */
         .hover-detail {
             max-height: 0;
             opacity: 0;
             overflow: hidden;
-            transition: all 0.3s ease-in-out;
+            transition: all 0.4s ease-in-out;
         }
         .group:hover .hover-detail {
-            max-height: 150px;
+            max-height: 300px;
             opacity: 1;
-            margin-top: 0.5rem;
+            margin-top: 1rem;
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased flex flex-col min-h-screen text-xs md:text-sm">
+<body class="text-slate-800 antialiased flex flex-col min-h-screen text-sm">
 
   <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-    <div class="max-w-[1600px] mx-auto px-4 py-2 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-          <a href="/" class="font-bold text-blue-700 text-base flex items-center gap-2 serif tracking-tight">
+    <div class="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+          <a href="/" class="font-bold text-blue-700 text-lg flex items-center gap-2 serif tracking-tight">
             <span aria-hidden="true">🏛️</span> The Capitol Wire
           </a>
-          <span class="hidden md:inline-block h-4 w-px bg-slate-200"></span>
-          <span class="hidden md:inline-block text-[10px] font-bold text-slate-500 uppercase tracking-wider">About</span>
+          <span class="hidden md:inline-block h-5 w-px bg-slate-200"></span>
+          <span class="hidden md:inline-block text-xs font-bold text-slate-500 uppercase tracking-wider">About</span>
       </div>
-      <div class="flex items-center gap-3">
-        <a href="/dashboard/" class="text-[11px] font-bold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Dashboard</a>
-        <button class="text-[10px] font-bold bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded shadow-sm transition-colors" onclick="openModal()">
+      <div class="flex items-center gap-4">
+        <a href="/dashboard/" class="text-xs font-bold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Dashboard</a>
+        <button class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded shadow-sm transition-colors" onclick="openModal()">
           Get Alerts
         </button>
       </div>
     </div>
   </nav>
 
-  <header class="bg-white border-b border-slate-200 py-3 px-4 text-center">
-      <h1 class="text-lg font-bold text-slate-900 serif">About The Capitol Wire</h1>
+  <header class="bg-white border-b border-slate-200 py-4 px-6 text-center">
+      <h1 class="text-xl font-bold text-slate-900 serif">About The Capitol Wire</h1>
   </header>
 
-  <main class="flex-grow px-4 py-4">
-    <div class="max-w-4xl mx-auto space-y-3">
+  <main class="flex-grow px-6 py-8">
+    <div class="max-w-4xl mx-auto space-y-6">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="bg-white p-3 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div class="flex items-center gap-2 mb-1">
-                    <div class="text-base">💸</div>
-                    <h3 class="text-sm font-bold text-slate-900 serif">Why is this free?</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-5 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="text-xl">💸</div>
+                    <h3 class="text-base font-bold text-slate-900 serif">Why is this free?</h3>
                 </div>
-                <p class="text-slate-600 text-xs leading-tight">
+                <p class="text-slate-600 leading-snug">
                     Because I'm not trying to sell you a $20,000 subscription. The data is public, the hosting is cheap, and I had time on break to make it.
                 </p>
             </div>
-            <div class="bg-white p-3 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div class="flex items-center gap-2 mb-1">
-                    <div class="text-base">🛠️</div>
-                    <h3 class="text-sm font-bold text-slate-900 serif">Why I built it</h3>
+            <div class="bg-white p-5 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="text-xl">🛠️</div>
+                    <h3 class="text-base font-bold text-slate-900 serif">Why I built it</h3>
                 </div>
-                <p class="text-slate-600 text-xs leading-tight">
+                <p class="text-slate-600 leading-snug">
                     It honestly blew my mind there wasn't already an automated system to parse this instantly. We shouldn't have to manually hunt for information that is digitally available.
                 </p>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="bg-white p-3 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div class="flex items-center gap-2 mb-1">
-                    <div class="text-base">⚡</div>
-                    <h3 class="text-sm font-bold text-slate-900 serif">A Force Multiplier</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-5 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="text-xl">⚡</div>
+                    <h3 class="text-base font-bold text-slate-900 serif">A Force Multiplier</h3>
                 </div>
-                <p class="text-slate-600 text-xs leading-tight mb-1">
+                <p class="text-slate-600 leading-snug mb-2">
                     I don't want this bot to replace the Legislative Assistant. It's here to keep you from drowning.
                 </p>
-                <p class="text-slate-600 text-xs leading-tight">
+                <p class="text-slate-600 leading-snug">
                     Reading a bill and understanding its political impacts are different things. AI is great at reading 800 pages in 30 seconds. This tool gives you time to focus on strategy.
                 </p>
             </div>
-            <div class="bg-white p-3 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div class="flex items-center gap-2 mb-1">
-                    <div class="text-base">📋</div>
-                    <h3 class="text-sm font-bold text-slate-900 serif">Automated Policy Briefs</h3>
+            <div class="bg-white p-5 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="text-xl">📋</div>
+                    <h3 class="text-base font-bold text-slate-900 serif">Automated Policy Briefs</h3>
                 </div>
-                <p class="text-slate-600 text-xs leading-tight mb-1">
+                <p class="text-slate-600 leading-snug mb-2">
                     I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules.
                 </p>
-                <p class="text-slate-600 text-xs leading-tight">
+                <p class="text-slate-600 leading-snug">
                     Crucially, it also generates a Verification Guide with specific page numbers for every claim. Never trust what AI or someone else tells you about a bill before telling your boss about it—verify it.
                 </p>
             </div>
         </div>
 
-        <div class="pt-4">
-            <div class="text-center mb-4">
-                <h3 class="text-sm font-bold text-slate-900 serif">How It Works</h3>
-                <p class="text-[10px] text-slate-400 uppercase tracking-wide">Hover to see logic</p>
+        <div class="pt-8">
+            <div class="text-center mb-8">
+                <h3 class="text-lg font-bold text-slate-900 serif">How It Works</h3>
+                <p class="text-xs text-slate-400 uppercase tracking-wide font-medium mt-1">Hover over a step to see the architecture</p>
             </div>
             
-            <div class="relative hidden md:block step-connector mb-4"></div>
+            <div class="relative hidden md:block step-connector mb-8"></div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 relative z-10">
-                <div class="group bg-white p-3 rounded border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all cursor-default text-center">
-                    <div class="w-8 h-8 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-xs font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-2">1</div>
-                    <h4 class="font-bold text-xs text-slate-900">Monitor</h4>
-                    <p class="text-[10px] text-slate-500 leading-tight">Scans every 60s.</p>
-                    <div class="hover-detail bg-slate-50 rounded p-2 text-left border-t border-slate-100 mt-2">
-                        <p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Logic</p>
-                        <ul class="text-[9px] text-slate-600 list-disc pl-3"><li>docs.house.gov</li><li>Leader Schedule</li><li>Redis Hashing</li></ul>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                <div class="group bg-white p-5 rounded border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all cursor-default text-center relative bg-white">
+                    <div class="w-10 h-10 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-3">1</div>
+                    <h4 class="font-bold text-slate-900 group-hover:text-blue-700">Monitor</h4>
+                    <p class="text-xs text-slate-500 mt-1">Dual-source polling every 60s.</p>
+                    
+                    <div class="hover-detail bg-slate-50 rounded p-4 text-left border-t border-slate-100 mt-4 shadow-inner">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Technical Specs</p>
+                        <ul class="text-xs text-slate-600 space-y-2 list-disc pl-3 leading-relaxed">
+                            <li>Polls <strong>docs.house.gov</strong> (XML) and <strong>majorityleader.gov</strong> (HTML) simultaneously[cite: 14].</li>
+                            <li>Uses <strong>Redis</strong> to calculate cryptographic hashes of the schedule, allowing detection of minute changes compared to the previous state[cite: 31].</li>
+                        </ul>
                     </div>
                 </div>
 
-                <div class="group bg-white p-3 rounded border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all cursor-default text-center">
-                    <div class="w-8 h-8 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-xs font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-2">2</div>
-                    <h4 class="font-bold text-xs text-slate-900">Analyze</h4>
-                    <p class="text-[10px] text-slate-500 leading-tight">Finds hidden changes.</p>
-                    <div class="hover-detail bg-slate-50 rounded p-2 text-left border-t border-slate-100 mt-2">
-                        <p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Logic</p>
-                        <ul class="text-[9px] text-slate-600 list-disc pl-3"><li>Gap Analysis</li><li>Extract XML/PDF</li><li>Check Timestamps</li></ul>
+                <div class="group bg-white p-5 rounded border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all cursor-default text-center relative bg-white">
+                    <div class="w-10 h-10 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-3">2</div>
+                    <h4 class="font-bold text-slate-900 group-hover:text-blue-700">Analyze</h4>
+                    <p class="text-xs text-slate-500 mt-1">Gap analysis & Parsing.</p>
+                    
+                    <div class="hover-detail bg-slate-50 rounded p-4 text-left border-t border-slate-100 mt-4 shadow-inner">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Technical Specs</p>
+                        <ul class="text-xs text-slate-600 space-y-2 list-disc pl-3 leading-relaxed">
+                            <li>Performs <strong>Gap Analysis</strong> between Leader's schedule and Clerk's feed to flag "Advance Notice" items[cite: 15].</li>
+                            <li>Parses "Added" timestamps to force new items to the top[cite: 17].</li>
+                            <li>Drills down into sub-tables to find hidden committee reports[cite: 21].</li>
+                        </ul>
                     </div>
                 </div>
 
-                <div class="group bg-white p-3 rounded border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all cursor-default text-center">
-                    <div class="w-8 h-8 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-xs font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-2">3</div>
-                    <h4 class="font-bold text-xs text-slate-900">Deliver</h4>
-                    <p class="text-[10px] text-slate-500 leading-tight">Alerts & Syncs.</p>
-                    <div class="hover-detail bg-slate-50 rounded p-2 text-left border-t border-slate-100 mt-2">
-                        <p class="text-[9px] font-bold text-slate-400 uppercase mb-0.5">Logic</p>
-                        <ul class="text-[9px] text-slate-600 list-disc pl-3"><li>Stable DB IDs</li><li>AWS SES Email</li><li>Supabase Sync</li></ul>
+                <div class="group bg-white p-5 rounded border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all cursor-default text-center relative bg-white">
+                    <div class="w-10 h-10 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-3">3</div>
+                    <h4 class="font-bold text-slate-900 group-hover:text-blue-700">Deliver</h4>
+                    <p class="text-xs text-slate-500 mt-1">Alerts, IDs & Sync.</p>
+                    
+                    <div class="hover-detail bg-slate-50 rounded p-4 text-left border-t border-slate-100 mt-4 shadow-inner">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Technical Specs</p>
+                        <ul class="text-xs text-slate-600 space-y-2 list-disc pl-3 leading-relaxed">
+                            <li>Generates stable <strong>Database IDs</strong> for deep-linking[cite: 26].</li>
+                            <li>Broadcasts via <strong>AWS SES</strong> with a custom rate limiter (~13.8 emails/sec) to avoid throttling[cite: 32].</li>
+                            <li>Upserts final state to <strong>Supabase</strong>[cite: 28].</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="text-center pt-4 border-t border-slate-200 pb-4">
-            <p class="font-bold text-slate-900 text-xs serif">— Zachary Florman</p>
-            <a href="mailto:zach@thecapitolwire.com" class="text-[10px] text-slate-400 hover:text-blue-600 transition-colors font-medium">zach@thecapitolwire.com</a>
+        <div class="text-center pt-8 border-t border-slate-200 pb-4">
+            <p class="font-bold text-slate-900 text-sm serif">— Zachary Florman</p>
+            <a href="mailto:zach@thecapitolwire.com" class="text-xs text-slate-400 hover:text-blue-600 transition-colors font-medium">zach@thecapitolwire.com</a>
         </div>
 
     </div>
