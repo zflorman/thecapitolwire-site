@@ -11,10 +11,11 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         h1, h2, h3, .serif { font-family: 'Merriweather', serif; }
+        /* Tighter step connector for condensed layout */
         .step-connector::after {
             content: '';
             position: absolute;
-            top: 2rem;
+            top: 1.5rem;
             left: 50%;
             width: 100%;
             height: 2px;
@@ -26,7 +27,7 @@
 <body class="text-slate-800 antialiased flex flex-col min-h-screen">
 
   <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-    <div class="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
+    <div class="max-w-[1600px] mx-auto px-6 py-2 flex items-center justify-between">
       <div class="flex items-center gap-4">
           <a href="/" class="font-bold text-blue-700 text-lg flex items-center gap-2 serif tracking-tight">
             <span aria-hidden="true">🏛️</span> The Capitol Wire
@@ -36,113 +37,111 @@
       </div>
       <div class="flex items-center gap-4">
         <a href="/dashboard/" class="text-xs font-semibold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Dashboard</a>
-        <a href="/" class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded shadow-sm transition-colors">
+        <a href="/" class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded shadow-sm transition-colors">
           Back to Briefs
         </a>
       </div>
     </div>
   </nav>
 
-  <header class="bg-white border-b border-slate-200 pt-16 pb-12 px-6 text-center">
+  <header class="bg-white border-b border-slate-200 py-8 px-6 text-center">
       <div class="max-w-3xl mx-auto">
-          <h1 class="text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight serif">
+          <h1 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2 leading-tight serif">
               About The Capitol Wire
           </h1>
-          <p class="text-lg md:text-xl text-slate-600 leading-relaxed font-light">
+          <p class="text-base text-slate-600 font-light">
               Why I built an AI to read Congress so you don't have to.
           </p>
       </div>
   </header>
 
-  <main class="flex-grow px-6 py-12">
-    <div class="max-w-5xl mx-auto space-y-16">
+  <main class="flex-grow px-4 py-6">
+    <div class="max-w-5xl mx-auto space-y-4">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
-                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-xl mb-4">💸</div>
-                <h3 class="text-lg font-bold text-slate-900 mb-3 serif">Why is this free?</h3>
-                <p class="text-slate-600 leading-relaxed text-sm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="text-xl">💸</div>
+                    <h3 class="text-base font-bold text-slate-900 serif">Why is this free?</h3>
+                </div>
+                <p class="text-slate-600 text-sm leading-snug">
                     Because I'm not trying to sell you a $20,000 subscription. The data is public, the hosting is cheap, and I had time on vacation to make it.
                 </p>
             </div>
-            <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
-                <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-xl mb-4">🛠️</div>
-                <h3 class="text-lg font-bold text-slate-900 mb-3 serif">Why I built it</h3>
-                <p class="text-slate-600 leading-relaxed text-sm">
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="text-xl">🛠️</div>
+                    <h3 class="text-base font-bold text-slate-900 serif">Why I built it</h3>
+                </div>
+                <p class="text-slate-600 text-sm leading-snug">
                     It honestly blew my mind there wasn't already an automated system to parse it instantly. We shouldn't have to manually hunt for information that is digitally available.
                 </p>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <div class="bg-slate-900 rounded-2xl p-8 text-white relative overflow-hidden flex flex-col">
-                <div class="relative z-10">
-                    <h2 class="text-xl md:text-2xl font-bold mb-4 serif">A Force Multiplier</h2>
-                    <p class="text-slate-300 leading-relaxed font-light text-sm mb-4">
-                        This bot isn't here to replace the Legislative Assistant. It's here to keep you from drowning. 
-                    </p>
-                    <p class="text-slate-300 leading-relaxed font-light text-sm">
-                        Reading a bill and actually understanding its political impacts are two very different things. AI is already pretty good at reading 800 pages of bill text in 30 seconds. This tool sets you up to succeed and gives you more time to focus on strategy.
-                    </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="text-xl">⚡</div>
+                    <h3 class="text-base font-bold text-slate-900 serif">A Force Multiplier</h3>
                 </div>
-                <div class="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-slate-700 rounded-full blur-2xl opacity-30"></div>
+                <p class="text-slate-600 text-sm leading-snug mb-2">
+                    This bot isn't here to replace the Legislative Assistant. It's here to keep you from drowning.
+                </p>
+                <p class="text-slate-600 text-sm leading-snug">
+                    Reading a bill and actually understanding its political impacts are two different things. AI is great at reading 800 pages in 30 seconds. This tool sets you up to succeed and gives you time to focus on strategy.
+                </p>
             </div>
-
-            <div class="bg-blue-900 rounded-2xl p-8 text-white relative overflow-hidden flex flex-col">
-                <div class="relative z-10">
-                    <h2 class="text-xl md:text-2xl font-bold mb-4 serif">Verification Systems</h2>
-                    <p class="text-blue-100 leading-relaxed font-light text-sm mb-4">
-                        I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules. 
-                    </p>
-                    <p class="text-blue-100 leading-relaxed font-light text-sm">
-                        Crucially, it generates a <span class="font-bold text-white">Verification Guide</span> with specific page numbers for every claim. You should never trust what someone else or an AI tells you is true—always verify it yourself.
-                    </p>
+            <div class="bg-white p-5 rounded-lg border border-slate-200 shadow-sm hover:border-blue-200 transition-colors">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="text-xl">🛡️</div>
+                    <h3 class="text-base font-bold text-slate-900 serif">Verification Systems</h3>
                 </div>
-                <div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-blue-500 rounded-full blur-2xl opacity-30"></div>
-            </div>
-
-        </div>
-
-        <div>
-            <div class="text-center mb-10">
-                <h3 class="text-2xl font-bold text-slate-900 serif">How It Works</h3>
-                <p class="text-slate-500 mt-2">The pipeline from House Clerk to your dashboard.</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-                <div class="text-center relative z-10">
-                    <div class="w-16 h-16 mx-auto bg-white border-2 border-slate-200 rounded-full flex items-center justify-center text-2xl shadow-sm mb-4 font-bold text-slate-300">1</div>
-                    <h4 class="font-bold text-slate-900 mb-2">Monitor</h4>
-                    <p class="text-xs text-slate-500 px-4">Scans <span class="font-mono bg-slate-100 px-1 rounded">docs.house.gov</span> and the Majority Leader's site every 60 seconds for new files.</p>
-                </div>
-                
-                <div class="text-center relative z-10">
-                    <div class="w-16 h-16 mx-auto bg-white border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-2xl shadow-md mb-4 font-bold">2</div>
-                    <h4 class="font-bold text-slate-900 mb-2">Gap Analysis</h4>
-                    <p class="text-xs text-slate-500 px-4">Compares schedules to flag "Advance Notice" items and extracts raw XML text.</p>
-                </div>
-
-                <div class="text-center relative z-10">
-                    <div class="w-16 h-16 mx-auto bg-white border-2 border-slate-200 rounded-full flex items-center justify-center text-2xl shadow-sm mb-4 font-bold text-slate-300">3</div>
-                    <h4 class="font-bold text-slate-900 mb-2">Verify</h4>
-                    <p class="text-xs text-slate-500 px-4">Generates summary & page citations, then pushes to the live dashboard instantly.</p>
-                </div>
-                
-                <div class="hidden md:block absolute top-8 left-[16%] right-[16%] h-0.5 bg-slate-200 -z-0"></div>
+                <p class="text-slate-600 text-sm leading-snug mb-2">
+                    I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules.
+                </p>
+                <p class="text-slate-600 text-sm leading-snug">
+                    Crucially, it generates a <span class="font-bold text-blue-700">Verification Guide</span> with specific page numbers for every claim. Never trust what AI tells you—verify it.
+                </p>
             </div>
         </div>
 
-        <div class="text-center pt-12 border-t border-slate-200">
-            <p class="font-bold text-slate-900 text-lg serif">— Zachary Florman</p>
+        <div class="pt-6">
+            <div class="text-center mb-6">
+                <h3 class="text-lg font-bold text-slate-900 serif">How It Works</h3>
+                <p class="text-slate-500 text-xs">The pipeline from House Clerk to your dashboard.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+                <div class="text-center relative z-10">
+                    <div class="w-10 h-10 mx-auto bg-white border border-slate-200 rounded-full flex items-center justify-center text-sm shadow-sm mb-2 font-bold text-slate-400">1</div>
+                    <h4 class="font-bold text-sm text-slate-900 mb-1">Monitor</h4>
+                    <p class="text-[10px] text-slate-500 px-2 leading-tight">Scans <span class="font-mono bg-slate-100 px-1 rounded">docs.house.gov</span> every 60 seconds.</p>
+                </div>
+                <div class="text-center relative z-10">
+                    <div class="w-10 h-10 mx-auto bg-white border-2 border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-sm shadow-md mb-2 font-bold">2</div>
+                    <h4 class="font-bold text-sm text-slate-900 mb-1">Gap Analysis</h4>
+                    <p class="text-[10px] text-slate-500 px-2 leading-tight">Flags "Advance Notice" items and extracts XML text.</p>
+                </div>
+                <div class="text-center relative z-10">
+                    <div class="w-10 h-10 mx-auto bg-white border border-slate-200 rounded-full flex items-center justify-center text-sm shadow-sm mb-2 font-bold text-slate-400">3</div>
+                    <h4 class="font-bold text-sm text-slate-900 mb-1">Verify</h4>
+                    <p class="text-[10px] text-slate-500 px-2 leading-tight">Generates citations and pushes to live dashboard.</p>
+                </div>
+                
+                <div class="hidden md:block absolute top-5 left-[16%] right-[16%] h-px bg-slate-200 -z-0"></div>
+            </div>
+        </div>
+
+        <div class="text-center pt-8 border-t border-slate-200">
+            <p class="font-bold text-slate-900 text-base serif">— Zachary Florman</p>
         </div>
 
     </div>
   </main>
 
-  <footer class="bg-slate-50 border-t border-slate-200 py-12 text-center">
-      <p class="text-sm text-slate-500 mb-4 font-medium uppercase tracking-wide">Ready to see it in action?</p>
-      <a href="/dashboard/" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded shadow-lg transition-transform transform hover:-translate-y-0.5">
+  <footer class="bg-slate-50 border-t border-slate-200 py-6 text-center">
+      <a href="/dashboard/" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-6 text-sm rounded shadow-sm transition-transform transform hover:-translate-y-0.5">
           View Live Dashboard
       </a>
   </footer>
