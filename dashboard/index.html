@@ -530,8 +530,7 @@
             const { data, error } = await _supabase
                 .from('live_feed')
                 .select('*')
-                .eq('is_visible', true)
-                .order('timestamp', { ascending: false })
+                .order('id', { ascending: true })
                 .limit(100);
             if (error) {
                 console.error("Supabase Error:", error);
@@ -540,12 +539,35 @@
             }
 
             if (data) {
-                const currentHash = JSON.stringify(data.map(d => [d.link, d.timestamp, d.page_timestamp, d.title, !!d.ai_analysis, d.is_visible]));
-                if (currentHash !== lastFetchedHash) {
-                    allBillData = data;
-                    lastFetchedHash = currentHash;
-                    renderFeed();
+                function sig(row) {
+                    return JSON.stringify([
+                        row.link || "",
+                        row.timestamp || "",
+                        row.title || "",
+                        row.category || "",
+                        row.section || "",
+                        row.page_timestamp || ""
+                    ]);
                 }
+
+                const prev = JSON.parse(localStorage.getItem("live_feed_prev") || "{}");
+                const next = {};
+                const latestActivityData = [];
+
+                for (const row of data) {
+                    if (!row.link) continue;
+                    const s = sig(row);
+                    next[row.link] = s;
+                    if (!prev[row.link] || prev[row.link] !== s) {
+                        latestActivityData.push(row);
+                    }
+                }
+
+                localStorage.setItem("live_feed_prev", JSON.stringify(next));
+
+                allBillData = data;
+                window.latestActivityData = latestActivityData;
+                renderFeed();
             }
         } catch (e) { console.error("Feed Crash:", e); }
     }
@@ -578,10 +600,9 @@
             return;
         }
 
-        // Data already arrives ordered by timestamp desc from Supabase
-        const displayData = [...filteredData];
+        const displayData = [...filteredData].sort((a, b) => b.id - a.id);
         const newestItem = displayData[0];
-        const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
+        const bannerTime = newestItem?.page_timestamp || newestItem?.timestamp;
 
         if (bannerTime) {
             statusLine.innerHTML = "Last update from the Clerk: <b>" + bannerTime + "</b>";
@@ -590,14 +611,12 @@
         }
 
         let hasLatest = false;
-        if (newestItem && newestItem.timestamp) {
-            displayData.forEach(item => {
-                if (item.timestamp === newestItem.timestamp) {
-                    latestList.appendChild(createBillItem(item));
-                    hasLatest = true;
-                }
-            });
-        }
+        (window.latestActivityData || []).forEach(item => {
+            if ((item.section || 'THIS_WEEK') === activeSection) {
+                latestList.appendChild(createBillItem(item));
+                hasLatest = true;
+            }
+        });
         latestContainer.style.display = hasLatest ? 'block' : 'none';
 
         CATEGORIES.forEach(cat => {
