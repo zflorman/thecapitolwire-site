@@ -531,7 +531,7 @@
                 .from('live_feed')
                 .select('*')
                 .eq('is_visible', true)
-                .order('timestamp', { ascending: false });
+                .order('timestamp', { ascending: false })
                 .limit(100);
             if (error) {
                 console.error("Supabase Error:", error);
@@ -540,7 +540,7 @@
             }
 
             if (data) {
-                const currentHash = JSON.stringify(data.map(d => d.id));
+                const currentHash = JSON.stringify(data.map(d => [d.link, d.timestamp, d.page_timestamp, d.title, !!d.ai_analysis, d.is_visible]));
                 if (currentHash !== lastFetchedHash) {
                     allBillData = data;
                     lastFetchedHash = currentHash;
@@ -578,7 +578,8 @@
             return;
         }
 
-        const displayData = [...filteredData].sort((a, b) => b.id - a.id);
+        // Data already arrives ordered by timestamp desc from Supabase
+        const displayData = [...filteredData];
         const newestItem = displayData[0];
         const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
 
