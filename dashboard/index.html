@@ -550,21 +550,26 @@
                     ]);
                 }
 
-                const prev = JSON.parse(localStorage.getItem("live_feed_prev") || "{}");
-                const next = {};
+                
+                // Latest Activity = newest Added/Updated timestamp (VISIBLE bills only)
+                const visibleData = (data || []).filter(r => r.is_visible === true);
+
+                // Collect Added/Updated timestamps
+                const activityStamps = visibleData
+                    .filter(r => (r.timestamp || "").includes("Added") || (r.timestamp || "").includes("Updated"))
+                    .map(r => r.timestamp);
+
+                // Find newest timestamp (strings are consistent format)
+                activityStamps.sort((a, b) => (a > b ? -1 : a < b ? 1 : 0));
+                const newestStamp = activityStamps.length ? activityStamps[0] : null;
+
                 const latestActivityData = [];
-
-                for (const row of data) {
-                    if (!row.link) continue;
-                    const s = sig(row);
-                    next[row.link] = s;
-                    if (!prev[row.link] || prev[row.link] !== s) {
-                        latestActivityData.push(row);
+                if (newestStamp) {
+                    for (const row of visibleData) {
+                        if (row.timestamp === newestStamp) {
+                            latestActivityData.push(row);
+                        }
                     }
-                }
-
-                if (latestActivityData.length === 0) {
-                    localStorage.setItem("live_feed_prev", JSON.stringify(next));
                 }
 
                 allBillData = data;
