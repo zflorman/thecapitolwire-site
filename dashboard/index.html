@@ -530,7 +530,8 @@
             const { data, error } = await _supabase
                 .from('live_feed')
                 .select('*')
-                .order('id', { ascending: true })
+                .eq('is_visible', true)
+                .order('timestamp', { ascending: false });
                 .limit(100);
             if (error) {
                 console.error("Supabase Error:", error);
