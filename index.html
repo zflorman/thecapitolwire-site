@@ -427,6 +427,7 @@
             const { data, error } = await _supabase
                 .from('live_feed')
                 .select('*')
+                .eq('is_visible', true)
                 .order('id', { ascending: true })
                 .limit(100);
             if (error) {
@@ -476,10 +477,19 @@
             statusLine.innerHTML = "System Active. Monitoring for updates...";
         }
 
+        
+        // Latest Activity = ALL visible bills that share the NEWEST "Added"/"Updated" timestamp
+        const activityStamps = displayData
+            .filter(i => (i.timestamp || "").includes("Added") || (i.timestamp || "").includes("Updated"))
+            .map(i => i.timestamp);
+
+        activityStamps.sort((a, b) => (a > b ? -1 : a < b ? 1 : 0));
+        const newestStamp = activityStamps.length ? activityStamps[0] : null;
+
         let hasLatest = false;
-        if (newestItem && newestItem.timestamp) {
+        if (newestStamp) {
             displayData.forEach(item => {
-                if (item.timestamp === newestItem.timestamp) {
+                if (item.timestamp === newestStamp) {
                     latestList.appendChild(createBillItem(item));
                     hasLatest = true;
                 }
