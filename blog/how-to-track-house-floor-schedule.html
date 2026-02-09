@@ -17,11 +17,78 @@
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://thecapitolwire.com/blog/how-to-track-house-floor-schedule.html" />
   <meta property="og:title" content="How to Track the House Floor Schedule in Real Time (2026 Guide)" />
-  <meta property="og:description" content="Learn how to track the House floor schedule in real time. Compare manual methods, tracking websites, and automated tools like The Capitol Wire." />
+  <meta property="og:description" content="4 methods for tracking House floor schedules compared: manual tracking, GovTrack/Popvox, news outlets, and automated tools. Learn which delivers instant updates for Hill staffers and advocates." />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="How to Track the House Floor Schedule in Real Time (2026 Guide)" />
+  <meta name="twitter:description" content="4 methods for tracking House floor schedules compared: manual tracking, GovTrack/Popvox, news outlets, and automated tools. Learn which delivers instant updates for Hill staffers and advocates." />
 
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
 
+  <!-- Schema.org Article Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "How to Track the House Floor Schedule in Real Time (2026 Guide)",
+    "description": "Learn how to track the House floor schedule in real time. Compare manual methods, tracking websites, and automated tools like The Capitol Wire.",
+    "author": {
+      "@type": "Organization",
+      "name": "The Capitol Wire"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Capitol Wire",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://thecapitolwire.com/favicon.ico"
+      }
+    },
+    "datePublished": "2026-02-10",
+    "dateModified": "2026-02-10"
+  }
+  </script>
+
+  <!-- FAQ Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{
+      "@type": "Question",
+      "name": "How often does the House floor schedule change?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The House floor schedule can change multiple times per day, with new bills added or existing items updated with hours' notice. Committee prints can replace introduced text at the last minute, making real-time tracking essential for Hill staffers and advocates."
+      }
+    },{
+      "@type": "Question",
+      "name": "What's the fastest way to get House floor alerts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Automated tools like The Capitol Wire deliver email alerts within minutes of schedule changes, compared to hours of delay with news outlets or the need for constant manual checking of government websites."
+      }
+    },{
+      "@type": "Question",
+      "name": "Does GovTrack track the House floor schedule in real time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GovTrack tracks bill lifecycle across both chambers but doesn't focus on real-time floor schedule changes. Updates are not instant, making it better suited for long-term bill tracking rather than immediate floor alerts."
+      }
+    },{
+      "@type": "Question",
+      "name": "Where can I find the official House floor schedule?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The official House floor schedule is published on the House Majority Leader's website (majorityleader.gov) and Docs.House.Gov from the Clerk of the House. However, these require manual checking and don't provide automatic alerts when changes occur."
+      }
+    }]
+  }
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     /* --- MODERN LIGHT THEME (MATCHING MAIN SITE) --- */
@@ -265,6 +332,81 @@
         gap: 24px;
     }
 
+    /* MODAL STYLES */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-overlay.active {
+        display: flex;
+    }
+    .modal-content {
+        width: 92%;
+        max-width: 28rem;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid #e2e8f0;
+        padding: 24px;
+        position: relative;
+    }
+    .modal-close {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        color: #94a3b8;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        border: none;
+        background: none;
+    }
+    .modal-close:hover {
+        color: #1e293b;
+    }
+    .modal-input {
+        margin-top: 16px;
+        width: 100%;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    .modal-input:focus {
+        outline: none;
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .modal-button {
+        margin-top: 12px;
+        width: 100%;
+        border-radius: 6px;
+        background: #0f172a;
+        color: white;
+        font-weight: 700;
+        padding: 10px;
+        font-size: 14px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+    }
+    .modal-button:hover {
+        background: #000;
+    }
+    .modal-status {
+        margin-top: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        min-height: 20px;
+    }
+
     @media (max-width: 768px) {
         h1 { font-size: 1.8rem; }
         h2 { font-size: 1.4rem; }
@@ -281,7 +423,7 @@
       <div class="nav-links">
         <a href="/" class="nav-link">Home</a>
         <a href="/about.html" class="nav-link">About</a>
-        <a href="/#hero" class="sub-btn">Get Alerts</a>
+        <button class="sub-btn" onclick="openModal()" style="border: none; cursor: pointer;">Get Alerts</button>
       </div>
     </div>
   </nav>
@@ -293,7 +435,7 @@
       <div class="cta-box">
         <h3>Get instant House floor alerts</h3>
         <p>Stop refreshing government websites. Subscribe for free real-time updates.</p>
-        <a href="/#hero" class="cta-button">Subscribe Free →</a>
+        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Subscribe Free →</button>
       </div>
 
       <div class="article-header">
@@ -305,33 +447,7 @@
       <p>The House floor schedule changes constantly. Bills get added with hours' notice. Committee prints replace introduced text. Tracking this manually means refreshing <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a>, parsing PDFs, and hoping you didn't miss something.</p>
       <p>Here's how to stay on top of House floor action without refreshing government websites all day.</p>
 
-      <h2>Method 1: Manual Tracking (Free, Time-Intensive)</h2>
-
-      <h3>Official Sources</h3>
-      <p><strong><a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">House Majority Leader's website</a></strong> posts weekly schedules (usually Thursdays) and updates throughout the week. <strong>Limitation:</strong> No alerts, must refresh manually.</p>
-      <p><strong><a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a></strong> is the official repository for bill text and committee reports from the <a href="https://clerk.house.gov/" target="_blank">Clerk of the House</a>. <strong>Limitation:</strong> No consolidated view, hard to track changes.</p>
-
-      <h3>How to Do It</h3>
-      <ol>
-        <li>Bookmark the <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">Majority Leader's schedule page</a></li>
-        <li>Check 2-3 times per day (morning, midday, late afternoon)</li>
-        <li>Cross-reference with <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> for bill text</li>
-      </ol>
-      <p><strong>Bottom line:</strong> Free and official, but time-consuming and easy to miss updates.</p>
-
-      <h2>Method 2: Congressional Tracking Websites (Free)</h2>
-      <h3>GovTrack</h3>
-      <p>Tracks bill status across both chambers with free email alerts for specific bills. <strong>Limitation:</strong> Focuses on bill lifecycle, not real-time floor schedule changes. Updates are not instant.</p>
-      <h3>Popvox</h3>
-      <p>Similar to GovTrack—good for tracking specific legislation as it moves through Congress. <strong>Limitation:</strong> Not designed for real-time floor schedule monitoring. Updates are not instant.</p>
-      <p><strong>Bottom line:</strong> Excellent for long-term bill tracking, but don't deliver instant updates when schedules change.</p>
-
-      <h2>Method 3: News Outlets & Newsletters</h2>
-      <h3>Punchbowl News, Politico Playbook</h3>
-      <p>Daily and weekly summaries of congressional action with political context and analysis. <strong>Limitation:</strong> Typically delayed by hours after schedule changes occur. Do not deliver instant updates.</p>
-      <p><strong>Bottom line:</strong> Great for context and analysis, but not instant notifications when things change.</p>
-
-      <h2>Method 4: Automated Tracking Tools</h2>
+      <h2>Method 1: Automated Tracking Tools (Instant Updates)</h2>
       <h3>The Capitol Wire</h3>
       <p>The Capitol Wire monitors <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> and <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.Gov</a> around the clock and delivers:</p>
       <ul>
@@ -345,8 +461,34 @@
       <div class="cta-box">
         <h3>Try The Capitol Wire Free</h3>
         <p>Instant alerts + AI Policy Briefs for every bill. Used by Hill staffers, advocates, and journalists.</p>
-        <a href="/#hero" class="cta-button">Subscribe Now →</a>
+        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Subscribe Now →</button>
       </div>
+
+      <h2>Method 2: Manual Tracking (Free, Time-Intensive)</h2>
+
+      <h3>Official Sources</h3>
+      <p><strong><a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">House Majority Leader's website</a></strong> posts weekly schedules (usually Thursdays) and updates throughout the week. <strong>Limitation:</strong> No alerts, must refresh manually.</p>
+      <p><strong><a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a></strong> is the official repository for bill text and committee reports from the <a href="https://clerk.house.gov/" target="_blank">Clerk of the House</a>. <strong>Limitation:</strong> No consolidated view, hard to track changes.</p>
+
+      <h3>How to Do It</h3>
+      <ol>
+        <li>Bookmark the <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">Majority Leader's schedule page</a></li>
+        <li>Check 2-3 times per day (morning, midday, late afternoon)</li>
+        <li>Cross-reference with <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> for bill text</li>
+      </ol>
+      <p><strong>Bottom line:</strong> Free and official, but time-consuming and easy to miss updates.</p>
+
+      <h2>Method 3: Congressional Tracking Websites (Free)</h2>
+      <h3>GovTrack</h3>
+      <p>Tracks bill status across both chambers with free email alerts for specific bills. <strong>Limitation:</strong> Focuses on bill lifecycle, not real-time floor schedule changes. Updates are not instant.</p>
+      <h3>Popvox</h3>
+      <p>Similar to GovTrack—good for tracking specific legislation as it moves through Congress. <strong>Limitation:</strong> Not designed for real-time floor schedule monitoring. Updates are not instant.</p>
+      <p><strong>Bottom line:</strong> Excellent for long-term bill tracking, but don't deliver instant updates when schedules change.</p>
+
+      <h2>Method 4: News Outlets & Newsletters</h2>
+      <h3>Punchbowl News, Politico Playbook</h3>
+      <p>Daily and weekly summaries of congressional action with political context and analysis. <strong>Limitation:</strong> Typically delayed by hours after schedule changes occur. Do not deliver instant updates.</p>
+      <p><strong>Bottom line:</strong> Great for context and analysis, but not instant notifications when things change.</p>
 
       <h2>Which Method Should You Use?</h2>
 
@@ -359,6 +501,11 @@
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td><strong>The Capitol Wire (automated)</strong></td>
+            <td>Real-time alerts, busy staffers, instant Policy Briefs</td>
+            <td>Very low (set & forget)</td>
+          </tr>
           <tr>
             <td>Manual tracking</td>
             <td>Occasional checkers, budget-conscious</td>
@@ -374,21 +521,30 @@
             <td>Context & analysis</td>
             <td>Low (5 min/day, but delayed)</td>
           </tr>
-          <tr>
-            <td>Automated tools</td>
-            <td>Real-time alerts, busy staffers</td>
-            <td>Very low (set & forget)</td>
-          </tr>
         </tbody>
       </table>
 
       <h2>Conclusion</h2>
       <p>If you're a Hill staffer, advocate, or journalist who needs to know about floor changes <em>immediately</em>, automated tools like The Capitol Wire save hours of manual work. If you're casually following Congress, GovTrack or news outlets might be enough.</p>
 
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How often does the House floor schedule change?</h3>
+      <p>The House floor schedule can change multiple times per day, with new bills added or existing items updated with hours' notice. Committee prints can replace introduced text at the last minute, making real-time tracking essential for Hill staffers and advocates.</p>
+
+      <h3>What's the fastest way to get House floor alerts?</h3>
+      <p>Automated tools like The Capitol Wire deliver email alerts within minutes of schedule changes, compared to hours of delay with news outlets or the need for constant manual checking of government websites.</p>
+
+      <h3>Does GovTrack track the House floor schedule in real time?</h3>
+      <p>GovTrack tracks bill lifecycle across both chambers but doesn't focus on real-time floor schedule changes. Updates are not instant, making it better suited for long-term bill tracking rather than immediate floor alerts.</p>
+
+      <h3>Where can I find the official House floor schedule?</h3>
+      <p>The official House floor schedule is published on the <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">House Majority Leader's website</a> and <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> from the <a href="https://clerk.house.gov/" target="_blank">Clerk of the House</a>. However, these require manual checking and don't provide automatic alerts when changes occur.</p>
+
       <div class="cta-box">
         <h3>Never miss a floor schedule change</h3>
         <p>Join Hill staffers, advocates, and journalists who rely on The Capitol Wire for real-time intelligence</p>
-        <a href="/#hero" class="cta-button">Get Free Alerts →</a>
+        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Get Free Alerts →</button>
       </div>
 
     </div>
@@ -404,6 +560,90 @@
       </div>
     </div>
   </footer>
+
+  <!-- Subscribe Modal -->
+  <div id="modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+      <h3 style="font-family: 'Merriweather', serif; font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Get Instant Alerts</h3>
+      <p style="font-size: 14px; color: #64748b;">Enter your email to get notified when the schedule or analysis updates.</p>
+      <input id="modal-email" type="email" placeholder="Enter your email" class="modal-input" />
+      <button id="modal-submit" class="modal-button">Subscribe Free</button>
+      <div id="modal-status" class="modal-status"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
+    const SUBSCRIBE_KEY = 'sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h';
+    let subscribeClient = null;
+    if (window.supabase) subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
+
+    const modalEl = document.getElementById('modal');
+    const modalEmail = document.getElementById('modal-email');
+    const modalSubmit = document.getElementById('modal-submit');
+    const modalStatus = document.getElementById('modal-status');
+
+    function openModal() {
+      if(modalEl) {
+        modalEl.classList.add('active');
+        if(modalEmail) modalEmail.focus();
+      }
+    }
+
+    function closeModal() {
+      if(modalEl) {
+        modalEl.classList.remove('active');
+        if(modalStatus) modalStatus.textContent = '';
+        if(modalSubmit) {
+          modalSubmit.disabled = false;
+          modalSubmit.textContent = 'Subscribe Free';
+        }
+      }
+    }
+
+    // Close modal on outside click
+    if(modalEl) {
+      modalEl.addEventListener('click', (e) => {
+        if(e.target === modalEl) closeModal();
+      });
+    }
+
+    // Subscribe handler
+    if(modalSubmit && subscribeClient) {
+      modalSubmit.addEventListener('click', async () => {
+        const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : '');
+        if(!email || !email.includes('@')) {
+          modalStatus.textContent = 'Please enter a valid email.';
+          modalStatus.style.color = '#ef4444';
+          return;
+        }
+        modalSubmit.disabled = true;
+        modalSubmit.textContent = 'Processing...';
+        modalStatus.textContent = '';
+
+        const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
+
+        if(error) {
+          if(error.code === '23505') {
+            modalStatus.textContent = 'You are already subscribed!';
+            modalStatus.style.color = '#3b82f6';
+          } else {
+            modalStatus.textContent = 'Error. Try again.';
+            modalStatus.style.color = '#ef4444';
+          }
+          modalSubmit.disabled = false;
+          modalSubmit.textContent = 'Subscribe Free';
+          return;
+        }
+
+        modalStatus.textContent = 'Subscribed!';
+        modalStatus.style.color = '#22c55e';
+        if(modalEmail) modalEmail.value = '';
+        setTimeout(closeModal, 1200);
+      });
+    }
+  </script>
 
 </body>
 </html>
