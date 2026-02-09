@@ -1,224 +1,648 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About | The Capitol Wire</title>
+  <meta charset="UTF-8" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CEV5ME0C6L');
+  </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Track the House Floor Schedule in Real Time (2026 Guide) | The Capitol Wire</title>
+  <meta name="description" content="Learn how to track the House floor schedule in real time. Compare manual methods, tracking websites, and automated tools like The Capitol Wire." />
 
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        h1, h2, h3, .serif { font-family: 'Merriweather', serif; }
-        
-        /* Interactive Step Connector */
-        .step-connector::after {
-            content: '';
-            position: absolute;
-            top: 2.25rem;
-            left: 16%;
-            right: 16%;
-            height: 2px;
-            background: #e2e8f0;
-            z-index: 0;
-        }
-        
-        /* Smooth expand for details */
-        .hover-detail {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: all 0.4s ease-in-out;
-        }
-        .group:hover .hover-detail {
-            max-height: 300px;
-            opacity: 1;
-            margin-top: 1rem;
-        }
-    </style>
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://thecapitolwire.com/blog/how-to-track-house-floor-schedule.html" />
+  <meta property="og:title" content="How to Track the House Floor Schedule in Real Time (2026 Guide)" />
+  <meta property="og:description" content="4 methods for tracking House floor schedules compared: manual tracking, GovTrack/Popvox, news outlets, and automated tools. Learn which delivers instant updates for Hill staffers and advocates." />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="How to Track the House Floor Schedule in Real Time (2026 Guide)" />
+  <meta name="twitter:description" content="4 methods for tracking House floor schedules compared: manual tracking, GovTrack/Popvox, news outlets, and automated tools. Learn which delivers instant updates for Hill staffers and advocates." />
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+
+  <!-- Schema.org Article Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "How to Track the House Floor Schedule in Real Time (2026 Guide)",
+    "description": "Learn how to track the House floor schedule in real time. Compare manual methods, tracking websites, and automated tools like The Capitol Wire.",
+    "author": {
+      "@type": "Organization",
+      "name": "The Capitol Wire"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Capitol Wire",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://thecapitolwire.com/favicon.ico"
+      }
+    },
+    "datePublished": "2026-02-10",
+    "dateModified": "2026-02-10"
+  }
+  </script>
+
+  <!-- FAQ Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{
+      "@type": "Question",
+      "name": "How often does the House floor schedule change?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The House floor schedule can change multiple times per day, with new bills added or existing items updated with hours' notice. Committee prints can replace introduced text at the last minute, making real-time tracking essential for Hill staffers and advocates."
+      }
+    },{
+      "@type": "Question",
+      "name": "What's the fastest way to get House floor alerts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Automated tools like The Capitol Wire deliver email alerts within minutes of schedule changes, compared to hours of delay with news outlets or the need for constant manual checking of government websites."
+      }
+    },{
+      "@type": "Question",
+      "name": "Does GovTrack track the House floor schedule in real time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GovTrack tracks bill lifecycle across both chambers but doesn't focus on real-time floor schedule changes. Updates are not instant, making it better suited for long-term bill tracking rather than immediate floor alerts."
+      }
+    },{
+      "@type": "Question",
+      "name": "Where can I find the official House floor schedule?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The official House floor schedule is published on the House Majority Leader's website (majorityleader.gov) and Docs.House.Gov from the Clerk of the House. However, these require manual checking and don't provide automatic alerts when changes occur."
+      }
+    }]
+  }
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* --- MODERN LIGHT THEME (MATCHING MAIN SITE) --- */
+    :root {
+      --bg-main: #ffffff;
+      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%);
+
+      --card-bg: #ffffff;
+      --card-border: 1px solid #e2e8f0;
+      --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+
+      --brand-primary: #2563eb;
+      --brand-dark: #1e3a8a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        color: var(--text-main);
+        background: var(--bg-main);
+        background-image: var(--bg-gradient);
+        background-attachment: fixed;
+        min-height: 100vh;
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
+
+    /* --- NAV (MATCHING MAIN SITE) --- */
+    nav {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 16px 0;
+        position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner {
+        max-width: 1000px; margin: 0 auto;
+        padding: 0 24px;
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    .logo {
+        font-family: 'Merriweather', serif;
+        font-weight: 800; font-size: 1.2rem;
+        color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
+        letter-spacing: -0.5px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-link {
+        color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--brand-primary); }
+
+    .sub-btn {
+        background: var(--brand-primary);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+    }
+    .sub-btn:hover { background: var(--brand-dark); }
+
+    /* --- BLOG ARTICLE STYLES --- */
+    article { padding: 60px 0; }
+
+    .article-header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    h1 {
+        font-family: 'Merriweather', serif;
+        font-size: 2.5rem;
+        color: var(--text-main);
+        margin-bottom: 16px;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+
+    .article-meta {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 12px;
+    }
+
+    h2 {
+        font-family: 'Merriweather', serif;
+        font-size: 1.8rem;
+        color: var(--text-main);
+        margin-top: 32px;
+        margin-bottom: 14px;
+        line-height: 1.3;
+    }
+
+    h3 {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.3rem;
+        color: var(--text-main);
+        margin-top: 24px;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    p {
+        margin-bottom: 14px;
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+
+    strong { font-weight: 600; color: var(--text-main); }
+
+    ul, ol {
+        margin: 14px 0;
+        padding-left: 24px;
+    }
+
+    li {
+        margin-bottom: 6px;
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+
+    a {
+        color: var(--brand-primary);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(37, 99, 235, 0.3);
+        transition: all 0.2s;
+    }
+    a:hover {
+        color: var(--brand-dark);
+        border-bottom-color: var(--brand-dark);
+    }
+
+    /* CTA BOXES */
+    .cta-box {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border: 2px solid var(--brand-primary);
+        border-radius: 12px;
+        padding: 30px;
+        text-align: center;
+        margin: 40px 0;
+    }
+
+    .cta-box h3 {
+        margin-top: 0;
+        color: var(--brand-primary);
+        font-size: 1.4rem;
+    }
+
+    .cta-box p {
+        margin-bottom: 20px;
+        color: var(--text-muted);
+    }
+
+    .cta-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        padding: 14px 32px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        text-decoration: none;
+        border: none;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+    }
+
+    .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+        border: none;
+    }
+
+    /* COMPARISON TABLE */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 30px 0;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+    }
+
+    th {
+        background: #f8fafc;
+        padding: 14px 16px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-main);
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.95rem;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    footer {
+        padding: 60px 0;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        border-top: 1px solid #e2e8f0;
+        margin-top: 60px;
+    }
+    footer a {
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    footer a:hover {
+        color: var(--brand-primary);
+        text-decoration: underline;
+    }
+    .footer-links {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+    }
+
+    /* MODAL STYLES */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-overlay.active {
+        display: flex;
+    }
+    .modal-content {
+        width: 92%;
+        max-width: 28rem;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid #e2e8f0;
+        padding: 24px;
+        position: relative;
+    }
+    .modal-close {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        color: #94a3b8;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        border: none;
+        background: none;
+    }
+    .modal-close:hover {
+        color: #1e293b;
+    }
+    .modal-input {
+        margin-top: 16px;
+        width: 100%;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    .modal-input:focus {
+        outline: none;
+        border-color: var(--brand-primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .modal-button {
+        margin-top: 12px;
+        width: 100%;
+        border-radius: 6px;
+        background: #0f172a;
+        color: white;
+        font-weight: 700;
+        padding: 10px;
+        font-size: 14px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: none;
+        cursor: pointer;
+    }
+    .modal-button:hover {
+        background: #000;
+    }
+    .modal-status {
+        margin-top: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        min-height: 20px;
+    }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 1.8rem; }
+        h2 { font-size: 1.4rem; }
+        .nav-links { gap: 12px; }
+        .nav-link { font-size: 0.8rem; }
+    }
+  </style>
 </head>
-<body class="text-slate-800 antialiased flex flex-col min-h-screen text-sm">
+<body>
 
-  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-    <div class="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-4">
-          <a href="/" class="font-bold text-blue-700 text-lg flex items-center gap-2 serif tracking-tight">
-            <span aria-hidden="true">🏛️</span> The Capitol Wire
-          </a>
-          <span class="hidden md:inline-block h-5 w-px bg-slate-200"></span>
-          <span class="hidden md:inline-block text-xs font-bold text-slate-500 uppercase tracking-wider">About</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <a href="/dashboard/" class="text-xs font-bold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Dashboard</a>
-        <button class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded shadow-sm transition-colors" onclick="openModal()">
-          Get Alerts
-        </button>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">🏛️ The Capitol Wire</a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/about.html" class="nav-link">About</a>
+        <button class="sub-btn" onclick="openModal()" style="border: none; cursor: pointer;">Get Alerts</button>
       </div>
     </div>
   </nav>
 
-  <header class="bg-white border-b border-slate-200 py-4 px-6 text-center">
-      <h1 class="text-xl font-bold text-slate-900 serif">About The Capitol Wire</h1>
-  </header>
+  <article>
+    <div class="container">
 
-  <main class="flex-grow px-6 py-8">
-    <div class="max-w-4xl mx-auto space-y-6">
+      <!-- CTA at top -->
+      <div class="cta-box">
+        <h3>Get instant House floor alerts</h3>
+        <p>Stop refreshing government websites. Subscribe for free real-time updates.</p>
+        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Subscribe Free →</button>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-5 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-xl">💸</div>
-                    <h3 class="text-base font-bold text-slate-900 serif">Why is this free?</h3>
-                </div>
-                <p class="text-slate-600 leading-snug">
-                    Because I'm not trying to sell you a $20,000 subscription. The data is public, the hosting is cheap, and I had time on break to make it.
-                </p>
-            </div>
-            <div class="bg-white p-5 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-xl">🛠️</div>
-                    <h3 class="text-base font-bold text-slate-900 serif">Why I built it</h3>
-                </div>
-                <p class="text-slate-600 leading-snug">
-                    It honestly blew my mind there wasn't already an automated system to parse this instantly. We shouldn't have to manually hunt for information that is digitally available.
-                </p>
-            </div>
-        </div>
+      <div class="article-header">
+        <h1>How to Track the House Floor Schedule in Real Time (2026 Guide)</h1>
+        <div class="article-meta">Last updated: February 2026</div>
+      </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-5 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-xl">⚡</div>
-                    <h3 class="text-base font-bold text-slate-900 serif">A Force Multiplier</h3>
-                </div>
-                <p class="text-slate-600 leading-snug mb-2">
-                    I don't want this bot to replace the Legislative Assistant. It's here to keep you from drowning.
-                </p>
-                <p class="text-slate-600 leading-snug">
-                    Reading a bill and understanding its political impacts are different things. AI is great at reading 800 pages in 30 seconds. This tool gives you time to focus on strategy.
-                </p>
-            </div>
-            <div class="bg-white p-5 rounded border border-slate-200 shadow-sm hover:border-blue-300 transition-colors">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="text-xl">📋</div>
-                    <h3 class="text-base font-bold text-slate-900 serif">Automated Policy Briefs</h3>
-                </div>
-                <p class="text-slate-600 leading-snug mb-2">
-                    I’ve prompted the model to look for specific "staffer" concerns: effective dates, appropriations triggers, and procedural rules.
-                </p>
-                <p class="text-slate-600 leading-snug">
-                    Crucially, it also generates a Verification Guide with specific page numbers for every claim. Never trust what AI or someone else tells you about a bill before telling your boss about it—verify it.
-                </p>
-            </div>
-        </div>
+      <h2>Introduction</h2>
+      <p>The House floor schedule changes constantly. Bills get added with hours' notice. Committee prints replace introduced text. Tracking this manually means refreshing <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a>, parsing PDFs, and hoping you didn't miss something.</p>
+      <p>Here's how to stay on top of House floor action without refreshing government websites all day.</p>
 
-        <div class="pt-8">
-            <div class="text-center mb-8">
-                <h3 class="text-lg font-bold text-slate-900 serif">How It Works</h3>
-                <p class="text-xs text-slate-400 uppercase tracking-wide font-medium mt-1">Hover over a step to see the architecture</p>
-            </div>
-            
-            <div class="relative hidden md:block step-connector mb-8"></div>
+      <h2>Method 1: Automated Tracking Tools (Instant Updates)</h2>
+      <h3>The Capitol Wire</h3>
+      <p>The Capitol Wire monitors <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> and <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.Gov</a> around the clock and delivers:</p>
+      <ul>
+        <li><strong>Instant email alerts</strong> within minutes of any schedule change</li>
+        <li><strong>Automatic detection of Advance Notices</strong> (items not yet filed with the <a href="https://clerk.house.gov/" target="_blank">Clerk</a>)</li>
+        <li><strong>AI-generated Policy Briefs</strong> for every bill—delivered instantly with executive summaries, key provisions, political dynamics, and page citations for verification</li>
+        <li><strong>Completely free</strong>, no login required</li>
+      </ul>
+      <p><strong>Bottom line:</strong> Set it and forget it. Real-time automation with instant Policy Briefs saves hours of manual work.</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-                <div class="group bg-white p-5 rounded border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all cursor-default text-center relative bg-white">
-                    <div class="w-10 h-10 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-3">1</div>
-                    <h4 class="font-bold text-slate-900 group-hover:text-blue-700">Monitor</h4>
-                    <p class="text-xs text-slate-500 mt-1">Dual-source polling every 60s.</p>
-                    
-                    <div class="hover-detail bg-slate-50 rounded p-4 text-left border-t border-slate-100 mt-4 shadow-inner">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Technical Specs</p>
-                        <ul class="text-xs text-slate-600 space-y-2 list-disc pl-3 leading-relaxed">
-                            <li>Polls <strong>docs.house.gov</strong> (XML) and <strong>majorityleader.gov</strong> (HTML) simultaneously[cite: 14].</li>
-                            <li>Uses <strong>Redis</strong> to calculate cryptographic hashes of the schedule, allowing detection of minute changes compared to the previous state[cite: 31].</li>
-                        </ul>
-                    </div>
-                </div>
+      <div class="cta-box">
+        <h3>Try The Capitol Wire Free</h3>
+        <p>Instant alerts + AI Policy Briefs for every bill. Used by Hill staffers, advocates, and journalists.</p>
+        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Subscribe Now →</button>
+      </div>
 
-                <div class="group bg-white p-5 rounded border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all cursor-default text-center relative bg-white">
-                    <div class="w-10 h-10 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-3">2</div>
-                    <h4 class="font-bold text-slate-900 group-hover:text-blue-700">Analyze</h4>
-                    <p class="text-xs text-slate-500 mt-1">Gap analysis & Parsing.</p>
-                    
-                    <div class="hover-detail bg-slate-50 rounded p-4 text-left border-t border-slate-100 mt-4 shadow-inner">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Technical Specs</p>
-                        <ul class="text-xs text-slate-600 space-y-2 list-disc pl-3 leading-relaxed">
-                            <li>Performs <strong>Gap Analysis</strong> between Leader's schedule and Clerk's feed to flag "Advance Notice" items[cite: 15].</li>
-                            <li>Parses "Added" timestamps to force new items to the top[cite: 17].</li>
-                            <li>Drills down into sub-tables to find hidden committee reports[cite: 21].</li>
-                        </ul>
-                    </div>
-                </div>
+      <h2>Method 2: Manual Tracking (Free, Time-Intensive)</h2>
 
-                <div class="group bg-white p-5 rounded border border-slate-200 shadow-sm hover:shadow-lg hover:border-blue-400 transition-all cursor-default text-center relative bg-white">
-                    <div class="w-10 h-10 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors mb-3">3</div>
-                    <h4 class="font-bold text-slate-900 group-hover:text-blue-700">Deliver</h4>
-                    <p class="text-xs text-slate-500 mt-1">Alerts, IDs & Sync.</p>
-                    
-                    <div class="hover-detail bg-slate-50 rounded p-4 text-left border-t border-slate-100 mt-4 shadow-inner">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Technical Specs</p>
-                        <ul class="text-xs text-slate-600 space-y-2 list-disc pl-3 leading-relaxed">
-                            <li>Generates stable <strong>Database IDs</strong> for deep-linking[cite: 26].</li>
-                            <li>Broadcasts via <strong>AWS SES</strong> with a custom rate limiter (~13.8 emails/sec) to avoid throttling[cite: 32].</li>
-                            <li>Upserts final state to <strong>Supabase</strong>[cite: 28].</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <h3>Official Sources</h3>
+      <p><strong><a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">House Majority Leader's website</a></strong> posts weekly schedules (usually Thursdays) and updates throughout the week. <strong>Limitation:</strong> No alerts, must refresh manually.</p>
+      <p><strong><a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a></strong> is the official repository for bill text and committee reports from the <a href="https://clerk.house.gov/" target="_blank">Clerk of the House</a>. <strong>Limitation:</strong> No consolidated view, hard to track changes.</p>
 
-        <div class="text-center pt-8 border-t border-slate-200 pb-4">
-            <p class="font-bold text-slate-900 text-sm serif">— Zachary Florman</p>
-            <a href="mailto:zach@thecapitolwire.com" class="text-xs text-slate-400 hover:text-blue-600 transition-colors font-medium">zach@thecapitolwire.com</a>
-        </div>
+      <h3>How to Do It</h3>
+      <ol>
+        <li>Bookmark the <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">Majority Leader's schedule page</a></li>
+        <li>Check 2-3 times per day (morning, midday, late afternoon)</li>
+        <li>Cross-reference with <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> for bill text</li>
+      </ol>
+      <p><strong>Bottom line:</strong> Free and official, but time-consuming and easy to miss updates.</p>
+
+      <h2>Method 3: Congressional Tracking Websites (Free)</h2>
+      <h3>GovTrack</h3>
+      <p>Tracks bill status across both chambers with free email alerts for specific bills. <strong>Limitation:</strong> Focuses on bill lifecycle, not real-time floor schedule changes. Updates are not instant.</p>
+      <h3>Popvox</h3>
+      <p>Similar to GovTrack—good for tracking specific legislation as it moves through Congress. <strong>Limitation:</strong> Not designed for real-time floor schedule monitoring. Updates are not instant.</p>
+      <p><strong>Bottom line:</strong> Excellent for long-term bill tracking, but don't deliver instant updates when schedules change.</p>
+
+      <h2>Method 4: News Outlets & Newsletters</h2>
+      <h3>Punchbowl News, Politico Playbook</h3>
+      <p>Daily and weekly summaries of congressional action with political context and analysis. <strong>Limitation:</strong> Typically delayed by hours after schedule changes occur. Do not deliver instant updates.</p>
+      <p><strong>Bottom line:</strong> Great for context and analysis, but not instant notifications when things change.</p>
+
+      <h2>Which Method Should You Use?</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Best For</th>
+            <th>Time Required</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>The Capitol Wire (automated)</strong></td>
+            <td>Real-time alerts, busy staffers, instant Policy Briefs</td>
+            <td>Very low (set & forget)</td>
+          </tr>
+          <tr>
+            <td>Manual tracking</td>
+            <td>Occasional checkers, budget-conscious</td>
+            <td>High (30+ min/day)</td>
+          </tr>
+          <tr>
+            <td>GovTrack/Popvox</td>
+            <td>Long-term bill tracking</td>
+            <td>Medium (10-15 min/day)</td>
+          </tr>
+          <tr>
+            <td>News outlets</td>
+            <td>Context & analysis</td>
+            <td>Low (5 min/day, but delayed)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Conclusion</h2>
+      <p>If you're a Hill staffer, advocate, or journalist who needs to know about floor changes <em>immediately</em>, automated tools like The Capitol Wire save hours of manual work. If you're casually following Congress, GovTrack or news outlets might be enough.</p>
+
+      <h2>Frequently Asked Questions</h2>
+
+      <h3>How often does the House floor schedule change?</h3>
+      <p>The House floor schedule can change multiple times per day, with new bills added or existing items updated with hours' notice. Committee prints can replace introduced text at the last minute, making real-time tracking essential for Hill staffers and advocates.</p>
+
+      <h3>What's the fastest way to get House floor alerts?</h3>
+      <p>Automated tools like The Capitol Wire deliver email alerts within minutes of schedule changes, compared to hours of delay with news outlets or the need for constant manual checking of government websites.</p>
+
+      <h3>Does GovTrack track the House floor schedule in real time?</h3>
+      <p>GovTrack tracks bill lifecycle across both chambers but doesn't focus on real-time floor schedule changes. Updates are not instant, making it better suited for long-term bill tracking rather than immediate floor alerts.</p>
+
+      <h3>Where can I find the official House floor schedule?</h3>
+      <p>The official House floor schedule is published on the <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">House Majority Leader's website</a> and <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> from the <a href="https://clerk.house.gov/" target="_blank">Clerk of the House</a>. However, these require manual checking and don't provide automatic alerts when changes occur.</p>
+
+      <div class="cta-box">
+        <h3>Never miss a floor schedule change</h3>
+        <p>Join Hill staffers, advocates, and journalists who rely on The Capitol Wire for real-time intelligence</p>
+        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Get Free Alerts →</button>
+      </div>
 
     </div>
-  </main>
+  </article>
 
-  <div id="modal" class="hidden fixed inset-0 z-[100] items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-    <div class="w-[92%] max-w-md rounded-xl bg-white shadow-2xl border border-slate-200 p-6 relative">
-      <button class="absolute right-4 top-4 text-slate-400 hover:text-slate-700 text-2xl leading-none" onclick="closeModal()" aria-label="Close">&times;</button>
-      <h3 class="text-lg font-bold text-slate-900 serif">Get Instant Alerts</h3>
-      <p class="mt-1 text-sm text-slate-600">Enter your email to get notified when the schedule or analysis updates.</p>
-      <input id="modal-email" type="email" placeholder="Enter your email" class="mt-4 w-full rounded border border-slate-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-      <button id="modal-submit" class="mt-3 w-full rounded bg-slate-900 hover:bg-black text-white font-bold py-2.5 text-sm transition-all shadow-md">Subscribe Free</button>
-      <div id="modal-status" class="mt-2 text-xs font-semibold min-h-[20px]"></div>
+  <footer>
+    <div class="container">
+      <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
+      <div class="footer-links">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Subscribe Modal -->
+  <div id="modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+      <h3 style="font-family: 'Merriweather', serif; font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Get Instant Alerts</h3>
+      <p style="font-size: 14px; color: #64748b;">Enter your email to get notified when the schedule or analysis updates.</p>
+      <input id="modal-email" type="email" placeholder="Enter your email" class="modal-input" />
+      <button id="modal-submit" class="modal-button">Subscribe Free</button>
+      <div id="modal-status" class="modal-status"></div>
     </div>
   </div>
 
   <script>
-      const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
-      const SUBSCRIBE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
-      let subscribeClient = null;
-      if (window.supabase) subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
+    const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
+    const SUBSCRIBE_KEY = 'sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h';
+    let subscribeClient = null;
+    if (window.supabase) subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
 
-      const modalEl = document.getElementById('modal');
-      const modalEmail = document.getElementById('modal-email');
-      const modalSubmit = document.getElementById('modal-submit');
-      const modalStatus = document.getElementById('modal-status');
+    const modalEl = document.getElementById('modal');
+    const modalEmail = document.getElementById('modal-email');
+    const modalSubmit = document.getElementById('modal-submit');
+    const modalStatus = document.getElementById('modal-status');
 
-      function openModal() { if(modalEl) { modalEl.classList.remove('hidden'); modalEl.classList.add('flex'); if(modalEmail) modalEmail.focus(); }}
-      function closeModal() { if(modalEl) { modalEl.classList.add('hidden'); modalEl.classList.remove('flex'); if(modalStatus) modalStatus.textContent=""; if(modalSubmit) { modalSubmit.disabled=false; modalSubmit.textContent="Subscribe Free"; }}}
-      if(modalEl) modalEl.addEventListener('click', (e) => { if(e.target===modalEl) closeModal(); });
-
-      if(modalSubmit && subscribeClient) {
-          modalSubmit.addEventListener('click', async () => {
-              const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : "");
-              if(!email || !email.includes('@')) { modalStatus.textContent="Please enter a valid email."; modalStatus.style.color="#ef4444"; return; }
-              modalSubmit.disabled=true; modalSubmit.textContent="Processing..."; modalStatus.textContent="";
-              const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
-              if(error) {
-                   if(error.code==='23505') { modalStatus.textContent="You are already subscribed!"; modalStatus.style.color="#3b82f6"; }
-                   else { modalStatus.textContent="Error. Try again."; modalStatus.style.color="#ef4444"; }
-                   modalSubmit.disabled=false; modalSubmit.textContent="Subscribe Free"; return;
-              }
-              modalStatus.textContent="Subscribed!"; modalStatus.style.color="#22c55e";
-              if(modalEmail) modalEmail.value="";
-              setTimeout(closeModal, 1200);
-          });
+    function openModal() {
+      if(modalEl) {
+        modalEl.classList.add('active');
+        if(modalEmail) modalEmail.focus();
       }
+    }
+
+    function closeModal() {
+      if(modalEl) {
+        modalEl.classList.remove('active');
+        if(modalStatus) modalStatus.textContent = '';
+        if(modalSubmit) {
+          modalSubmit.disabled = false;
+          modalSubmit.textContent = 'Subscribe Free';
+        }
+      }
+    }
+
+    // Close modal on outside click
+    if(modalEl) {
+      modalEl.addEventListener('click', (e) => {
+        if(e.target === modalEl) closeModal();
+      });
+    }
+
+    // Subscribe handler
+    if(modalSubmit && subscribeClient) {
+      modalSubmit.addEventListener('click', async () => {
+        const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : '');
+        if(!email || !email.includes('@')) {
+          modalStatus.textContent = 'Please enter a valid email.';
+          modalStatus.style.color = '#ef4444';
+          return;
+        }
+        modalSubmit.disabled = true;
+        modalSubmit.textContent = 'Processing...';
+        modalStatus.textContent = '';
+
+        const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
+
+        if(error) {
+          if(error.code === '23505') {
+            modalStatus.textContent = 'You are already subscribed!';
+            modalStatus.style.color = '#3b82f6';
+          } else {
+            modalStatus.textContent = 'Error. Try again.';
+            modalStatus.style.color = '#ef4444';
+          }
+          modalSubmit.disabled = false;
+          modalSubmit.textContent = 'Subscribe Free';
+          return;
+        }
+
+        modalStatus.textContent = 'Subscribed!';
+        modalStatus.style.color = '#22c55e';
+        if(modalEmail) modalEmail.value = '';
+        setTimeout(closeModal, 1200);
+      });
+    }
   </script>
 
 </body>
