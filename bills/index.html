@@ -170,11 +170,15 @@
 
                 if (error) throw error;
 
-                // Filter out error entries
+                // Filter out error entries and deduplicate by title
+                const seen = new Map();
                 allBills = (data || []).filter(b => {
                     const ai = b.ai_analysis;
                     if (!ai) return false;
                     if (typeof ai === 'object' && ai.error) return false;
+                    const title = (b.title || '').trim();
+                    if (seen.has(title)) return false;
+                    seen.set(title, true);
                     return true;
                 });
 
