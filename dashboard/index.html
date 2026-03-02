@@ -328,10 +328,7 @@
   <nav>
     <div class="nav-inner">
       <a href="/" class="logo">🏛️ The Capitol Wire</a>
-      <div style="display:flex;align-items:center;gap:16px;">
-        <a href="/bills/" style="font-size:13px;font-weight:600;color:#64748b;text-decoration:none;text-transform:uppercase;letter-spacing:0.05em;">Bill Archive</a>
-        <button class="sub-btn" onclick="openModal()">Get Alerts</button>
-      </div>
+      <button class="sub-btn" onclick="openModal()">Get Alerts</button>
     </div>
   </nav>
 
@@ -397,7 +394,7 @@
       <div class="footer-links">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
-        <a href="/cdn-cgi/l/email-protection#552f34363d15213d303634253c213a39223c27307b363a38">Contact Support</a>
+        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
       </div>
     </div>
   </footer>
@@ -413,7 +410,7 @@
     </div>
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script>
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -740,4 +737,11 @@
             modalBtn.innerText = "Subscribe Free";
         } else {
             modalStatus.innerText = "Subscribed!";
-            modalS
+            modalStatus.style.color = "#16a34a";
+            modalInput.value = "";
+            setTimeout(closeModal, 2000);
+        }
+    });
+  </script>
+</body>
+</html>
