@@ -330,7 +330,6 @@
           </div>
         </div>
         <a href="/about.html" class="nav-link">About</a>
-        <a href="/bills/" class="nav-link">Bill Archive</a>
         <a href="dashboard/" class="nav-link">Dashboard</a>
         <a href="#hero" class="sub-btn">Get Alerts</a>
       </div>
@@ -395,12 +394,12 @@
       <div class="footer-links">
         <a href="privacy.html">Privacy Policy</a>
         <a href="terms.html">Terms of Service</a>
-        <a href="/cdn-cgi/l/email-protection#c6bca7a5ae86b2aea3a5a7b6afb2a9aab1afb4a3e8a5a9ab">Contact Support</a>
+        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
       </div>
     </div>
   </footer>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script>
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -597,3 +596,10 @@
           stat.textContent = "Confirmed. You are now tracking the floor.";
           stat.style.color = "#16a34a"; input.value = ""; btn.textContent = "Success";
           setTimeout(() => {
+              btn.disabled = false; btn.textContent = "Subscribe a Colleague"; stat.textContent = "";
+          }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>
