@@ -164,8 +164,8 @@
             try {
                 const { data, error } = await client
                     .from('live_feed')
-                    .select('id, title, created_at, ai_analysis')
-                    .order('created_at', { ascending: false })
+                    .select('id, title, category, timestamp, ai_analysis')
+                    .order('timestamp', { ascending: false })
                     .limit(500);
 
                 if (error) throw error;
@@ -211,7 +211,7 @@
                 const isRule = (bill.title || '').toLowerCase().includes('providing for consideration');
                 const slug = slugify(title);
                 const billUrl = `/bills/${slug}.html`;
-                const date = new Date(bill.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const date = new Date(bill.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
                 // Extract summary
                 let summary = '';
