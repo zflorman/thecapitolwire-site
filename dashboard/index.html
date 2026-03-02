@@ -325,15 +325,18 @@
 </head>
 <body>
 
-<nav>
+  <nav>
     <div class="nav-inner">
       <a href="/" class="logo">🏛️ The Capitol Wire</a>
       <div style="display:flex;align-items:center;gap:16px;">
-          <a href="/bills/" style="font-size:13px;font-weight:600;color:#64748b;text-decoration:none;text-transform:uppercase;letter-spacing:0.05em;">Bill Archive</a>
-          <button class="sub-btn" onclick="openModal()">Get Alerts</button>
+        <a href="/bills/" style="font-size:13px;font-weight:600;color:#64748b;text-decoration:none;text-transform:uppercase;letter-spacing:0.05em;">Bill Archive</a>
+        <button class="sub-btn" onclick="openModal()">Get Alerts</button>
       </div>
     </div>
   </nav>
+
+  <div class="main-container">
+    
     <div class="content-area">
         <div class="toggle-container">
             <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This Week</button>
@@ -394,7 +397,7 @@
       <div class="footer-links">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
-        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+        <a href="/cdn-cgi/l/email-protection#8df7eceee5cdf9e5e8eeecfde4f9e2e1fae4ffe8a3eee2e0">Contact Support</a>
       </div>
     </div>
   </footer>
@@ -410,7 +413,7 @@
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -737,11 +740,4 @@
             modalBtn.innerText = "Subscribe Free";
         } else {
             modalStatus.innerText = "Subscribed!";
-            modalStatus.style.color = "#16a34a";
-            modalInput.value = "";
-            setTimeout(closeModal, 2000);
-        }
-    });
-  </script>
-</body>
-</html>
+            modalS
