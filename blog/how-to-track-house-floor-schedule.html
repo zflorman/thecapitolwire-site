@@ -1,832 +1,494 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-CEV5ME0C6L');
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congress Voting Schedule 2026: How to Track House Votes in Real Time | The Capitol Wire</title>
+    <meta name="description"
+        content="How to track the 2026 Congress voting schedule in real time. Compare 4 methods: official sources, GovTrack, news outlets, and automated alerts. Find out what's being voted on this week.">
+    <link rel="canonical" href="https://www.thecapitolwire.com/blog/congress-voting-schedule.html">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>How to Track the House Floor Schedule in Real Time (2026 Guide) | The Capitol Wire</title>
-  <meta name="description" content="Learn how to track the House floor schedule in real time. Compare manual methods, tracking websites, and automated tools like The Capitol Wire." />
+    <meta property="og:title" content="Congress Voting Schedule 2026: How to Track House Votes">
+    <meta property="og:description"
+        content="How to track the 2026 Congress voting schedule in real time. Compare official sources, tracking tools, and automated alerts.">
+    <meta property="og:url" content="https://www.thecapitolwire.com/blog/congress-voting-schedule.html">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="The Capitol Wire">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Congress Voting Schedule 2026 | The Capitol Wire">
+    <meta name="twitter:description" content="How to track the 2026 Congress voting schedule in real time.">
 
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://thecapitolwire.com/blog/how-to-track-house-floor-schedule.html" />
-  <meta property="og:title" content="How to Track the House Floor Schedule in Real Time (2026 Guide)" />
-  <meta property="og:description" content="4 methods for tracking House floor schedules compared: manual tracking, GovTrack/Popvox, news outlets, and automated tools. Learn which delivers instant updates for Hill staffers and advocates." />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="How to Track the House Floor Schedule in Real Time (2026 Guide)" />
-  <meta name="twitter:description" content="4 methods for tracking House floor schedules compared: manual tracking, GovTrack/Popvox, news outlets, and automated tools. Learn which delivers instant updates for Hill staffers and advocates." />
-
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
-
-  <!-- Schema.org Article Markup -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "How to Track the House Floor Schedule in Real Time (2026 Guide)",
-    "description": "Learn how to track the House floor schedule in real time. Compare manual methods, tracking websites, and automated tools like The Capitol Wire.",
-    "author": {
-      "@type": "Organization",
-      "name": "The Capitol Wire"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "The Capitol Wire",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://thecapitolwire.com/favicon.ico"
-      }
-    },
-    "datePublished": "2026-02-10",
-    "dateModified": "2026-02-10"
-  }
-  </script>
-
-  <!-- FAQ Schema Markup -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [{
-      "@type": "Question",
-      "name": "How often does the House floor schedule change?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The House floor schedule can change multiple times per day, with new bills added or existing items updated with hours' notice. Committee prints can replace introduced text at the last minute, making real-time tracking essential for Hill staffers and advocates."
-      }
-    },{
-      "@type": "Question",
-      "name": "What's the fastest way to get House floor alerts?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Automated tools like The Capitol Wire deliver email alerts within minutes of schedule changes, compared to hours of delay with news outlets or the need for constant manual checking of government websites."
-      }
-    },{
-      "@type": "Question",
-      "name": "Does GovTrack track the House floor schedule in real time?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "GovTrack tracks bill lifecycle across both chambers but doesn't focus on real-time floor schedule changes. Updates are not instant, making it better suited for long-term bill tracking rather than immediate floor alerts."
-      }
-    },{
-      "@type": "Question",
-      "name": "Where can I find the official House floor schedule?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The official House floor schedule is published on the House Majority Leader's website (majorityleader.gov) and Docs.House.Gov from the Clerk of the House. However, these require manual checking and don't provide automatic alerts when changes occur."
-      }
-    }]
-  }
-  </script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    /* --- MODERN LIGHT THEME (MATCHING MAIN SITE) --- */
-    :root {
-      --bg-main: #ffffff;
-      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%);
-
-      --card-bg: #ffffff;
-      --card-border: 1px solid #e2e8f0;
-      --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-
-      --brand-primary: #2563eb;
-      --brand-dark: #1e3a8a;
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Congress Voting Schedule 2026: How to Track House Votes in Real Time",
+      "description": "Complete guide to tracking the 2026 congressional voting schedule with official sources and real-time tools.",
+      "url": "https://www.thecapitolwire.com/blog/congress-voting-schedule.html",
+      "datePublished": "2026-03-03",
+      "dateModified": "2026-03-03",
+      "author": { "@type": "Person", "name": "Zachary Florman" },
+      "publisher": { "@type": "Organization", "name": "The Capitol Wire", "url": "https://www.thecapitolwire.com" },
+      "mainEntityOfPage": { "@type": "WebPage", "@id": "https://www.thecapitolwire.com/blog/congress-voting-schedule.html" },
+      "articleSection": "Congressional Guides",
+      "keywords": ["congress voting schedule", "congressional votes this week", "house votes today", "how to track congress", "2026 congress schedule"]
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-        font-family: 'Inter', sans-serif;
-        color: var(--text-main);
-        background: var(--bg-main);
-        background-image: var(--bg-gradient);
-        background-attachment: fixed;
-        min-height: 100vh;
-        line-height: 1.7;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; }
-
-    /* --- NAV (MATCHING MAIN SITE) --- */
-    nav {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        padding: 16px 0;
-        position: sticky; top: 0; z-index: 100;
-    }
-    .nav-inner {
-        max-width: 1000px; margin: 0 auto;
-        padding: 0 24px;
-        display: flex; justify-content: space-between; align-items: center;
-    }
-    .logo {
-        font-family: 'Merriweather', serif;
-        font-weight: 800; font-size: 1.2rem;
-        color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
-        letter-spacing: -0.5px;
-    }
-    .nav-links { display: flex; align-items: center; gap: 24px; }
-    .nav-link {
-        color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
-        font-weight: 500;
-        transition: color 0.2s;
-    }
-    .nav-link:hover { color: var(--brand-primary); }
-
-    .sub-btn {
-        background: var(--brand-primary);
-        color: white;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-weight: 600;
-        text-decoration: none;
-        font-size: 0.85rem;
-        transition: all 0.2s;
-    }
-    .sub-btn:hover { background: var(--brand-dark); }
-
-    /* --- BLOG ARTICLE STYLES --- */
-    article { padding: 40px 0; }
-
-    .article-header {
-        text-align: center;
-        margin-bottom: 40px;
-        padding: 40px 24px;
-        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        border-radius: 16px;
-        border: 1px solid #bfdbfe;
-    }
-
-    h1 {
-        font-family: 'Merriweather', serif;
-        font-size: 2.5rem;
-        color: var(--text-main);
-        margin-bottom: 12px;
-        line-height: 1.2;
-        letter-spacing: -0.5px;
-    }
-
-    .article-meta {
-        color: var(--text-muted);
-        font-size: 0.85rem;
-        margin-top: 8px;
-        font-weight: 500;
-    }
-
-    h2 {
-        font-family: 'Merriweather', serif;
-        font-size: 1.5rem;
-        color: var(--text-main);
-        margin-top: 48px;
-        margin-bottom: 20px;
-        line-height: 1.3;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    h2::before {
-        content: '';
-        display: inline-block;
-        width: 4px;
-        height: 28px;
-        background: var(--brand-primary);
-        border-radius: 2px;
-    }
-
-    h3 {
-        font-family: 'Inter', sans-serif;
-        font-size: 1.1rem;
-        color: var(--text-main);
-        margin-top: 20px;
-        margin-bottom: 8px;
-        font-weight: 700;
-    }
-
-    /* METHOD CARDS */
-    .method-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 24px;
-        margin: 24px 0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        transition: all 0.2s;
-    }
-
-    .method-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        border-color: #cbd5e1;
-    }
-
-    .method-card.featured {
-        border: 2px solid var(--brand-primary);
-        background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
-    }
-
-    .method-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid #f1f5f9;
-    }
-
-    .method-icon {
-        font-size: 32px;
-        line-height: 1;
-    }
-
-    .method-title {
-        font-family: 'Merriweather', serif;
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--text-main);
-        margin: 0;
-    }
-
-    .method-subtitle {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .intro-box {
-        background: #f8fafc;
-        border-left: 4px solid var(--brand-primary);
-        padding: 20px 24px;
-        margin: 24px 0;
-        border-radius: 8px;
-    }
-
-    p {
-        margin-bottom: 14px;
-        font-size: 1.05rem;
-        line-height: 1.6;
-    }
-
-    strong { font-weight: 600; color: var(--text-main); }
-
-    ul, ol {
-        margin: 14px 0;
-        padding-left: 24px;
-    }
-
-    li {
-        margin-bottom: 6px;
-        font-size: 1.05rem;
-        line-height: 1.6;
-    }
-
-    a {
-        color: var(--brand-primary);
-        text-decoration: none;
-        border-bottom: 1px solid rgba(37, 99, 235, 0.3);
-        transition: all 0.2s;
-    }
-    a:hover {
-        color: var(--brand-dark);
-        border-bottom-color: var(--brand-dark);
-    }
-
-    /* CTA BOXES */
-    .cta-box {
-        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        border: 2px solid var(--brand-primary);
-        border-radius: 12px;
-        padding: 30px;
-        text-align: center;
-        margin: 40px 0;
-    }
-
-    .cta-box h3 {
-        margin-top: 0;
-        color: var(--brand-primary);
-        font-size: 1.4rem;
-    }
-
-    .cta-box p {
-        margin-bottom: 20px;
-        color: var(--text-muted);
-    }
-
-    .cta-button {
-        display: inline-block;
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: white;
-        padding: 14px 32px;
-        border-radius: 8px;
-        font-weight: 700;
-        font-size: 1.05rem;
-        text-decoration: none;
-        border: none;
-        transition: all 0.2s;
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
-    }
-
-    .cta-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
-        border: none;
-    }
-
-    /* COMPARISON TABLE */
-    .comparison-wrapper {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 24px;
-        margin: 32px 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 0;
-    }
-
-    th {
-        background: #f8fafc;
-        padding: 12px 16px;
-        text-align: left;
-        font-weight: 700;
-        font-size: 0.85rem;
-        color: var(--text-main);
-        border-bottom: 2px solid #e2e8f0;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    td {
-        padding: 14px 16px;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-
-    tr:last-child td {
-        border-bottom: none;
-    }
-
-    tr:first-child td {
-        background: #eff6ff;
-        font-weight: 600;
-    }
-
-    /* FAQ SECTION */
-    .faq-item {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 20px 24px;
-        margin-bottom: 12px;
-        transition: all 0.2s;
-    }
-
-    .faq-item:hover {
-        border-color: var(--brand-primary);
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
-    }
-
-    .faq-item h3 {
-        margin-top: 0;
-        margin-bottom: 12px;
-        color: var(--brand-primary);
-        font-size: 1.05rem;
-    }
-
-    .faq-item p {
-        margin-bottom: 0;
-        color: #475569;
-    }
-
-    footer {
-        padding: 60px 0;
-        text-align: center;
-        color: #94a3b8;
-        font-size: 0.9rem;
-        border-top: 1px solid #e2e8f0;
-        margin-top: 60px;
-    }
-    footer a {
-        color: #64748b;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    footer a:hover {
-        color: var(--brand-primary);
-        text-decoration: underline;
-    }
-    .footer-links {
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-        gap: 24px;
-    }
-
-    /* MODAL STYLES */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-    }
-    .modal-overlay.active {
-        display: flex;
-    }
-    .modal-content {
-        width: 92%;
-        max-width: 28rem;
-        border-radius: 12px;
-        background: white;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        border: 1px solid #e2e8f0;
-        padding: 24px;
-        position: relative;
-    }
-    .modal-close {
-        position: absolute;
-        right: 16px;
-        top: 16px;
-        color: #94a3b8;
-        font-size: 24px;
-        line-height: 1;
-        cursor: pointer;
-        border: none;
-        background: none;
-    }
-    .modal-close:hover {
-        color: #1e293b;
-    }
-    .modal-input {
-        margin-top: 16px;
-        width: 100%;
-        border-radius: 6px;
-        border: 1px solid #cbd5e1;
-        padding: 10px 16px;
-        font-size: 14px;
-    }
-    .modal-input:focus {
-        outline: none;
-        border-color: var(--brand-primary);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-    .modal-button {
-        margin-top: 12px;
-        width: 100%;
-        border-radius: 6px;
-        background: #0f172a;
-        color: white;
-        font-weight: 700;
-        padding: 10px;
-        font-size: 14px;
-        transition: all 0.2s;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        border: none;
-        cursor: pointer;
-    }
-    .modal-button:hover {
-        background: #000;
-    }
-    .modal-status {
-        margin-top: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        min-height: 20px;
-    }
-
-    @media (max-width: 768px) {
-        h1 { font-size: 1.8rem; }
-        h2 { font-size: 1.4rem; }
-        .nav-links { gap: 12px; }
-        .nav-link { font-size: 0.8rem; }
-    }
-  </style>
-</head>
-<body>
-
-  <nav>
-    <div class="nav-inner">
-      <a href="/" class="logo">🏛️ The Capitol Wire</a>
-      <div class="nav-links">
-        <a href="/" class="nav-link">Home</a>
-        <a href="/about.html" class="nav-link">About</a>
-        <button class="sub-btn" onclick="openModal()" style="border: none; cursor: pointer;">Get Alerts</button>
-      </div>
-    </div>
-  </nav>
-
-  <article>
-    <div class="container">
-
-      <!-- CTA at top -->
-      <div class="cta-box">
-        <h3>Get instant House floor alerts</h3>
-        <p>Stop refreshing government websites. Subscribe for real-time updates.</p>
-        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Subscribe Now →</button>
-      </div>
-
-      <div class="article-header">
-        <h1>How to Track the House Floor Schedule in Real Time (2026 Guide)</h1>
-        <div class="article-meta">Last updated: February 2026</div>
-      </div>
-
-      <div class="intro-box">
-        <p style="margin-bottom: 12px; font-size: 1.05rem;"><strong>The House floor schedule changes constantly.</strong> Bills get added with hours' notice. Committee prints replace introduced text. Tracking this manually means refreshing <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a>, parsing PDFs, and hoping you didn't miss something.</p>
-        <p style="margin-bottom: 0; font-size: 1.05rem;">Here's how to stay on top of House floor action without refreshing government websites all day.</p>
-      </div>
-
-      <h2>⚡ Method 1: Automated Tracking Tools</h2>
-
-      <div class="method-card featured">
-        <div class="method-header">
-          <div class="method-icon">🏛️</div>
-          <div>
-            <h3 class="method-title" style="margin: 0; font-size: 1.4rem;">The Capitol Wire</h3>
-            <div class="method-subtitle" style="color: var(--brand-primary); margin-top: 4px;">✓ Instant Updates · Free Forever</div>
-          </div>
-        </div>
-
-        <p style="margin-bottom: 16px;">The Capitol Wire monitors <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> and <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.Gov</a> around the clock and delivers:</p>
-
-        <ul style="margin: 0;">
-          <li><strong>Instant email alerts</strong> within minutes of any schedule change</li>
-          <li><strong>Automatic detection of Advance Notices</strong> (items not yet filed with the <a href="https://clerk.house.gov/" target="_blank">Clerk</a>)</li>
-          <li><strong>AI-generated Policy Briefs</strong> for every bill—delivered instantly with executive summaries, key provisions, political dynamics, and page citations for verification</li>
-          <li><strong>Completely free</strong>, no login required</li>
-        </ul>
-
-        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; background: white; padding: 16px; border-radius: 8px; margin-left: -4px; margin-right: -4px;">
-          <p style="margin: 0; font-weight: 600; color: var(--brand-primary);"><strong>✓ Bottom line:</strong> Set it and forget it. Real-time automation with instant Policy Briefs saves hours of manual work.</p>
-        </div>
-      </div>
-
-      <div class="cta-box">
-        <h3>The Capitol Wire — Free Forever</h3>
-        <p>Instant alerts + AI Policy Briefs for every bill. Used by Hill staffers, advocates, and journalists.</p>
-        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Subscribe Now →</button>
-      </div>
-
-      <h2>📋 Method 2: Manual Tracking</h2>
-
-      <div class="method-card">
-        <div class="method-header">
-          <div class="method-icon">👁️</div>
-          <div>
-            <h3 class="method-title" style="margin: 0;">Official Government Sources</h3>
-            <div class="method-subtitle" style="margin-top: 4px;">⏱️ Time-Intensive · Requires Constant Checking</div>
-          </div>
-        </div>
-
-        <p style="font-weight: 600; margin-bottom: 12px;">Official Sources:</p>
-        <ul style="margin-bottom: 16px;">
-          <li><strong><a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">House Majority Leader's website</a></strong> posts weekly schedules (usually Thursdays) and updates throughout the week. <strong>Limitation:</strong> No alerts, must refresh manually.</li>
-          <li><strong><a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a></strong> is the official repository for bill text and committee reports from the <a href="https://clerk.house.gov/" target="_blank">Clerk of the House</a>. <strong>Limitation:</strong> No consolidated view, hard to track changes.</li>
-        </ul>
-
-        <p style="font-weight: 600; margin-bottom: 12px;">How to Do It:</p>
-        <ol style="margin-bottom: 16px;">
-          <li>Bookmark the <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">Majority Leader's schedule page</a></li>
-          <li>Check 2-3 times per day (morning, midday, late afternoon)</li>
-          <li>Cross-reference with <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> for bill text</li>
-        </ol>
-
-        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #f1f5f9;">
-          <p style="margin: 0; font-weight: 600; color: #64748b;"><strong>⚠️ Bottom line:</strong> Official sources, but time-consuming and easy to miss updates.</p>
-        </div>
-      </div>
-
-      <h2>🔍 Method 3: Congressional Tracking Websites</h2>
-
-      <div class="method-card">
-        <div class="method-header">
-          <div class="method-icon">📊</div>
-          <div>
-            <h3 class="method-title" style="margin: 0;">GovTrack & Popvox</h3>
-            <div class="method-subtitle" style="margin-top: 4px;">⏰ Delayed Updates · Bill Lifecycle Focus</div>
-          </div>
-        </div>
-
-        <p style="font-weight: 600; margin-bottom: 12px;"><strong>GovTrack:</strong></p>
-        <p style="margin-bottom: 16px;">Tracks bill status across both chambers with email alerts for specific bills. <strong>Limitation:</strong> Focuses on bill lifecycle, not real-time floor schedule changes. Updates are not instant.</p>
-
-        <p style="font-weight: 600; margin-bottom: 12px;"><strong>Popvox:</strong></p>
-        <p style="margin-bottom: 16px;">Similar to GovTrack—good for tracking specific legislation as it moves through Congress. <strong>Limitation:</strong> Not designed for real-time floor schedule monitoring. Updates are not instant.</p>
-
-        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #f1f5f9;">
-          <p style="margin: 0; font-weight: 600; color: #64748b;"><strong>⚠️ Bottom line:</strong> Excellent for long-term bill tracking, but don't deliver instant updates when schedules change.</p>
-        </div>
-      </div>
-
-      <h2>📰 Method 4: News Outlets & Newsletters</h2>
-
-      <div class="method-card">
-        <div class="method-header">
-          <div class="method-icon">📧</div>
-          <div>
-            <h3 class="method-title" style="margin: 0;">Punchbowl News, Politico Playbook</h3>
-            <div class="method-subtitle" style="margin-top: 4px;">⏳ Hours of Delay · Analysis Focus</div>
-          </div>
-        </div>
-
-        <p style="margin-bottom: 16px;">Daily and weekly summaries of congressional action with political context and analysis. <strong>Limitation:</strong> Typically delayed by hours after schedule changes occur. Do not deliver instant updates.</p>
-
-        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #f1f5f9;">
-          <p style="margin: 0; font-weight: 600; color: #64748b;"><strong>⚠️ Bottom line:</strong> Great for context and analysis, but not instant notifications when things change.</p>
-        </div>
-      </div>
-
-      <h2>📊 Quick Comparison</h2>
-
-      <div class="comparison-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Method</th>
-            <th>Best For</th>
-            <th>Time Required</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>The Capitol Wire (automated)</strong></td>
-            <td>Real-time alerts, busy staffers, instant Policy Briefs</td>
-            <td>Very low (set & forget)</td>
-          </tr>
-          <tr>
-            <td>Manual tracking</td>
-            <td>Occasional checkers, budget-conscious</td>
-            <td>High (30+ min/day)</td>
-          </tr>
-          <tr>
-            <td>GovTrack/Popvox</td>
-            <td>Long-term bill tracking</td>
-            <td>Medium (10-15 min/day)</td>
-          </tr>
-          <tr>
-            <td>News outlets</td>
-            <td>Context & analysis</td>
-            <td>Low (5 min/day, but delayed)</td>
-          </tr>
-        </tbody>
-      </table>
-      </div>
-
-      <h2>💡 Conclusion</h2>
-      <p>If you're a Hill staffer, advocate, or journalist who needs to know about floor changes <em>immediately</em>, automated tools like The Capitol Wire save hours of manual work. If you're casually following Congress, GovTrack or news outlets might be enough.</p>
-
-      <h2>❓ Frequently Asked Questions</h2>
-
-      <div class="faq-item">
-        <h3>How often does the House floor schedule change?</h3>
-        <p>The House floor schedule can change multiple times per day, with new bills added or existing items updated with hours' notice. Committee prints can replace introduced text at the last minute, making real-time tracking essential for Hill staffers and advocates.</p>
-      </div>
-
-      <div class="faq-item">
-        <h3>What's the fastest way to get House floor alerts?</h3>
-        <p>Automated tools like The Capitol Wire deliver email alerts within minutes of schedule changes, compared to hours of delay with news outlets or the need for constant manual checking of government websites.</p>
-      </div>
-
-      <div class="faq-item">
-        <h3>Does GovTrack track the House floor schedule in real time?</h3>
-        <p>GovTrack tracks bill lifecycle across both chambers but doesn't focus on real-time floor schedule changes. Updates are not instant, making it better suited for long-term bill tracking rather than immediate floor alerts.</p>
-      </div>
-
-      <div class="faq-item">
-        <h3>Where can I find the official House floor schedule?</h3>
-        <p>The official House floor schedule is published on the <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">House Majority Leader's website</a> and <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> from the <a href="https://clerk.house.gov/" target="_blank">Clerk of the House</a>. However, these require manual checking and don't provide automatic alerts when changes occur.</p>
-      </div>
-
-      <div class="cta-box">
-        <h3>Never miss a floor schedule change</h3>
-        <p>Join Hill staffers, advocates, and journalists who rely on The Capitol Wire for real-time intelligence</p>
-        <button onclick="openModal()" class="cta-button" style="border: none; cursor: pointer;">Get Alerts Now →</button>
-      </div>
-
-    </div>
-  </article>
-
-  <footer>
-    <div class="container">
-      <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
-      <div class="footer-links">
-        <a href="/privacy.html">Privacy Policy</a>
-        <a href="/terms.html">Terms of Service</a>
-        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Subscribe Modal -->
-  <div id="modal" class="modal-overlay">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
-      <h3 style="font-family: 'Merriweather', serif; font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Get Instant Alerts</h3>
-      <p style="font-size: 14px; color: #64748b;">Enter your email to get notified when the schedule or analysis updates.</p>
-      <input id="modal-email" type="email" placeholder="Enter your email" class="modal-input" />
-      <button id="modal-submit" class="modal-button">Subscribe Free</button>
-      <div id="modal-status" class="modal-status"></div>
-    </div>
-  </div>
-
-  <script>
-    const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
-    const SUBSCRIBE_KEY = 'sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h';
-    let subscribeClient = null;
-    if (window.supabase) subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
-
-    const modalEl = document.getElementById('modal');
-    const modalEmail = document.getElementById('modal-email');
-    const modalSubmit = document.getElementById('modal-submit');
-    const modalStatus = document.getElementById('modal-status');
-
-    function openModal() {
-      if(modalEl) {
-        modalEl.classList.add('active');
-        if(modalEmail) modalEmail.focus();
-      }
-    }
-
-    function closeModal() {
-      if(modalEl) {
-        modalEl.classList.remove('active');
-        if(modalStatus) modalStatus.textContent = '';
-        if(modalSubmit) {
-          modalSubmit.disabled = false;
-          modalSubmit.textContent = 'Subscribe Free';
-        }
-      }
-    }
-
-    // Close modal on outside click
-    if(modalEl) {
-      modalEl.addEventListener('click', (e) => {
-        if(e.target === modalEl) closeModal();
-      });
-    }
-
-    // Subscribe handler
-    if(modalSubmit && subscribeClient) {
-      modalSubmit.addEventListener('click', async () => {
-        const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : '');
-        if(!email || !email.includes('@')) {
-          modalStatus.textContent = 'Please enter a valid email.';
-          modalStatus.style.color = '#ef4444';
-          return;
-        }
-        modalSubmit.disabled = true;
-        modalSubmit.textContent = 'Processing...';
-        modalStatus.textContent = '';
-
-        const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
-
-        if(error) {
-          if(error.code === '23505') {
-            modalStatus.textContent = 'You are already subscribed!';
-            modalStatus.style.color = '#3b82f6';
-          } else {
-            modalStatus.textContent = 'Error. Try again.';
-            modalStatus.style.color = '#ef4444';
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the Congress voting schedule for this week?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The weekly House voting schedule is published at docs.house.gov/floor/ and can change multiple times per day. Use The Capitol Wire's live dashboard at thecapitolwire.com/dashboard for the always-current schedule."
           }
-          modalSubmit.disabled = false;
-          modalSubmit.textContent = 'Subscribe Free';
-          return;
+        },
+        {
+          "@type": "Question",
+          "name": "How do I track what Congress is voting on?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can track House floor votes through official sources (docs.house.gov), congressional tracking sites (GovTrack, Popvox), news outlets (Punchbowl, Politico), or automated alert services like The Capitol Wire that monitor the schedule every 60 seconds."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the Senate voting schedule different from the House?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The Senate operates under different rules and publishes its schedule through the Senate Majority Leader's office. The House publishes its schedule through the Majority Leader at majorityleader.gov and the Clerk at docs.house.gov/floor/."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How far in advance is the House voting schedule published?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The Majority Leader typically announces the following week's schedule on Friday. However, the detailed schedule with bill PDFs and procedural details is updated throughout the week by the House Clerk, often with only hours of advance notice."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        modalStatus.textContent = 'Subscribed!';
-        modalStatus.style.color = '#22c55e';
-        if(modalEmail) modalEmail.value = '';
-        setTimeout(closeModal, 1200);
-      });
-    }
-  </script>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.8;
+        }
 
+        .article-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            padding: 60px 20px 40px;
+            text-align: center;
+            border-bottom: 4px solid #3b82f6;
+        }
+
+        .article-header .brand {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 16px;
+            color: #93c5fd;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .article-header h1 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: clamp(24px, 4vw, 38px);
+            color: #fff;
+            max-width: 800px;
+            margin: 0 auto 15px;
+            line-height: 1.3;
+        }
+
+        .article-header .meta {
+            color: #93c5fd;
+            font-size: 14px;
+        }
+
+        .article-body {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .article-body h2 {
+            font-family: 'Merriweather', Georgia, serif;
+            font-size: 24px;
+            color: #fff;
+            margin: 40px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #334155;
+        }
+
+        .article-body h3 {
+            font-size: 18px;
+            color: #93c5fd;
+            margin: 28px 0 12px;
+        }
+
+        .article-body p {
+            margin-bottom: 18px;
+            color: #cbd5e1;
+            font-size: 16px;
+        }
+
+        .article-body a {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        .article-body ul,
+        .article-body ol {
+            margin: 0 0 18px 24px;
+            color: #cbd5e1;
+        }
+
+        .article-body li {
+            margin-bottom: 8px;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #1e3a8a, #1e40af);
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .cta-box h3 {
+            color: #fff !important;
+            margin-top: 0 !important;
+        }
+
+        .cta-box p {
+            color: #bfdbfe;
+        }
+
+        .cta-box a.btn {
+            display: inline-block;
+            background: #fff;
+            color: #1e3a8a;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0;
+        }
+
+        .info-table th,
+        .info-table td {
+            padding: 10px 14px;
+            border: 1px solid #334155;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .info-table th {
+            background: #1e293b;
+            color: #93c5fd;
+            font-weight: 600;
+        }
+
+        .info-table td {
+            color: #cbd5e1;
+        }
+
+        .faq-section {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .faq-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .faq-item h3 {
+            color: #fff !important;
+            font-size: 16px !important;
+            margin: 0 0 8px !important;
+        }
+
+        .faq-item p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .breadcrumb {
+            max-width: 760px;
+            margin: 15px auto;
+            padding: 0 20px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .breadcrumb a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="article-header">
+        <a href="https://thecapitolwire.com/" class="brand">🏛️ The Capitol Wire</a>
+        <h1>Congress Voting Schedule 2026: How to Track House Votes in Real Time</h1>
+        <div class="meta">By Zachary Florman · Updated March 3, 2026 · 7 min read</div>
+    </header>
+
+    <nav class="breadcrumb">
+        <a href="/">Home</a> › <a href="/blog/">Blog</a> › Congress Voting Schedule 2026
+    </nav>
+
+    <article class="article-body">
+        <p>
+            <strong>Want to know what Congress is voting on this week?</strong> The 119th Congress
+            (2025–2026) has hundreds of bills moving through committees at any given time, but only
+            a handful make it to the House floor each week. Knowing what's on the floor schedule —
+            and when it changes — is critical for staffers, lobbyists, journalists, and engaged citizens.
+        </p>
+        <p>
+            This guide covers every method for tracking the House voting schedule, from official
+            government sources to automated monitoring tools, so you can choose the approach that
+            fits your workflow.
+        </p>
+
+        <div class="cta-box">
+            <h3>⚡ Skip the Manual Work</h3>
+            <p>The Capitol Wire sends free email alerts the moment the House schedule changes.</p>
+            <a href="https://thecapitolwire.com/#hero" class="btn">Subscribe Free →</a>
+        </div>
+
+        <h2>Understanding the Congressional Calendar</h2>
+        <p>
+            Congress operates on a two-chamber system. The House and Senate maintain separate
+            schedules, voting procedures, and calendars. This guide focuses on the
+            <strong>House of Representatives</strong>, which publishes a weekly floor schedule
+            through two official channels.
+        </p>
+
+        <h3>The House Legislative Calendar</h3>
+        <p>
+            The House typically holds votes Tuesday through Thursday when in session. The
+            <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm">Majority Leader</a>
+            sets the agenda, announcing the following week's schedule on Friday afternoon. The
+            <a href="https://docs.house.gov/floor/">House Clerk</a> then publishes the detailed
+            schedule with specific bill PDFs, committee reports, and procedural documents.
+        </p>
+
+        <h2>4 Methods for Tracking the House Voting Schedule</h2>
+
+        <h3>Method 1: Official Government Sources (Free, Manual)</h3>
+        <p>
+            The most authoritative sources are the government websites themselves:
+        </p>
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Source</th>
+                    <th>Best For</th>
+                    <th>Limitation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><a href="https://docs.house.gov/floor/">docs.house.gov/floor/</a></td>
+                    <td>Detailed bill PDFs, sub-items, timestamps</td>
+                    <td>No alerts — you must manually refresh</td>
+                </tr>
+                <tr>
+                    <td><a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm">majorityleader.gov</a>
+                    </td>
+                    <td>Early schedule preview (Friday announcements)</td>
+                    <td>Less detail, no document links</td>
+                </tr>
+                <tr>
+                    <td><a href="https://clerk.house.gov/">clerk.house.gov</a></td>
+                    <td>Roll call votes and final results</td>
+                    <td>After-the-fact only — not predictive</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Method 2: Congressional Tracking Websites (Free/Paid)</h3>
+        <p>
+            Services like <strong>GovTrack</strong> and <strong>Popvox</strong> track bill
+            status through the legislative process (committee referral, amendments, chamber passage).
+            They're excellent for monitoring a specific bill's journey, but they
+            <strong>don't monitor the weekly House floor schedule page</strong> in real time.
+        </p>
+        <p>
+            If you need to know the moment a bill is added to this week's agenda — before the
+            vote happens — you need a tool that watches docs.house.gov directly.
+        </p>
+
+        <h3>Method 3: News Outlets &amp; Newsletters</h3>
+        <p>
+            <strong>Punchbowl News</strong>, <strong>Politico Playbook</strong>, and
+            <strong>The Hill</strong> cover the House floor schedule in their daily newsletters.
+            These are excellent for context and political analysis, but they update once or twice
+            daily — not in real time. If a bill is added to the schedule at 3pm, you might not
+            learn about it until the next morning's newsletter.
+        </p>
+
+        <h3>Method 4: Automated Monitoring Tools (Free, Real-Time)</h3>
+        <p>
+            <a href="https://thecapitolwire.com/">The Capitol Wire</a> monitors both official
+            sources every 60 seconds using automated change detection. When any bill is added,
+            removed, or updated on the weekly agenda, email alerts go out within seconds. Each
+            bill also gets an <a href="https://thecapitolwire.com/bills/">AI-generated policy
+                brief</a> with key provisions and a verification guide.
+        </p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Official Sources</th>
+                    <th>GovTrack</th>
+                    <th>News Outlets</th>
+                    <th>The Capitol Wire</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Monitors floor schedule</td>
+                    <td>✅</td>
+                    <td>❌</td>
+                    <td>✅ (daily)</td>
+                    <td>✅ (60s)</td>
+                </tr>
+                <tr>
+                    <td>Real-time alerts</td>
+                    <td>❌</td>
+                    <td>❌</td>
+                    <td>❌</td>
+                    <td>✅</td>
+                </tr>
+                <tr>
+                    <td>AI policy briefs</td>
+                    <td>❌</td>
+                    <td>❌</td>
+                    <td>❌</td>
+                    <td>✅</td>
+                </tr>
+                <tr>
+                    <td>Bill PDFs linked</td>
+                    <td>✅</td>
+                    <td>❌</td>
+                    <td>❌</td>
+                    <td>✅</td>
+                </tr>
+                <tr>
+                    <td>Cost</td>
+                    <td>Free</td>
+                    <td>Free/Paid</td>
+                    <td>Free/Paid</td>
+                    <td>Free</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>What's on the House Floor This Week?</h2>
+        <p>
+            The fastest way to see the current House floor schedule is
+            <a href="https://thecapitolwire.com/dashboard/">The Capitol Wire's live dashboard</a>,
+            which merges data from both official sources and organizes bills by procedural category.
+            You can also browse <a href="https://thecapitolwire.com/bills/">AI policy briefs</a>
+            for every bill on the agenda.
+        </p>
+
+        <div class="cta-box">
+            <h3>Never Miss a House Floor Vote</h3>
+            <p>Free alerts, AI policy briefs, and a live dashboard — all in one place.</p>
+            <a href="https://thecapitolwire.com/#hero" class="btn">Get Free Alerts →</a>
+        </div>
+
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-section">
+            <div class="faq-item">
+                <h3>What is the Congress voting schedule for this week?</h3>
+                <p>
+                    The weekly House voting schedule is published at
+                    <a href="https://docs.house.gov/floor/">docs.house.gov/floor/</a> and can change
+                    multiple times per day. Use <a href="https://thecapitolwire.com/dashboard/">The
+                        Capitol Wire's live dashboard</a> for the always-current schedule.
+                </p>
+            </div>
+            <div class="faq-item">
+                <h3>How do I track what Congress is voting on?</h3>
+                <p>
+                    You can track House floor votes through official sources (docs.house.gov),
+                    congressional tracking sites (GovTrack, Popvox), news outlets (Punchbowl,
+                    Politico), or automated alert services like
+                    <a href="https://thecapitolwire.com/">The Capitol Wire</a> that monitor the
+                    schedule every 60 seconds.
+                </p>
+            </div>
+            <div class="faq-item">
+                <h3>Is the Senate voting schedule different from the House?</h3>
+                <p>
+                    Yes. The Senate operates under different rules and publishes its schedule through
+                    the Senate Majority Leader's office. The House publishes its schedule through the
+                    Majority Leader at majorityleader.gov and the Clerk at docs.house.gov/floor/.
+                </p>
+            </div>
+            <div class="faq-item">
+                <h3>How far in advance is the House voting schedule published?</h3>
+                <p>
+                    The Majority Leader typically announces the following week's schedule on Friday.
+                    However, the detailed schedule with bill PDFs and procedural details is updated
+                    throughout the week by the House Clerk, often with only hours of advance notice.
+                </p>
+            </div>
+        </div>
+    </article>
+
+    <footer
+        style="text-align: center; padding: 40px 20px; border-top: 1px solid #334155; color: #64748b; font-size: 13px;">
+        <a href="https://thecapitolwire.com/" style="color: #60a5fa;">The Capitol Wire</a> ·
+        <a href="https://thecapitolwire.com/bills/" style="color: #60a5fa;">Bill Archive</a> ·
+        <a href="https://thecapitolwire.com/dashboard/" style="color: #60a5fa;">Dashboard</a> ·
+        <a href="https://thecapitolwire.com/blog/how-to-track-house-floor-schedule.html"
+            style="color: #60a5fa;">Tracking Guide</a>
+        <br><br>
+        <a href="https://thecapitolwire.com/privacy.html" style="color: #64748b;">Privacy Policy</a> ·
+        <a href="https://thecapitolwire.com/terms.html" style="color: #64748b;">Terms of Service</a>
+    </footer>
 </body>
+
 </html>
