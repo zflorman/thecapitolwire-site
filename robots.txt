@@ -1,0 +1,12 @@
+# The Capitol Wire — Robots.txt
+# https://thecapitolwire.com
+
+User-agent: *
+Allow: /
+
+# Point all crawlers to the sitemap
+Sitemap: https://www.thecapitolwire.com/sitemap.xml
+
+# Block admin/API paths (if any exist in the future)
+Disallow: /api/
+Disallow: /admin/
