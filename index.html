@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -11,26 +11,26 @@
         gtag('config', 'G-CEV5ME0C6L');
     </script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Capitol Wire | Real-Time House Floor Alerts</title>
     <meta name="description"
         content="Free real-time email alerts for the House floor schedule. Monitors docs.house.gov and majorityleader.gov every 60 seconds. AI policy briefs for every bill on the weekly agenda.">
     <link rel="canonical" href="https://www.thecapitolwire.com/">
 
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://thecapitolwire.com/" />
-    <meta property="og:title" content="The Capitol Wire | Real-Time House Floor Alerts" />
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://thecapitolwire.com/">
+    <meta property="og:title" content="The Capitol Wire | Real-Time House Floor Alerts">
     <meta property="og:description"
-        content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule. Track Congress in real-time - 100% Free." />
+        content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule. Track Congress in real-time - 100% Free.">
     <meta property="og:image"
-        content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6" />
+        content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6">
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="The Capitol Wire | Real-Time House Floor Alerts" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="The Capitol Wire | Real-Time House Floor Alerts">
     <meta name="twitter:description"
-        content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule - 100% Free." />
+        content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule - 100% Free.">
     <meta name="twitter:image"
-        content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6" />
+        content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6">
 
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
@@ -198,6 +198,18 @@
 
         .sub-btn:hover {
             background: var(--brand-dark);
+        }
+
+        /* --- HAMBURGER MENU --- */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            color: var(--text-main);
+            padding: 4px 8px;
+            line-height: 1;
         }
 
         /* --- DROPDOWN --- */
@@ -512,7 +524,6 @@
         /* EMAIL MATCHING ITEM STYLES */
         .bill-item {
             padding: 14px 20px;
-            /* Condensed padding */
             border-bottom: 1px solid #f1f5f9;
             display: flex;
             flex-direction: column;
@@ -631,14 +642,80 @@
             gap: 24px;
         }
 
+        /* --- MOBILE RESPONSIVE --- */
         @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 16px 24px;
+                gap: 16px;
+                border-bottom: 1px solid #e2e8f0;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                z-index: 200;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .nav-inner {
+                position: relative;
+            }
+
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                border: none;
+                padding-left: 16px;
+                transform: none;
+                min-width: auto;
+            }
+
+            .dropdown:hover .dropdown-content {
+                animation: none;
+                transform: none;
+            }
+
             .hero h1 {
                 font-size: 1.75rem;
+            }
+
+            .hero-checklist {
+                font-size: 0.95rem;
+            }
+
+            .form-wrapper {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            button.form-btn {
+                width: 100%;
             }
 
             .bill-links {
                 display: block;
                 margin: 4px 0 0 0;
+            }
+
+            .status-bar {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+                gap: 8px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 12px;
             }
         }
 
@@ -661,6 +738,8 @@
     <nav>
         <div class="nav-inner">
             <a href="/" class="logo">🏛️ The Capitol Wire</a>
+            <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')"
+                aria-label="Menu">☰</button>
             <div class="nav-links">
                 <div class="dropdown">
                     <a href="#live-feed" class="nav-link">Live Feed ▾</a>
@@ -699,7 +778,7 @@
             </div>
 
             <div class="form-wrapper">
-                <input type="email" id="email" placeholder="Enter your email" required />
+                <input type="email" id="email" placeholder="Enter your email" required>
                 <button id="submitBtn" class="form-btn">Subscribe for Free</button>
             </div>
             <div id="status" class="msg"></div>
@@ -721,10 +800,10 @@
 
             <div class="status-bar">
                 <div class="live-dot"></div>
-                <div id="status-line">System Online. Monitoring active feeds...</div>
+                <div id="status-line">Connecting to live feed...</div>
             </div>
 
-            <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
+            <div id="latest-container" class="feed-section" style="display: none; border-color: var(--warning-border);">
                 <div class="section-header"
                     style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
                     ⚡ Latest Activity (New)
@@ -733,9 +812,7 @@
             </div>
 
             <div id="schedule-list">
-                <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">
-                    Initializing secure connection...
-                </div>
+                <!-- Feed items loaded via JS -->
             </div>
 
         </div>
@@ -969,6 +1046,13 @@
                     btn.disabled = false; btn.textContent = "Subscribe a Colleague"; stat.textContent = "";
                 }, 3000);
             }
+        });
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-links').classList.remove('open');
+            });
         });
     </script>
 </body>
