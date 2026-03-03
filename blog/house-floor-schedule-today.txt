@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-CEV5ME0C6L');
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>House Floor Schedule Today: What's Being Voted On This Week | The Capitol Wire</title>
+    <meta name="description"
+        content="See what bills are on the House floor schedule today. Updated in real time from docs.house.gov. Track votes, suspensions, and rule bills on the weekly congressional agenda." />
+    <link rel="canonical" href="https://www.thecapitolwire.com/blog/house-floor-schedule-today.html" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.thecapitolwire.com/blog/house-floor-schedule-today.html" />
+    <meta property="og:title" content="House F loor Schedule Today: What's Being Voted On This Week" />
+    <meta property="og:description"
+        content="See what bills are on the House floor schedule today. Updated in real time from official government sources." />
+    <meta property="og:site_name" content="The Capitol Wire" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="House Floor Schedule Today | The Capitol Wire" />
+    <meta name="twitter:description"
+        content="See what bills are on the House floor schedule today. Updated in real time." />
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+
+    <!-- Article Schema -->
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "House Floor Schedule Today: What's Being Voted On This Week",
+    "description": "How to check what bills are scheduled for House floor votes today. Covers official sources, schedule categories, and real-time tracking.",
+    "url": "https://www.thecapitolwire.com/blog/house-floor-schedule-today.html",
+    "datePublished": "2026-03-03",
+    "dateModified": "2026-03-03",
+    "author": {
+      "@type": "Organization",
+      "name": "The Capitol Wire"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Capitol Wire",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://thecapitolwire.com/favicon.ico"
+      }
+    },
+    "articleSection": "Congressional Guides",
+    "keywords": ["house floor schedule today", "house floor votes today", "congressional schedule", "what bills are being voted on", "house agenda this week"]
+  }
+  </script>
+
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{
+      "@type": "Question",
+      "name": "What is on the House floor schedule today?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The House floor schedule is published weekly by the Majority Leader and updated throughout the week by the House Clerk at docs.house.gov/floor/. Bills can be added or removed with only hours of notice. Check The Capitol Wire's live dashboard for the current agenda."
+      }
+    },{
+      "@type": "Question",
+      "name": "Where can I find the official House floor schedule?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The official House floor schedule is published in two places: docs.house.gov/floor/ (the Clerk's office) and majorityleader.gov/schedule/weekly-schedule.htm (Majority Leader's office). The Clerk's version is updated more frequently with procedural details."
+      }
+    },{
+      "@type": "Question",
+      "name": "What is the difference between a suspension vote and a rule vote?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Suspension votes require a two-thirds majority and are typically used for non-controversial bills. Rule votes use a simple majority and go through the Rules Committee, which sets debate time and amendment procedures. Rule bills are usually the most significant legislation on the weekly agenda."
+      }
+    },{
+      "@type": "Question",
+      "name": "How often does the House floor schedule change?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The House floor schedule can change multiple times per day. The Majority Leader typically posts a preliminary schedule on Friday for the following week, but bills are frequently added throughout the week, especially suspension bills that appear with little advance notice."
+      }
+    },{
+      "@type": "Question",
+      "name": "Can I get alerts when the House floor schedule changes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The Capitol Wire monitors the official House floor schedule every 60 seconds and sends free email alerts within seconds of any change. Sign up at thecapitolwire.com."
+      }
+    }]
+  }
+  </script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --bg-main: #ffffff;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%);
+            --card-bg: #ffffff;
+            --card-border: 1px solid #e2e8f0;
+            --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --brand-primary: #2563eb;
+            --brand-dark: #1e3a8a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background: var(--bg-main);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Merriweather', serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--brand-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+            border: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            border: none;
+        }
+
+        .nav-link:hover {
+            color: var(--brand-primary);
+        }
+
+        .sub-btn {
+            background: var(--brand-primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .sub-btn:hover {
+            background: var(--brand-dark);
+        }
+
+        article {
+            padding: 40px 0;
+        }
+
+        .article-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 24px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 16px;
+            border: 1px solid #bfdbfe;
+        }
+
+        h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 2.5rem;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .article-meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        h2 {
+            font-family: 'Merriweather', serif;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-top: 48px;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 28px;
+            background: var(--brand-primary);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .intro-box {
+            background: #f8fafc;
+            border-left: 4px solid var(--brand-primary);
+            padding: 20px 24px;
+            margin: 24px 0;
+            border-radius: 8px;
+        }
+
+        p {
+            margin-bottom: 14px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        ul,
+        ol {
+            margin: 14px 0;
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 6px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--brand-primary);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.3);
+            transition: all 0.2s;
+        }
+
+        a:hover {
+            color: var(--brand-dark);
+            border-bottom-color: var(--brand-dark);
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 2px solid var(--brand-primary);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .cta-box h3 {
+            margin-top: 0;
+            color: var(--brand-primary);
+            font-size: 1.4rem;
+        }
+
+        .cta-box p {
+            margin-bottom: 20px;
+            color: var(--text-muted);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            border: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+            border: none;
+        }
+
+        .comparison-wrapper {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            border-bottom: 2px solid #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .faq-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .faq-item:hover {
+            border-color: var(--brand-primary);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+        }
+
+        .faq-item h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: var(--brand-primary);
+            font-size: 1.05rem;
+        }
+
+        .faq-item p {
+            margin-bottom: 0;
+            color: #475569;
+        }
+
+        footer {
+            padding: 60px 0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s;
+            border: none;
+        }
+
+        footer a:hover {
+            color: var(--brand-primary);
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 92%;
+            max-width: 28rem;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            color: #94a3b8;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .modal-close:hover {
+            color: #1e293b;
+        }
+
+        .modal-input {
+            margin-top: 16px;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .modal-button {
+            margin-top: 12px;
+            width: 100%;
+            border-radius: 6px;
+            background: #0f172a;
+            color: white;
+            font-weight: 700;
+            padding: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+        }
+
+        .modal-button:hover {
+            background: #000;
+        }
+
+        .modal-status {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            min-height: 20px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-link {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">🏛️ The Capitol Wire</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/about.html" class="nav-link">About</a>
+                <button class="sub-btn" onclick="openModal()">Get Alerts</button>
+            </div>
+        </div>
+    </nav>
+
+    <article>
+        <div class="container">
+
+            <div class="cta-box">
+                <h3>Get instant House floor alerts</h3>
+                <p>Stop refreshing government websites. Get real-time updates the moment the schedule changes.</p>
+                <button onclick="openModal()" class="cta-button">Subscribe Now →</button>
+            </div>
+
+            <div class="article-header">
+                <h1>House Floor Schedule Today: What's Being Voted On This Week</h1>
+                <div class="article-meta">Last updated: March 2026</div>
+            </div>
+
+            <div class="intro-box">
+                <p style="margin-bottom: 12px; font-size: 1.05rem;"><strong>Looking for today's House floor
+                        schedule?</strong> The weekly agenda is published by the <a href="https://docs.house.gov/floor/"
+                        target="_blank">House Clerk</a> and the <a
+                        href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">Majority
+                        Leader</a>, but it changes constantly. Bills get added with hours' notice. Committee prints
+                    replace introduced text. Suspension bills appear late in the week without warning.</p>
+                <p style="margin-bottom: 0; font-size: 1.05rem;">This guide explains where to find today's schedule, how
+                    to read it, and how to get instant alerts when it changes.</p>
+            </div>
+
+            <h2>📋 Where to Find the House Floor Schedule</h2>
+
+            <p>The House floor schedule is published and updated in two official locations. Both are free and publicly
+                accessible, but they serve different purposes and update at different times.</p>
+
+            <div class="comparison-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>What It Shows</th>
+                            <th>Update Frequency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong><a href="https://docs.house.gov/floor/" target="_blank">House Clerk
+                                        (docs.house.gov)</a></strong></td>
+                            <td>Bill PDFs, committee reports, rule texts, sub-items</td>
+                            <td>Multiple times daily</td>
+                        </tr>
+                        <tr>
+                            <td><strong><a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm"
+                                        target="_blank">Majority Leader</a></strong></td>
+                            <td>Advance schedule preview (less detail)</td>
+                            <td>Usually Friday for next week</td>
+                        </tr>
+                        <tr>
+                            <td><strong><a href="https://thecapitolwire.com/dashboard/" target="_blank">The Capitol
+                                        Wire</a></strong></td>
+                            <td>Both sources merged + AI analysis</td>
+                            <td>Every 60 seconds</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>📖 How to Read the House Floor Schedule</h2>
+
+            <p>The weekly agenda organizes bills into three procedural categories. Understanding these categories tells
+                you how significant a bill is and how the vote will work.</p>
+
+            <h3>🏛️ Pursuant to a Rule</h3>
+            <p>These are the most significant bills of the week. They go through the <a href="https://rules.house.gov/"
+                    target="_blank">Rules Committee</a>, which sets debate time, amendment procedures, and sometimes
+                packages multiple bills together. Rule bills require a simple majority (218 votes) to pass. This is
+                where major legislation — appropriations, reconciliation, policy overhauls — typically appears.</p>
+
+            <h3>⚡ Suspension of the Rules</h3>
+            <p>Suspension bills require a two-thirds majority to pass and are typically used for non-controversial
+                legislation: post office namings, technical corrections, bipartisan initiatives. However, suspension
+                bills can sometimes include substantive policy — especially when leadership wants to fast-track
+                something.</p>
+
+            <h3>📋 Items That May Be Considered</h3>
+            <p>This catch-all category includes items that don't yet have a confirmed time slot: rules committee
+                resolutions, procedural motions, and items leadership is considering but hasn't committed to scheduling.
+            </p>
+
+            <h2>🕐 When Does the House Floor Schedule Change?</h2>
+
+            <p>The schedule is not static. Here's the typical weekly pattern:</p>
+            <ol>
+                <li><strong>Friday afternoon:</strong> The Majority Leader posts a preliminary schedule for the
+                    following week</li>
+                <li><strong>Monday–Tuesday:</strong> The House Clerk's page is updated with specific bill PDFs and
+                    committee reports</li>
+                <li><strong>Tuesday–Thursday:</strong> Suspension bills are added throughout the day, often with only a
+                    few hours' notice</li>
+                <li><strong>Week-end rollover:</strong> The canonical page rolls from "This Week" to "Next Week" as the
+                    calendar advances</li>
+            </ol>
+            <p>Because changes happen at unpredictable times, manually refreshing the official pages is impractical for
+                anyone tracking multiple bills. That's why automated monitoring tools like <a
+                    href="https://thecapitolwire.com/" target="_blank">The Capitol Wire</a> exist.</p>
+
+            <h2>⚡ How The Capitol Wire Tracks the Schedule</h2>
+
+            <p>The Capitol Wire <a href="https://thecapitolwire.com/about.html" target="_blank">automatically
+                    monitors</a> both the Clerk's page and the Majority Leader's website using a three-tier change
+                detection system:</p>
+            <ul>
+                <li><strong>Tier 1:</strong> HTTP header check every 60 seconds (costs almost zero bandwidth)</li>
+                <li><strong>Tier 2:</strong> Majority Leader page hash comparison (catches early leadership
+                    announcements)</li>
+                <li><strong>Tier 3:</strong> Canonical page timestamp check (catches silent updates)</li>
+            </ul>
+            <p>When any tier detects a change, the system parses the full schedule, identifies which bills were added or
+                updated, and sends email alerts within seconds. Each bill also gets an <a
+                    href="https://thecapitolwire.com/bills/" target="_blank">AI-generated policy brief</a> with key
+                provisions, political analysis, and a verification guide.</p>
+
+            <div class="cta-box">
+                <h3>Never miss a floor schedule change</h3>
+                <p>Join Hill staffers, advocates, and journalists who rely on The Capitol Wire for real-time
+                    intelligence.</p>
+                <button onclick="openModal()" class="cta-button">Get Alerts Now →</button>
+            </div>
+
+            <h2>❓ Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <h3>What is on the House floor schedule today?</h3>
+                <p>The House floor schedule is published weekly by the Majority Leader and updated throughout the week
+                    by the House Clerk at <a href="https://docs.house.gov/floor/"
+                        target="_blank">docs.house.gov/floor/</a>. Bills can be added or removed with only hours of
+                    notice. Check <a href="https://thecapitolwire.com/dashboard/" target="_blank">The Capitol Wire's
+                        live dashboard</a> for the current agenda.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Where can I find the official House floor schedule?</h3>
+                <p>The official schedule is published in two places: <a href="https://docs.house.gov/floor/"
+                        target="_blank">docs.house.gov/floor/</a> (the Clerk's office) and <a
+                        href="https://www.majorityleader.gov/schedule/weekly-schedule.htm"
+                        target="_blank">majorityleader.gov</a> (Majority Leader's office). The Clerk's version is
+                    updated more frequently with procedural details.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>What is the difference between a suspension vote and a rule vote?</h3>
+                <p>Suspension votes require a two-thirds majority and are typically used for non-controversial bills.
+                    Rule votes use a simple majority and go through the Rules Committee, which sets debate time and
+                    amendment procedures. Rule bills are usually the most significant legislation on the weekly agenda.
+                </p>
+            </div>
+
+            <div class="faq-item">
+                <h3>How often does the House floor schedule change?</h3>
+                <p>The schedule can change multiple times per day. The Majority Leader typically posts a preliminary
+                    schedule on Friday for the following week, but bills are frequently added throughout the week,
+                    especially suspension bills that appear with little advance notice.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Can I get alerts when the House floor schedule changes?</h3>
+                <p>Yes. <a href="https://thecapitolwire.com/" target="_blank">The Capitol Wire</a> monitors the official
+                    House floor schedule every 60 seconds and sends free email alerts within seconds of any change.</p>
+            </div>
+
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/"
+                    target="_blank">docs.house.gov/floor</a>.</div>
+            <div class="footer-links">
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/terms.html">Terms of Service</a>
+                <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Subscribe Modal -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+            <h3
+                style="font-family: 'Merriweather', serif; font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
+                Get Instant Alerts</h3>
+            <p style="font-size: 14px; color: #64748b;">Enter your email to get notified when the schedule or analysis
+                updates.</p>
+            <input id="modal-email" type="email" placeholder="Enter your email" class="modal-input" />
+            <button id="modal-submit" class="modal-button">Subscribe Free</button>
+            <div id="modal-status" class="modal-status"></div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
+        const SUBSCRIBE_KEY = 'sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h';
+        let subscribeClient = null;
+        if (window.supabase) subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
+
+        const modalEl = document.getElementById('modal');
+        const modalEmail = document.getElementById('modal-email');
+        const modalSubmit = document.getElementById('modal-submit');
+        const modalStatus = document.getElementById('modal-status');
+
+        function openModal() {
+            if (modalEl) {
+                modalEl.classList.add('active');
+                if (modalEmail) modalEmail.focus();
+            }
+        }
+
+        function closeModal() {
+            if (modalEl) {
+                modalEl.classList.remove('active');
+                if (modalStatus) modalStatus.textContent = '';
+                if (modalSubmit) {
+                    modalSubmit.disabled = false;
+                    modalSubmit.textContent = 'Subscribe Free';
+                }
+            }
+        }
+
+        if (modalEl) {
+            modalEl.addEventListener('click', (e) => {
+                if (e.target === modalEl) closeModal();
+            });
+        }
+
+        if (modalSubmit && subscribeClient) {
+            modalSubmit.addEventListener('click', async () => {
+                const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : '');
+                if (!email || !email.includes('@')) {
+                    modalStatus.textContent = 'Please enter a valid email.';
+                    modalStatus.style.color = '#ef4444';
+                    return;
+                }
+                modalSubmit.disabled = true;
+                modalSubmit.textContent = 'Processing...';
+                modalStatus.textContent = '';
+
+                const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
+                if (error) {
+                    if (error.code === '23505') {
+                        modalStatus.textContent = 'You are already subscribed!';
+                        modalStatus.style.color = '#3b82f6';
+                    } else {
+                        modalStatus.textContent = 'Error. Try again.';
+                        modalStatus.style.color = '#ef4444';
+                    }
+                    modalSubmit.disabled = false;
+                    modalSubmit.textContent = 'Subscribe Free';
+                    return;
+                }
+                modalStatus.textContent = 'Subscribed!';
+                modalStatus.style.color = '#22c55e';
+                if (modalEmail) modalEmail.value = '';
+                setTimeout(closeModal, 1200);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
