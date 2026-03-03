@@ -1,563 +1,932 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-CEV5ME0C6L');
+    <meta charset="UTF-8" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-CEV5ME0C6L');
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Capitol Wire | Real-Time House Floor Alerts</title>
+    <meta name="description"
+        content="Free real-time email alerts for the House floor schedule. Monitors docs.house.gov and majorityleader.gov every 60 seconds. AI policy briefs for every bill on the weekly agenda.">
+    <link rel="canonical" href="https://www.thecapitolwire.com/">
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://thecapitolwire.com/" />
+    <meta property="og:title" content="The Capitol Wire | Real-Time House Floor Alerts" />
+    <meta property="og:description"
+        content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule. Track Congress in real-time - 100% Free." />
+    <meta property="og:image"
+        content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="The Capitol Wire | Real-Time House Floor Alerts" />
+    <meta name="twitter:description"
+        content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule - 100% Free." />
+    <meta name="twitter:image"
+        content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6" />
+
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "The Capitol Wire",
+    "url": "https://www.thecapitolwire.com",
+    "description": "Real-time legislative intelligence for the U.S. House floor schedule.",
+    "email": "zach@thecapitolwire.com",
+    "sameAs": []
+  }
   </script>
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Capitol Wire | Real-Time House Floor Alerts</title>
-  
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://thecapitolwire.com/" />
-  <meta property="og:title" content="The Capitol Wire | Real-Time House Floor Alerts" />
-  <meta property="og:description" content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule. Track Congress in real-time - 100% Free." />
-  <meta property="og:image" content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6" />
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "The Capitol Wire",
+    "url": "https://www.thecapitolwire.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.thecapitolwire.com/bills/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "The Capitol Wire — Real-Time House Floor Alerts",
+    "description": "Free real-time email alerts for the House floor schedule. AI policy briefs for every bill.",
+    "url": "https://www.thecapitolwire.com/",
+    "isPartOf": { "@type": "WebSite", "name": "The Capitol Wire", "url": "https://www.thecapitolwire.com" },
+    "about": {
+      "@type": "GovernmentService",
+      "name": "U.S. House Floor Schedule",
+      "serviceType": "Legislative Calendar"
+    }
+  }
+  </script>
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="The Capitol Wire | Real-Time House Floor Alerts" />
-  <meta name="twitter:description" content="Instant email alerts and automatic policy briefs for every bill as it hits the House Schedule - 100% Free." />
-  <meta name="twitter:image" content="https://www.house.gov/sites/default/files/styles/large/public/2023-01/Floor%20Proceedings.png?itok=T_iZbYy6" />
-  
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>">
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- MODERN LIGHT THEME --- */
+        :root {
+            --bg-main: #ffffff;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%);
 
-  <style>
-    /* --- MODERN LIGHT THEME --- */
-    :root {
-      --bg-main: #ffffff;
-      --bg-gradient: radial-gradient(circle at 50% 0%, #eff6ff, #ffffff 60%); 
-      
-      --card-bg: #ffffff;
-      --card-border: 1px solid #e2e8f0;
-      --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      
-      --text-main: #0f172a; 
-      --text-muted: #64748b; 
-      
-      --brand-primary: #2563eb; 
-      --brand-dark: #1e3a8a;    
-      
-      --success: #10b981;
-      --warning-bg: #fffbeb;
-      --warning-text: #92400e;
-      --warning-border: #fcd34d;
-    }
+            --card-bg: #ffffff;
+            --card-border: 1px solid #e2e8f0;
+            --card-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
-    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-    html { scroll-behavior: smooth; }
-    
-    body { 
-        font-family: 'Inter', sans-serif;
-        color: var(--text-main); 
-        background: var(--bg-main); 
-        background-image: var(--bg-gradient);
-        background-attachment: fixed;
-        min-height: 100vh;
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-    }
+            --text-main: #0f172a;
+            --text-muted: #64748b;
 
-    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2; }
+            --brand-primary: #2563eb;
+            --brand-dark: #1e3a8a;
 
-    /* --- NAV --- */
-    nav { 
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        padding: 16px 0; 
-        position: sticky; top: 0; z-index: 100;
-    }
-    .nav-inner { 
-        max-width: 1000px; margin: 0 auto;
-        padding: 0 24px; 
-        display: flex; justify-content: space-between; align-items: center; 
-    }
-    .logo { 
-        font-family: 'Merriweather', serif;
-        font-weight: 800; font-size: 1.2rem; 
-        color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;
-        letter-spacing: -0.5px;
-    }
-    .nav-links { display: flex; align-items: center; gap: 24px; }
-    .nav-link { 
-        color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
-        font-weight: 500; 
-        transition: color 0.2s; cursor: pointer; 
-    }
-    .nav-link:hover { color: var(--brand-primary); }
-    
-    .sub-btn { 
-        background: var(--brand-primary);
-        color: white; 
-        padding: 8px 16px; 
-        border-radius: 6px; 
-        font-weight: 600; 
-        text-decoration: none; 
-        font-size: 0.85rem; 
-        transition: transform 0.1s;
-    }
-    .sub-btn:hover { background: var(--brand-dark); }
+            --success: #10b981;
+            --warning-bg: #fffbeb;
+            --warning-text: #92400e;
+            --warning-border: #fcd34d;
+        }
 
-    /* --- DROPDOWN --- */
-    .dropdown { position: relative; display: inline-block; }
-    .dropdown-content { 
-        display: none; position: absolute;
-        background: white;
-        min-width: 200px; 
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        border-radius: 8px; 
-        z-index: 100; top: 120%; left: 50%; transform: translateX(-50%); 
-        padding: 6px; 
-        opacity: 0; transition: opacity 0.2s;
-        border: 1px solid #e2e8f0;
-    }
-    .dropdown:hover .dropdown-content { display: block; opacity: 1; top: 100%; animation: slideUpFade 0.2s ease-out; }
-    .dropdown-content a { 
-        color: var(--text-main);
-        padding: 8px 12px; text-decoration: none; display: block; 
-        font-size: 0.85rem; font-weight: 500; border-radius: 4px;
-    }
-    .dropdown-content a:hover { background-color: #eff6ff; color: var(--brand-primary); }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+        }
 
-    /* --- HERO SECTION --- */
-    .hero { text-align: center; padding: 40px 0 0px; position: relative; }
-    .hero h1 { 
-        font-family: 'Merriweather', serif;
-        font-size: 3.5rem; 
-        color: var(--text-main); 
-        margin-bottom: 24px; 
-        line-height: 1.1;
-        letter-spacing: -1px;
-    }
-    .hero h1 span.highlight { color: var(--brand-primary); position: relative; }
-    .hero h1 span.highlight::after {
-        content: ''; position: absolute;
-        bottom: 5px; left: 0; width: 100%; height: 6px;
-        background: rgba(37, 99, 235, 0.1); z-index: -1; transform: rotate(-1deg);
-    }
-    .typing-wrapper { display: inline-block; }
-    .typing-text {
-        display: inline-block;
-        font-family: 'Merriweather', serif; 
-        font-weight: 700; 
-        color: var(--brand-primary);
-        border-right: 3px solid var(--text-main);
-        white-space: nowrap; overflow: hidden; width: 0;
-        animation: typing 1.5s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
-        vertical-align: bottom; line-height: 1.2;
-        padding-bottom: 3px; margin-bottom: -3px; 
-    }
-    @keyframes typing { to { width: 100%; } }
-    @keyframes blink-caret { 50% { border-color: transparent; } }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    .hero-checklist {
-        display: inline-block; text-align: left;
-        color: var(--text-muted); font-size: 1.1rem; line-height: 1.8;
-        margin: 0 auto 40px; max-width: 680px;
-    }
-    .check { color: var(--success); margin-right: 12px; font-weight: bold; }
-    .hero-checklist strong { color: var(--text-main); font-weight: 600; }
-    .hero-checklist a {
-        color: var(--brand-primary); text-decoration: none;
-        border-bottom: 1px dotted var(--brand-primary);
-        font-weight: 600; transition: all 0.2s;
-    }
-    .hero-checklist a:hover { color: var(--brand-dark); border-bottom-style: solid; }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background: var(--bg-main);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    /* --- FORM --- */
-    .form-wrapper { 
-        max-width: 480px; margin: 0 auto; display: flex; gap: 10px; 
-        padding: 4px; position: relative; z-index: 10;
-    }
-    input { 
-        flex: 1; padding: 16px 20px;
-        border: 1px solid #cbd5e1; background: white; color: var(--text-main);
-        border-radius: 8px; font-size: 1rem; transition: all 0.2s; 
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    input::placeholder { color: #94a3b8; }
-    input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-    
-    button.form-btn { 
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: white; border: none; padding: 16px 28px; border-radius: 8px; 
-        font-weight: 700; cursor: pointer; font-size: 1rem;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-    }
-    button.form-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
-    button.form-btn:disabled { opacity: 0.7; cursor: wait; }
-    .msg { margin-top: 5px; font-size: 0.9rem; min-height: 24px; font-weight: 500; text-align: center; } 
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 2;
+        }
 
-    /* --- DASHBOARD / FEED STYLES (MATCHING EMAIL) --- */
-    .feed-wrapper { padding: 10px 0 80px; }
+        /* --- NAV --- */
+        nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    .toggle-container {
-        display: flex; justify-content: center; gap: 10px;
-        margin-bottom: 20px; margin-top: 10px;
-    }
-    .toggle-btn {
-        padding: 12px 24px; border-radius: 8px;
-        border: 1px solid #e2e8f0; background: white;
-        color: var(--text-muted); font-weight: 600;
-        cursor: pointer; transition: all 0.2s;
-        box-shadow: var(--card-shadow);
-    }
-    .toggle-btn:hover { background: #f1f5f9; color: var(--brand-primary); }
-    .toggle-btn.active {
-        background: var(--brand-primary); color: white;
-        border-color: var(--brand-primary);
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
-    }
+        .nav-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .status-bar {
-        display: flex; align-items: center; gap: 12px;
-        font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
-        background: white; padding: 8px 16px; border-radius: 100px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border: 1px solid #e2e8f0;
-        margin-bottom: 30px; width: fit-content;
-        margin-left: auto; margin-right: auto;
-    }
-    .live-dot { 
-        width: 8px; height: 8px; background: #22c55e; 
-        border-radius: 50%; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-        animation: ripple 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
-    }
-    @keyframes ripple {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
+        .logo {
+            font-family: 'Merriweather', serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--brand-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
 
-    .feed-section { 
-        background: var(--card-bg); border: var(--card-border); 
-        border-radius: 12px; box-shadow: var(--card-shadow); 
-        margin-bottom: 30px; overflow: hidden; 
-    }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
 
-    .section-header {
-        background: #f8fafc; padding: 14px 20px;
-        font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem;
-        color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    
-    /* EMAIL MATCHING ITEM STYLES */
-    .bill-item { 
-        padding: 14px 20px; /* Condensed padding */
-        border-bottom: 1px solid #f1f5f9; 
-        display: flex; flex-direction: column; gap: 4px; 
-        transition: background 0.1s;
-    }
-    .bill-item:last-child { border-bottom: none; }
-    .bill-item:hover { background: #f8fafc; }
-    
-    /* Inline Title Row */
-    .bill-row { display: block; }
-    
-    .bill-id { 
-        display: inline; font-weight: 700; color: #000; 
-        font-family: 'Inter', sans-serif; font-size: 0.95rem; 
-    }
-    .bill-desc { 
-        display: inline; color: #333; font-size: 0.95rem; font-weight: 400; 
-    }
-    
-    .bill-links { display: inline-block; margin-left: 8px; vertical-align: middle; white-space: nowrap; }
-    
-    /* Email Style Tags */
-    .doc-link { 
-        color: #333 !important; text-decoration: none; 
-        background: #e5e7eb; padding: 1px 6px; 
-        border-radius: 3px; font-size: 0.7rem; font-weight: 700; 
-        border: 1px solid #d1d5db; transition: all 0.2s;
-        margin-right: 4px; text-transform: uppercase;
-    }
-    .doc-link:hover { background: #d1d5db; color: #000; }
-    
-    .ai-link {
-        color: #166534 !important; text-decoration: none;
-        background: #dcfce7; padding: 1px 6px; 
-        border-radius: 3px; font-size: 0.7rem; font-weight: 700;
-        border: 1px solid #86efac; transition: all 0.2s;
-        display: inline-block; margin-right: 4px; text-transform: uppercase;
-    }
-    .ai-link:hover { background: #bbf7d0; color: #14532d; }
-    
-    /* Email Style Timestamp (Red Text) */
-    .bill-meta { 
-        font-size: 0.75rem; color: #b91c1c; font-weight: 400;
-        margin-top: 2px; display: block;
-    }
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
 
-    footer { 
-        padding: 60px 0; text-align: center; color: #94a3b8; font-size: 0.9rem; 
-        border-top: 1px solid #e2e8f0; margin-top: 60px;
-    }
-    footer a { color: #64748b; text-decoration: none; transition: color 0.2s; }
-    footer a:hover { color: var(--brand-primary); text-decoration: underline; }
-    .footer-links { margin-top: 20px; display: flex; justify-content: center; gap: 24px; }
+        .nav-link:hover {
+            color: var(--brand-primary);
+        }
 
-    @media (max-width: 768px) { 
-        .hero h1 { font-size: 1.75rem; }
-        .bill-links { display: block; margin: 4px 0 0 0; }
-    }
-    @keyframes slideUpFade { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
-  </style>
+        .sub-btn {
+            background: var(--brand-primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: transform 0.1s;
+        }
+
+        .sub-btn:hover {
+            background: var(--brand-dark);
+        }
+
+        /* --- DROPDOWN --- */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            z-index: 100;
+            top: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+            opacity: 1;
+            top: 100%;
+            animation: slideUpFade 0.2s ease-out;
+        }
+
+        .dropdown-content a {
+            color: var(--text-main);
+            padding: 8px 12px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 4px;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #eff6ff;
+            color: var(--brand-primary);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            text-align: center;
+            padding: 40px 0 0px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 3.5rem;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 span.highlight {
+            color: var(--brand-primary);
+            position: relative;
+        }
+
+        .hero h1 span.highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: rgba(37, 99, 235, 0.1);
+            z-index: -1;
+            transform: rotate(-1deg);
+        }
+
+        .typing-wrapper {
+            display: inline-block;
+        }
+
+        .typing-text {
+            display: inline-block;
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            color: var(--brand-primary);
+            border-right: 3px solid var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            animation: typing 1.5s steps(14, end) forwards, blink-caret 0.8s step-end infinite;
+            vertical-align: bottom;
+            line-height: 1.2;
+            padding-bottom: 3px;
+            margin-bottom: -3px;
+        }
+
+        @keyframes typing {
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink-caret {
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        .hero-checklist {
+            display: inline-block;
+            text-align: left;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 0 auto 40px;
+            max-width: 680px;
+        }
+
+        .check {
+            color: var(--success);
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .hero-checklist strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .hero-checklist a {
+            color: var(--brand-primary);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--brand-primary);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .hero-checklist a:hover {
+            color: var(--brand-dark);
+            border-bottom-style: solid;
+        }
+
+        /* --- FORM --- */
+        .form-wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            padding: 4px;
+            position: relative;
+            z-index: 10;
+        }
+
+        input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        input:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button.form-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 16px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        button.form-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+
+        button.form-btn:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        .msg {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            min-height: 24px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* --- DASHBOARD / FEED STYLES (MATCHING EMAIL) --- */
+        .feed-wrapper {
+            padding: 10px 0 80px;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .toggle-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--card-shadow);
+        }
+
+        .toggle-btn:hover {
+            background: #f1f5f9;
+            color: var(--brand-primary);
+        }
+
+        .toggle-btn.active {
+            background: var(--brand-primary);
+            color: white;
+            border-color: var(--brand-primary);
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 100px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            animation: ripple 1.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+            }
+        }
+
+        .feed-section {
+            background: var(--card-bg);
+            border: var(--card-border);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8fafc;
+            padding: 14px 20px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* EMAIL MATCHING ITEM STYLES */
+        .bill-item {
+            padding: 14px 20px;
+            /* Condensed padding */
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: background 0.1s;
+        }
+
+        .bill-item:last-child {
+            border-bottom: none;
+        }
+
+        .bill-item:hover {
+            background: #f8fafc;
+        }
+
+        /* Inline Title Row */
+        .bill-row {
+            display: block;
+        }
+
+        .bill-id {
+            display: inline;
+            font-weight: 700;
+            color: #000;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .bill-desc {
+            display: inline;
+            color: #333;
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .bill-links {
+            display: inline-block;
+            margin-left: 8px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        /* Email Style Tags */
+        .doc-link {
+            color: #333 !important;
+            text-decoration: none;
+            background: #e5e7eb;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: 1px solid #d1d5db;
+            transition: all 0.2s;
+            margin-right: 4px;
+            text-transform: uppercase;
+        }
+
+        .doc-link:hover {
+            background: #d1d5db;
+            color: #000;
+        }
+
+        .ai-link {
+            color: #166534 !important;
+            text-decoration: none;
+            background: #dcfce7;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: 1px solid #86efac;
+            transition: all 0.2s;
+            display: inline-block;
+            margin-right: 4px;
+            text-transform: uppercase;
+        }
+
+        .ai-link:hover {
+            background: #bbf7d0;
+            color: #14532d;
+        }
+
+        /* Email Style Timestamp (Red Text) */
+        .bill-meta {
+            font-size: 0.75rem;
+            color: #b91c1c;
+            font-weight: 400;
+            margin-top: 2px;
+            display: block;
+        }
+
+        footer {
+            padding: 60px 0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--brand-primary);
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .bill-links {
+                display: block;
+                margin: 4px 0 0 0;
+            }
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-  <nav>
-    <div class="nav-inner">
-      <a href="/" class="logo">🏛️ The Capitol Wire</a>
-      <div class="nav-links">
-        <div class="dropdown">
-          <a href="#live-feed" class="nav-link">Live Feed ▾</a>
-          <div class="dropdown-content">
-            <a href="#latest-container">⚡ Latest Activity</a>
-            <a href="#cat-suspension">Suspensions</a>
-            <a href="#cat-rule">Rules</a>
-          </div>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">🏛️ The Capitol Wire</a>
+            <div class="nav-links">
+                <div class="dropdown">
+                    <a href="#live-feed" class="nav-link">Live Feed ▾</a>
+                    <div class="dropdown-content">
+                        <a href="#latest-container">⚡ Latest Activity</a>
+                        <a href="#cat-suspension">Suspensions</a>
+                        <a href="#cat-rule">Rules</a>
+                    </div>
+                </div>
+                <a href="/about.html" class="nav-link">About</a>
+                <a href="/bills/" class="nav-link">Bill Archive</a>
+                <a href="dashboard/" class="nav-link">Dashboard</a>
+                <a href="#hero" class="sub-btn">Get Alerts</a>
+            </div>
         </div>
-        <a href="/about.html" class="nav-link">About</a>
-        <a href="/bills/" class="nav-link">Bill Archive</a>
-        <a href="dashboard/" class="nav-link">Dashboard</a>
-        <a href="#hero" class="sub-btn">Get Alerts</a>
-      </div>
+    </nav>
+
+    <section id="hero" class="hero">
+        <div class="container">
+            <h1>
+                Real-Time Alerts for the<br>
+                <span class="highlight">House Floor</span>
+                <span class="typing-wrapper"><span class="typing-text">Weekly Agenda.</span></span>
+            </h1>
+
+            <div class="hero-checklist">
+                <div><span class="check">✓</span> Monitors <a href="https://docs.house.gov/floor/"
+                        target="_blank">Docs.House.Gov</a> and <a
+                        href="https://www.majorityleader.gov/schedule/weekly-schedule.htm"
+                        target="_blank">MajorityLeader.gov</a>.</div>
+                <div><span class="check">✓</span> Auto-detects <strong>Advance Notices</strong> (items not yet filed
+                    with the Clerk).</div>
+                <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly to you for free.</div>
+                <div><span class="check">✓</span> <strong>Automatic Policy Briefs</strong> for every bill as it's
+                    announced.</div>
+            </div>
+
+            <div class="form-wrapper">
+                <input type="email" id="email" placeholder="Enter your email" required />
+                <button id="submitBtn" class="form-btn">Subscribe for Free</button>
+            </div>
+            <div id="status" class="msg"></div>
+        </div>
+    </section>
+
+    <div id="live-feed" class="feed-wrapper">
+        <div class="container">
+
+            <h2
+                style="font-family:'Merriweather',serif; font-size:1.5rem; color:var(--text-main); text-align:center; margin-bottom:20px;">
+                Live House Floor Schedule</h2>
+
+            <div class="toggle-container">
+                <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This
+                    Week</button>
+                <button class="toggle-btn" id="btn-next-week" onclick="switchSection('NEXT_WEEK')">Next Week</button>
+            </div>
+
+            <div class="status-bar">
+                <div class="live-dot"></div>
+                <div id="status-line">System Online. Monitoring active feeds...</div>
+            </div>
+
+            <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
+                <div class="section-header"
+                    style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
+                    ⚡ Latest Activity (New)
+                </div>
+                <div id="latest-list"></div>
+            </div>
+
+            <div id="schedule-list">
+                <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">
+                    Initializing secure connection...
+                </div>
+            </div>
+
+        </div>
     </div>
-  </nav>
 
-  <section id="hero" class="hero">
-    <div class="container">
-      <h1>
-        Real-Time Alerts for the<br>
-        <span class="highlight">House Floor</span> 
-        <span class="typing-wrapper"><span class="typing-text">Weekly Agenda.</span></span>
-      </h1>
-      
-      <div class="hero-checklist">
-        <div><span class="check">✓</span> Monitors <a href="https://docs.house.gov/floor/" target="_blank">Docs.House.Gov</a> and <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm" target="_blank">MajorityLeader.gov</a>.</div>
-        <div><span class="check">✓</span> Auto-detects <strong>Advance Notices</strong> (items not yet filed with the Clerk).</div>
-        <div><span class="check">✓</span> <strong>Instant email alerts</strong> directly to you for free.</div>
-        <div><span class="check">✓</span> <strong>Automatic Policy Briefs</strong> for every bill as it's announced.</div>
-      </div>
-      
-      <div class="form-wrapper">
-        <input type="email" id="email" placeholder="Enter your email" required />
-        <button id="submitBtn" class="form-btn">Subscribe for Free</button>
-      </div>
-      <div id="status" class="msg"></div>
-    </div>
-  </section>
+    <section style="max-width:900px; margin:0 auto; padding:0 24px 40px; text-align:center;">
+        <h2 style="font-family:'Merriweather',serif; font-size:1.3rem; color:var(--text-main); margin-bottom:12px;">How
+            The Capitol Wire Tracks Congress</h2>
+        <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.7; max-width:700px; margin:0 auto;">
+            The Capitol Wire monitors the official House floor schedule from
+            <a href="https://docs.house.gov/floor/" style="color:var(--brand-primary);">docs.house.gov</a> and the
+            <a href="https://www.majorityleader.gov/schedule/weekly-schedule.htm"
+                style="color:var(--brand-primary);">Majority Leader's website</a>
+            every 60 seconds. When bills are added, removed, or updated on the weekly agenda,
+            you receive an instant email alert — completely free. Each bill also gets an
+            <a href="/bills/" style="color:var(--brand-primary);">AI-generated policy brief</a> with key provisions,
+            political analysis, and a verification guide so you can fact-check every claim.
+        </p>
+    </section>
 
-  <div id="live-feed" class="feed-wrapper">
-    <div class="container">
-        
-      <div class="toggle-container">
-          <button class="toggle-btn active" id="btn-this-week" onclick="switchSection('THIS_WEEK')">This Week</button>
-          <button class="toggle-btn" id="btn-next-week" onclick="switchSection('NEXT_WEEK')">Next Week</button>
-      </div>
+    <footer>
+        <div class="container">
+            <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/"
+                    target="_blank">docs.house.gov/floor</a>.</div>
+            <div class="footer-links">
+                <a href="privacy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="/blog/how-to-track-house-floor-schedule.html">Blog</a>
+                <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+            </div>
+        </div>
+    </footer>
 
-      <div class="status-bar">
-          <div class="live-dot"></div>
-          <div id="status-line">System Online. Monitoring active feeds...</div>
-      </div>
+    <script>
+        const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      <div id="latest-container" class="feed-section" style="display:none; border-color: var(--warning-border);">
-          <div class="section-header" style="background: var(--warning-bg); color: var(--warning-text); border-bottom-color: var(--warning-border);">
-             ⚡ Latest Activity (New)
-          </div>
-          <div id="latest-list"></div>
-      </div>
+        const CATEGORIES = [
+            { key: 'SUSPENSION', label: 'Suspension of the Rules' },
+            { key: 'RULE', label: 'Pursuant to a Rule' },
+            { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
+            { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
+        ];
 
-      <div id="schedule-list">
-          <div style="padding:60px; text-align:center; color: #94a3b8; font-weight:300;">
-            Initializing secure connection...
-          </div>
-      </div>
+        let activeSection = 'THIS_WEEK';
+        let allBillData = [];
+        let lastFetchedHash = "";
 
-    </div>
-  </div>
+        function switchSection(section) {
+            activeSection = section;
+            document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
+            document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
+            renderFeed();
+        }
 
-  <footer>
-    <div class="container">
-      <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy Policy</a>
-        <a href="terms.html">Terms of Service</a>
-        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
-      </div>
-    </div>
-  </footer>
+        async function initFeed() {
+            try {
+                const { data, error } = await _supabase
+                    .from('live_feed')
+                    .select('*')
+                    .eq('is_visible', true)
+                    .order('id', { ascending: true })
+                    .limit(100);
+                if (error) {
+                    console.error("Supabase Error:", error);
+                    document.getElementById('schedule-list').innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error.</div>';
+                    return;
+                }
 
-  <script>
-    const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                if (data) {
+                    const currentHash = JSON.stringify(data.map(d => d.id));
+                    if (currentHash !== lastFetchedHash) {
+                        allBillData = data;
+                        lastFetchedHash = currentHash;
+                        renderFeed();
+                    }
+                }
+            } catch (e) { console.error("Feed Crash:", e); }
+        }
 
-    const CATEGORIES = [
-        { key: 'SUSPENSION', label: 'Suspension of the Rules' },
-        { key: 'RULE', label: 'Pursuant to a Rule' },
-        { key: 'MAY_BE_CONSIDERED', label: 'Possible Consideration' },
-        { key: 'ADVANCE_NOTICE', label: 'Advance Notice' }
-    ];
+        function renderFeed() {
+            const latestContainer = document.getElementById('latest-container');
+            const latestList = document.getElementById('latest-list');
+            const scheduleList = document.getElementById('schedule-list');
+            const statusLine = document.getElementById('status-line');
 
-    let activeSection = 'THIS_WEEK'; 
-    let allBillData = [];
-    let lastFetchedHash = "";
+            scheduleList.innerHTML = '';
+            latestList.innerHTML = '';
 
-    function switchSection(section) {
-        activeSection = section;
-        document.getElementById('btn-this-week').classList.toggle('active', section === 'THIS_WEEK');
-        document.getElementById('btn-next-week').classList.toggle('active', section === 'NEXT_WEEK');
-        renderFeed();
-    }
-
-    async function initFeed() {
-        try {
-            const { data, error } = await _supabase
-                .from('live_feed')
-                .select('*')
-                .eq('is_visible', true)
-                .order('id', { ascending: true })
-                .limit(100);
-            if (error) {
-                console.error("Supabase Error:", error);
-                document.getElementById('schedule-list').innerHTML = '<div style="padding:40px; text-align:center; color:red;">System Error.</div>';
+            const filteredData = allBillData.filter(item => {
+                const itemSec = item.section || 'THIS_WEEK';
+                return itemSec === activeSection;
+            });
+            if (filteredData.length === 0) {
+                scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color: #94a3b8;">No items scheduled for this period.</div>';
+                latestContainer.style.display = 'none';
+                statusLine.innerHTML = "System Active. Monitoring for updates...";
                 return;
             }
 
-            if (data) {
-                const currentHash = JSON.stringify(data.map(d => d.id));
-                if (currentHash !== lastFetchedHash) {
-                    allBillData = data;
-                    lastFetchedHash = currentHash;
-                    renderFeed();
-                }
+            const displayData = [...filteredData].sort((a, b) => b.id - a.id);
+            const newestItem = displayData[0];
+            const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
+
+            if (bannerTime) {
+                statusLine.innerHTML = "Last update from the Clerk: <b>" + bannerTime + "</b>";
+            } else {
+                statusLine.innerHTML = "System Active. Monitoring for updates...";
             }
-        } catch (e) { console.error("Feed Crash:", e); }
-    }
 
-    function renderFeed() {
-        const latestContainer = document.getElementById('latest-container');
-        const latestList = document.getElementById('latest-list');
-        const scheduleList = document.getElementById('schedule-list');
-        const statusLine = document.getElementById('status-line');
-        
-        scheduleList.innerHTML = '';
-        latestList.innerHTML = '';
-        
-        const filteredData = allBillData.filter(item => {
-            const itemSec = item.section || 'THIS_WEEK';
-            return itemSec === activeSection;
-        });
-        if (filteredData.length === 0) {
-            scheduleList.innerHTML = '<div style="padding:60px; text-align:center; color: #94a3b8;">No items scheduled for this period.</div>';
-            latestContainer.style.display = 'none';
-            statusLine.innerHTML = "System Active. Monitoring for updates...";
-            return;
-        }
 
-        const displayData = [...filteredData].sort((a, b) => b.id - a.id);
-        const newestItem = displayData[0];
-        const bannerTime = newestItem.page_timestamp || newestItem.timestamp;
+            // Latest Activity = ALL visible bills that share the NEWEST "Added"/"Updated" timestamp
+            const activityStamps = displayData
+                .filter(i => (i.timestamp || "").includes("Added") || (i.timestamp || "").includes("Updated"))
+                .map(i => i.timestamp);
 
-        if (bannerTime) {
-            statusLine.innerHTML = "Last update from the Clerk: <b>" + bannerTime + "</b>";
-        } else {
-            statusLine.innerHTML = "System Active. Monitoring for updates...";
-        }
+            activityStamps.sort((a, b) => (a > b ? -1 : a < b ? 1 : 0));
+            const newestStamp = activityStamps.length ? activityStamps[0] : null;
 
-        
-        // Latest Activity = ALL visible bills that share the NEWEST "Added"/"Updated" timestamp
-        const activityStamps = displayData
-            .filter(i => (i.timestamp || "").includes("Added") || (i.timestamp || "").includes("Updated"))
-            .map(i => i.timestamp);
+            let hasLatest = false;
+            if (newestStamp) {
+                displayData.forEach(item => {
+                    if (item.timestamp === newestStamp) {
+                        latestList.appendChild(createBillItem(item));
+                        hasLatest = true;
+                    }
+                });
+            }
+            latestContainer.style.display = hasLatest ? 'block' : 'none';
 
-        activityStamps.sort((a, b) => (a > b ? -1 : a < b ? 1 : 0));
-        const newestStamp = activityStamps.length ? activityStamps[0] : null;
-
-        let hasLatest = false;
-        if (newestStamp) {
-            displayData.forEach(item => {
-                if (item.timestamp === newestStamp) {
-                    latestList.appendChild(createBillItem(item));
-                    hasLatest = true;
+            CATEGORIES.forEach(cat => {
+                const catItems = displayData.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
+                if (catItems.length > 0) {
+                    const section = document.createElement('div');
+                    section.className = 'feed-section';
+                    const header = document.createElement('div');
+                    header.className = 'section-header';
+                    header.innerText = cat.label;
+                    section.appendChild(header);
+                    catItems.forEach(item => section.appendChild(createBillItem(item)));
+                    scheduleList.appendChild(section);
                 }
             });
         }
-        latestContainer.style.display = hasLatest ? 'block' : 'none';
 
-        CATEGORIES.forEach(cat => {
-            const catItems = displayData.filter(i => (i.category || "").toUpperCase() === cat.key.toUpperCase());
-            if (catItems.length > 0) {
-                const section = document.createElement('div');
-                section.className = 'feed-section';
-                const header = document.createElement('div');
-                header.className = 'section-header';
-                header.innerText = cat.label;
-                section.appendChild(header);
-                catItems.forEach(item => section.appendChild(createBillItem(item)));
-                scheduleList.appendChild(section);
+        // --- REBUILT ITEM GENERATOR (MATCHES EMAIL) ---
+        function createBillItem(item) {
+            const div = document.createElement('div');
+            div.className = 'bill-item';
+
+            let buttonsHtml = '';
+
+            // 1. AI Button (Green Tag)
+            if (item.ai_analysis) {
+                buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">POLICY BRIEF</a>`;
             }
-        });
-    }
 
-    // --- REBUILT ITEM GENERATOR (MATCHES EMAIL) ---
-    function createBillItem(item) {
-        const div = document.createElement('div');
-        div.className = 'bill-item';
-        
-        let buttonsHtml = '';
+            // 2. Doc Link (Gray Tag)
+            if (item.link) {
+                const isPdf = item.link.toLowerCase().endsWith('pdf');
+                buttonsHtml += `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
+            }
 
-        // 1. AI Button (Green Tag)
-        if (item.ai_analysis) {
-             buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">POLICY BRIEF</a>`;
-        }
+            let linkHtml = '';
+            if (buttonsHtml) {
+                linkHtml = `<span class="bill-links">${buttonsHtml}</span>`;
+            }
 
-        // 2. Doc Link (Gray Tag)
-        if (item.link) {
-            const isPdf = item.link.toLowerCase().endsWith('pdf');
-            buttonsHtml += `<a href="${item.link}" target="_blank" class="doc-link">${isPdf ? 'PDF' : 'TEXT'}</a>`;
-        }
+            let timeHtml = '';
+            if (item.timestamp && item.timestamp.trim() !== "") {
+                timeHtml = `<div class="bill-meta">${item.timestamp}</div>`;
+            }
 
-        let linkHtml = '';
-        if (buttonsHtml) {
-            linkHtml = `<span class="bill-links">${buttonsHtml}</span>`;
-        }
-        
-        let timeHtml = '';
-        if (item.timestamp && item.timestamp.trim() !== "") {
-            timeHtml = `<div class="bill-meta">${item.timestamp}</div>`;
-        }
+            let fullTitle = item.title || "";
+            let boldPart = fullTitle;
+            let normalPart = "";
 
-        let fullTitle = item.title || "";
-        let boldPart = fullTitle;
-        let normalPart = "";
+            let splitIndex = fullTitle.indexOf("—");
+            if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
 
-        let splitIndex = fullTitle.indexOf("—");
-        if (splitIndex === -1) splitIndex = fullTitle.indexOf("-");
-        
-        if (splitIndex !== -1) {
-            boldPart = fullTitle.substring(0, splitIndex).trim();
-            normalPart = fullTitle.substring(splitIndex + 1).trim(); 
-            normalPart = ` — ${normalPart}`;
-        } else {
-            boldPart = fullTitle;
-            normalPart = "";
-        }
+            if (splitIndex !== -1) {
+                boldPart = fullTitle.substring(0, splitIndex).trim();
+                normalPart = fullTitle.substring(splitIndex + 1).trim();
+                normalPart = ` — ${normalPart}`;
+            } else {
+                boldPart = fullTitle;
+                normalPart = "";
+            }
 
-        div.innerHTML = `
+            div.innerHTML = `
             <div class="bill-row">
                 <a href="${item.link || '#'}" target="_blank" style="text-decoration:none; color:inherit;">
                     <span class="bill-id">${boldPart}</span>
@@ -567,40 +936,41 @@
             </div>
             ${timeHtml}
         `;
-        return div;
-    }
-    
-    initFeed();
-    setInterval(initFeed, 10000);
+            return div;
+        }
 
-    const btn = document.getElementById('submitBtn');
-    const input = document.getElementById('email');
-    const stat = document.getElementById('status');
+        initFeed();
+        setInterval(initFeed, 10000);
 
-    btn.addEventListener('click', async () => {
-      const email = input.value.trim();
-      if (!email.includes('@')) { 
-          stat.textContent = "Please enter a valid email."; stat.style.color = "#dc2626"; return; 
-      }
-      btn.disabled = true; btn.textContent = "Authenticating..."; stat.textContent = "";
+        const btn = document.getElementById('submitBtn');
+        const input = document.getElementById('email');
+        const stat = document.getElementById('status');
 
-      const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
+        btn.addEventListener('click', async () => {
+            const email = input.value.trim();
+            if (!email.includes('@')) {
+                stat.textContent = "Please enter a valid email."; stat.style.color = "#dc2626"; return;
+            }
+            btn.disabled = true; btn.textContent = "Authenticating..."; stat.textContent = "";
 
-      if (error) {
-          if (error.code === '23505') {
-              stat.textContent = "You are already in the system."; stat.style.color = "#2563eb"; 
-          } else {
-              stat.textContent = "Connection error. Please retry."; stat.style.color = "#dc2626"; 
-          }
-          btn.disabled = false; btn.textContent = "Subscribe for Free";
-      } else {
-          stat.textContent = "Confirmed. You are now tracking the floor.";
-          stat.style.color = "#16a34a"; input.value = ""; btn.textContent = "Success";
-          setTimeout(() => {
-              btn.disabled = false; btn.textContent = "Subscribe a Colleague"; stat.textContent = "";
-          }, 3000);
-      }
-    });
-  </script>
+            const { error } = await _supabase.from('subscribers').insert([{ email: email }]);
+
+            if (error) {
+                if (error.code === '23505') {
+                    stat.textContent = "You are already in the system."; stat.style.color = "#2563eb";
+                } else {
+                    stat.textContent = "Connection error. Please retry."; stat.style.color = "#dc2626";
+                }
+                btn.disabled = false; btn.textContent = "Subscribe for Free";
+            } else {
+                stat.textContent = "Confirmed. You are now tracking the floor.";
+                stat.style.color = "#16a34a"; input.value = ""; btn.textContent = "Success";
+                setTimeout(() => {
+                    btn.disabled = false; btn.textContent = "Subscribe a Colleague"; stat.textContent = "";
+                }, 3000);
+            }
+        });
+    </script>
 </body>
+
 </html>
