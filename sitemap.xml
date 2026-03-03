@@ -259,6 +259,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.thecapitolwire.com/bills/hr-7148-consolidated-appropriations-act-2026.html</loc>
+    <lastmod>2026-03-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.thecapitolwire.com/bills/hres-report-to-accompany-the-resolution-recommending-that-the-house-of-represent.html</loc>
     <lastmod>2026-03-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -332,12 +338,6 @@
   </url>
   <url>
     <loc>https://www.thecapitolwire.com/bills/hr-7147-department-of-homeland-security-appropriations-act-2026.html</loc>
-    <lastmod>2026-03-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.thecapitolwire.com/bills/hr-7148-consolidated-appropriations-act-2026.html</loc>
     <lastmod>2026-03-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
