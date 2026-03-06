@@ -29,6 +29,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
 
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.thecapitolwire.com/"},
+      {"@type": "ListItem", "position": 2, "name": "Dashboard"}
+    ]
+  }
+  </script>
+
   <style>
     /* --- MODERN LIGHT THEME --- */
     :root {
@@ -399,7 +410,7 @@
       <div class="footer-links">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
-        <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+        <a href="/cdn-cgi/l/email-protection#abd1cac8c3ebdfc3cec8cadbc2dfc4c7dcc2d9ce85c8c4c6">Contact Support</a>
       </div>
     </div>
   </footer>
@@ -415,7 +426,7 @@
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
     const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"; 
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -742,11 +753,4 @@
             modalBtn.innerText = "Subscribe Free";
         } else {
             modalStatus.innerText = "Subscribed!";
-            modalStatus.style.color = "#16a34a";
-            modalInput.value = "";
-            setTimeout(closeModal, 2000);
-        }
-    });
-  </script>
-</body>
-</html>
+            modalS
