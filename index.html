@@ -80,6 +80,15 @@
     }
   }
   </script>
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.thecapitolwire.com/"}
+    ]
+  }
+  </script>
 
     <style>
         /* --- MODERN LIGHT THEME --- */
@@ -841,12 +850,12 @@
                 <a href="privacy.html">Privacy Policy</a>
                 <a href="terms.html">Terms of Service</a>
                 <a href="/blog/how-to-track-house-floor-schedule.html">Blog</a>
-                <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
+                <a href="/cdn-cgi/l/email-protection#c2b8a3a1aa82b6aaa7a1a3b2abb6adaeb5abb0a7eca1adaf">Contact Support</a>
             </div>
         </div>
     </footer>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         const SUPABASE_URL = "https://jcrsdyyqrbtxyzhveszx.supabase.co";
         const SUPABASE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1050,11 +1059,4 @@
 
         // Close mobile menu when a link is clicked
         document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-links').classList.remove('open');
-            });
-        });
-    </script>
-</body>
-
-</html>
+            link.addEventListener('
