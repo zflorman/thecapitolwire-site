@@ -103,25 +103,24 @@
   }
   </script>
 
-    <!-- Breadcrumb Schema -->
-    <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.thecapitolwire.com/"},
-      {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://www.thecapitolwire.com/blog/"},
-      {"@type": "ListItem", "position": 3, "name": "House Floor Schedule Today"}
-    ]
-  }
-  </script>
-
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap"
         rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.thecapitolwire.com/"},
+        {"@type": "ListItem", "position": 2, "name": "Guides", "item": "https://www.thecapitolwire.com/blog/"},
+        {"@type": "ListItem", "position": 3, "name": "House Floor Schedule Today"}
+      ]
+    }
+    </script>
+    
     <style>
         :root {
             --bg-main: #ffffff;
@@ -757,7 +756,7 @@
             <div class="footer-links">
                 <a href="/privacy.html">Privacy Policy</a>
                 <a href="/terms.html">Terms of Service</a>
-                <a href="/cdn-cgi/l/email-protection#9be1faf8f3dbeff3fef8faebf2eff4f7ecf2e9feb5f8f4f6">Contact Support</a>
+                <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
             </div>
         </div>
     </footer>
@@ -777,7 +776,7 @@
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
         const SUBSCRIBE_KEY = 'sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h';
         let subscribeClient = null;
@@ -839,3 +838,12 @@
                 }
                 modalStatus.textContent = 'Subscribed!';
                 modalStatus.style.color = '#22c55e';
+                if (modalEmail) modalEmail.value = '';
+                setTimeout(closeModal, 1200);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
