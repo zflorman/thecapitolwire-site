@@ -3,10 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About | The Capitol Wire</title>
+    <title>About The Capitol Wire | Real-Time House Floor Intelligence</title>
+    <meta name="description" content="The Capitol Wire monitors the House floor schedule every 60 seconds and sends instant email alerts. Built by Zachary Florman to make public legislative data instantly accessible.">
+    <link rel="canonical" href="https://www.thecapitolwire.com/about.html">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.thecapitolwire.com/about.html">
+    <meta property="og:title" content="About The Capitol Wire | Real-Time House Floor Intelligence">
+    <meta property="og:description" content="The Capitol Wire monitors the House floor schedule every 60 seconds and sends instant email alerts with AI policy briefs for every bill — completely free.">
+    <meta property="og:image" content="https://www.thecapitolwire.com/og-image.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="About The Capitol Wire">
+    <meta name="twitter:description" content="Free real-time House floor alerts and AI policy briefs. Built by Zachary Florman to make public legislative data instantly accessible.">
+    <meta name="twitter:image" content="https://www.thecapitolwire.com/og-image.png">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "name": "About The Capitol Wire",
+        "description": "The Capitol Wire monitors the House floor schedule every 60 seconds and sends instant email alerts with AI-generated policy briefs for every bill on the weekly agenda.",
+        "url": "https://www.thecapitolwire.com/about.html",
+        "isPartOf": {"@type": "WebSite", "name": "The Capitol Wire", "url": "https://www.thecapitolwire.com"},
+        "author": {
+            "@type": "Person",
+            "name": "Zachary Florman",
+            "email": "zach@thecapitolwire.com",
+            "url": "https://www.thecapitolwire.com/about.html"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Zachary Florman",
+        "email": "zach@thecapitolwire.com",
+        "url": "https://www.thecapitolwire.com/about.html",
+        "jobTitle": "Founder",
+        "worksFor": {"@type": "Organization", "name": "The Capitol Wire", "url": "https://www.thecapitolwire.com"}
+    }
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CEV5ME0C6L"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-CEV5ME0C6L');
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
 
     <style>
@@ -52,6 +105,7 @@
       </div>
       <div class="flex items-center gap-4">
         <a href="/dashboard/" class="text-xs font-bold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Dashboard</a>
+        <a href="/bills/" class="text-xs font-bold text-slate-500 hover:text-blue-700 uppercase tracking-wide">Bill Archive</a>
         <button class="text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded shadow-sm transition-colors" onclick="openModal()">
           Get Alerts
         </button>
@@ -189,36 +243,37 @@
   </div>
 
   <script>
-      const SUPABASE_URL = 'https://jcrsdyyqrbtxyzhveszx.supabase.co';
-      const SUBSCRIBE_KEY = "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h";
-      let subscribeClient = null;
-      if (window.supabase) subscribeClient = supabase.createClient(SUPABASE_URL, SUBSCRIBE_KEY);
-
       const modalEl = document.getElementById('modal');
-      const modalEmail = document.getElementById('modal-email');
-      const modalSubmit = document.getElementById('modal-submit');
-      const modalStatus = document.getElementById('modal-status');
-
-      function openModal() { if(modalEl) { modalEl.classList.remove('hidden'); modalEl.classList.add('flex'); if(modalEmail) modalEmail.focus(); }}
-      function closeModal() { if(modalEl) { modalEl.classList.add('hidden'); modalEl.classList.remove('flex'); if(modalStatus) modalStatus.textContent=""; if(modalSubmit) { modalSubmit.disabled=false; modalSubmit.textContent="Subscribe Free"; }}}
+      function openModal() { if(modalEl) { modalEl.classList.remove('hidden'); modalEl.classList.add('flex'); const me=document.getElementById('modal-email'); if(me) me.focus(); }}
+      function closeModal() { if(modalEl) { modalEl.classList.add('hidden'); modalEl.classList.remove('flex'); const ms=document.getElementById('modal-status'); if(ms) ms.textContent=""; const mb=document.getElementById('modal-submit'); if(mb){mb.disabled=false; mb.textContent="Subscribe Free";}}}
       if(modalEl) modalEl.addEventListener('click', (e) => { if(e.target===modalEl) closeModal(); });
 
-      if(modalSubmit && subscribeClient) {
-          modalSubmit.addEventListener('click', async () => {
-              const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : "");
-              if(!email || !email.includes('@')) { modalStatus.textContent="Please enter a valid email."; modalStatus.style.color="#ef4444"; return; }
-              modalSubmit.disabled=true; modalSubmit.textContent="Processing..."; modalStatus.textContent="";
-              const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
-              if(error) {
-                   if(error.code==='23505') { modalStatus.textContent="You are already subscribed!"; modalStatus.style.color="#3b82f6"; }
-                   else { modalStatus.textContent="Error. Try again."; modalStatus.style.color="#ef4444"; }
-                   modalSubmit.disabled=false; modalSubmit.textContent="Subscribe Free"; return;
-              }
-              modalStatus.textContent="Subscribed!"; modalStatus.style.color="#22c55e";
-              if(modalEmail) modalEmail.value="";
-              setTimeout(closeModal, 1200);
-          });
-      }
+      window.addEventListener('load', function() {
+          if(typeof supabase === 'undefined') return;
+          const subscribeClient = supabase.createClient(
+              'https://jcrsdyyqrbtxyzhveszx.supabase.co',
+              "sb_publishable_oQOSOkFpJAPfmnINrAYYUg_FNMRBM1h"
+          );
+          const modalEmail = document.getElementById('modal-email');
+          const modalSubmit = document.getElementById('modal-submit');
+          const modalStatus = document.getElementById('modal-status');
+          if(modalSubmit) {
+              modalSubmit.addEventListener('click', async () => {
+                  const email = (modalEmail && modalEmail.value ? modalEmail.value.trim() : "");
+                  if(!email || !email.includes('@')) { modalStatus.textContent="Please enter a valid email."; modalStatus.style.color="#ef4444"; return; }
+                  modalSubmit.disabled=true; modalSubmit.textContent="Processing..."; modalStatus.textContent="";
+                  const { error } = await subscribeClient.from('subscribers').insert([{ email }]);
+                  if(error) {
+                      if(error.code==='23505') { modalStatus.textContent="You are already subscribed!"; modalStatus.style.color="#3b82f6"; }
+                      else { modalStatus.textContent="Error. Try again."; modalStatus.style.color="#ef4444"; }
+                      modalSubmit.disabled=false; modalSubmit.textContent="Subscribe Free"; return;
+                  }
+                  modalStatus.textContent="Subscribed!"; modalStatus.style.color="#22c55e";
+                  if(modalEmail) modalEmail.value="";
+                  setTimeout(closeModal, 1200);
+              });
+          }
+      });
   </script>
 
 </body>
