@@ -254,9 +254,12 @@
 
                 if (error) throw error;
 
-                // Filter out error entries and deduplicate by title
+                // Filter out error entries, known 404s, and deduplicate by title
                 const seen = new Map();
+                const skippedIds = [10766, 10651, 1371, 800, 752, 680, 588, 521, 520, 492, 333, 307, 306, 143, 86, 73];
+                
                 allBills = (data || []).filter(b => {
+                    if (skippedIds.includes(b.id)) return false;
                     const ai = b.ai_analysis;
                     if (!ai) return false;
                     if (typeof ai === 'object' && ai.error) return false;
