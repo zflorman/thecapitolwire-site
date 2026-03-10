@@ -12,6 +12,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Capitol Wire | Real-Time House Floor Alerts</title>
+  <meta name="description" content="Free real-time email alerts for the House floor schedule. AI policy briefs for every bill on the weekly agenda.">
+  <link rel="canonical" href="https://www.thecapitolwire.com/">
 
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://thecapitolwire.com/" />
@@ -408,8 +410,8 @@
     <div class="container">
       <div>© 2026 The Capitol Wire. Intelligence sourced directly from <a href="https://docs.house.gov/floor/" target="_blank">docs.house.gov/floor</a>.</div>
       <div class="footer-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
         <a href="mailto:zach@thecapitolwire.com">Contact Support</a>
       </div>
     </div>
@@ -666,7 +668,7 @@
 
         // 1. AI Button (Green Tag)
         if (item.ai_analysis) {
-             buttonsHtml += `<a href="/analysis/?id=${item.id}" class="ai-link">POLICY BRIEF</a>`;
+             buttonsHtml += `<a href="/bills/view.html?bill=${cleanSlug(item.title || '')}" class="ai-link">POLICY BRIEF</a>`;
         }
 
         // 2. Doc Link (Gray Tag)
@@ -715,6 +717,22 @@
         return div;
     }
     
+    function cleanSlug(title) {
+        let t = title.toLowerCase()
+            .replace(/—?\s*sponsored by rep.*/i, '')
+            .replace(/—?\s*as amended.*/i, '')
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_]+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+        if (t.length > 80) {
+            let trunc = t.substring(0, 80);
+            let last = trunc.lastIndexOf('-');
+            return last > 0 ? trunc.substring(0, last) : trunc;
+        }
+        return t;
+    }
+
     initFeed();
     setInterval(initFeed, 10000);
 
