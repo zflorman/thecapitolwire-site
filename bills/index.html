@@ -231,7 +231,7 @@
         function slugify(title) {
             let text = title.toLowerCase();
             text = text.replace(/—?\s*sponsored by rep.*/, '');
-            text = text.replace(/—?\s*as amended.*/, '');
+            text = text.replace(/[,—]?\s*as amended.*/i, '');
             text = text.replace(/[^\w\s-]/g, '');
             text = text.replace(/[\s_]+/g, '-');
             text = text.replace(/-+/g, '-').replace(/^-|-$/g, '');
