@@ -229,12 +229,18 @@
 
         // --- Slug Generator (must match github_publisher.py) ---
         function slugify(title) {
-            return title.toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s_]+/g, '-')
-                .replace(/-+/g, '-')
-                .replace(/^-|-$/g, '')
-                .substring(0, 80);
+            let text = title.toLowerCase();
+            text = text.replace(/—?\s*sponsored by rep.*/, '');
+            text = text.replace(/—?\s*as amended.*/, '');
+            text = text.replace(/[^\w\s-]/g, '');
+            text = text.replace(/[\s_]+/g, '-');
+            text = text.replace(/-+/g, '-').replace(/^-|-$/g, '');
+            if (text.length > 80) {
+                let truncated = text.substring(0, 80);
+                let lastHyphen = truncated.lastIndexOf('-');
+                return lastHyphen > 0 ? truncated.substring(0, lastHyphen) : truncated;
+            }
+            return text;
         }
 
         // --- Load Bills ---
