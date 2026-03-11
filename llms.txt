@@ -1,0 +1,30 @@
+# The Capitol Wire
+> Real-time U.S. House floor tracking and AI-generated legislative intelligence
+
+## About
+The Capitol Wire monitors docs.house.gov and the Majority Leader's website every 60 seconds. When bills are added or updated on the House floor schedule, instant email alerts go out and an AI policy brief is automatically generated from the official bill text.
+
+## Key Pages
+- /: Homepage with live bill feed and email signup
+- /dashboard/: Live House floor schedule (This Week / Next Week tabs)
+- /bills/: AI policy brief archive for all tracked bills
+- /blog/how-to-track-house-floor-schedule.html: Guide to monitoring the House floor schedule
+- /blog/house-floor-schedule-today.html: How to find today's House floor schedule
+- /blog/what-bills-are-being-voted-on-this-week.html: Guide to this week's House votes
+- /about.html: About the service and founder
+
+## Content
+All bill policy briefs are AI-generated from official bill text (PDFs from docs.house.gov). Each brief includes an executive summary, key provisions, verification guide with page/line citations, and political analysis. AI generation is disclosed on every page.
+
+## Permissions
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: *
+Allow: /
